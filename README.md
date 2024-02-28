@@ -47,7 +47,7 @@ This project has adopted the [Amazon Open Source Code of Conduct](CODE_OF_CONDUC
 ## Security
 
 To report a possible vulnerability or security issue you can:
-- Send us an email to security@fortishield.github.io.
+- Send us an email to security@khulnasoft.com.
 - Open a new security report under the security tab on this repository.
 
 **PLEASE DO NOT OPEN A PUBLIC ISSUE ABOUT SECURITY**

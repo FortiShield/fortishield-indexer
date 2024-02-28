@@ -11,7 +11,7 @@ This policy applies to all open source projects developed, maintained, or hosted
 ## Reporting Security Vulnerabilities
 If you believe you've discovered a potential security vulnerability in one of our open source projects, we strongly encourage you to report it to us responsibly.
 
-Please submit your findings as security advisories under the "Security" tab in the relevant GitHub repository. Alternatively, you may send the details of your findings to security@fortishield.com.
+Please submit your findings as security advisories under the "Security" tab in the relevant GitHub repository. Alternatively, you may send the details of your findings to security@fortishield.github.io.
 
 ## Vulnerability Disclosure Policy
 Upon receiving a report of a potential vulnerability, our team will initiate an investigation. If the reported issue is confirmed as a vulnerability, we will take the following steps:
@@ -46,4 +46,4 @@ We ask that all users and contributors respect this policy and the security of o
 ## Changes to this Security Policy
 This policy may be revised from time to time. Each version of the policy will be identified at the top of the page by its effective date.
 
-If you have any questions about this Security Policy, please contact us at security@fortishield.com
+If you have any questions about this Security Policy, please contact us at security@fortishield.github.io

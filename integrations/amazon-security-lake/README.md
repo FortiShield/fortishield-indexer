@@ -1,6 +1,6 @@
 ### Amazon Security Lake integration - Logstash
 
-Follow the [Fortishield indexer integration using Logstash](https://documentation.fortishield.com/current/integrations-guide/opensearch/index.html#fortishield-indexer-integration-using-logstash)
+Follow the [Fortishield indexer integration using Logstash](https://documentation.fortishield.github.io/current/integrations-guide/opensearch/index.html#fortishield-indexer-integration-using-logstash)
 to install `Logstash` and the `logstash-input-opensearch` plugin.
 
 > RPM: https://www.elastic.co/guide/en/logstash/current/installing-logstash.html#_yum

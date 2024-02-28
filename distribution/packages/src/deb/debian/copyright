@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: fortishield-indexer
-Upstream-Contact: info@fortishield.com
-Source: https://www.fortishield.com
+Upstream-Contact: info@fortishield.github.io
+Source: https://www.fortishield.github.io
 Files: *
 Copyright: OpenSearch Contributors
 License: Apache-2.0

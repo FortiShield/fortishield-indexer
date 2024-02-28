@@ -248,12 +248,28 @@ public class InternalDistributionBwcSetupPlugin implements Plugin<Project> {
             if (version.onOrAfter("1.1.0")) {
                 this.distFile = new File(
                     checkoutDir,
-                    baseDir + "/" + name + "/build/distributions/fortishield-indexer-min-" + version + "-SNAPSHOT" + classifier + "." + extension
+                    baseDir
+                        + "/"
+                        + name
+                        + "/build/distributions/fortishield-indexer-min-"
+                        + version
+                        + "-SNAPSHOT"
+                        + classifier
+                        + "."
+                        + extension
                 );
             } else {
                 this.distFile = new File(
                     checkoutDir,
-                    baseDir + "/" + name + "/build/distributions/fortishield-indexer-" + version + "-SNAPSHOT" + classifier + "." + extension
+                    baseDir
+                        + "/"
+                        + name
+                        + "/build/distributions/fortishield-indexer-"
+                        + version
+                        + "-SNAPSHOT"
+                        + classifier
+                        + "."
+                        + extension
                 );
             }
             // we only ported this down to the 7.x branch.

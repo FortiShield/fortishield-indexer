@@ -1,6 +1,6 @@
 [Unit]
 Description=fortishield-indexer
-Documentation=https://documentation.fortishield.com
+Documentation=https://documentation.fortishield.github.io
 Wants=network-online.target
 After=network-online.target
 

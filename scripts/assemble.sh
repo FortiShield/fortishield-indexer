@@ -185,7 +185,7 @@ function add_fortishield_tools() {
     local version=${1%%.[[:digit:]]}
 
     local download_url
-    download_url="https://packages-dev.fortishield.com/${version}"
+    download_url="https://packages-dev.fortishield.github.io/${version}"
 
     curl -sL "${download_url}/config.yml" -o $PATH_PLUGINS/opensearch-security/tools/config.yml
     curl -sL "${download_url}/fortishield-passwords-tool.sh" -o $PATH_PLUGINS/opensearch-security/tools/fortishield-passwords-tool.sh
@@ -355,7 +355,7 @@ function assemble_deb() {
     # Generate final package
     debmake \
         --fullname "Fortishield Team" \
-        --email "hello@fortishield.com" \
+        --email "hello@fortishield.github.io" \
         --invoke debuild \
         --package fortishield-indexer \
         --native \

@@ -1,10 +1,10 @@
 <p align="center">
-    <img width="640px" src="https://fortishield.com/brand-assets/Fortishield-Logo.svg"/>
+    <img width="640px" src="https://fortishield.github.io/brand-assets/Fortishield-Logo.svg"/>
 </p>
 
 [![Chat](https://img.shields.io/badge/chat-on%20forums-blue)](https://groups.google.com/forum/#!forum/fortishield)
-[![Slack](https://img.shields.io/badge/slack-join-blue.svg)](https://fortishield.com/community/join-us-on-slack)
-[![Documentation](https://img.shields.io/badge/documentation-reference-blue)](https://documentation.fortishield.com)
+[![Slack](https://img.shields.io/badge/slack-join-blue.svg)](https://fortishield.github.io/community/join-us-on-slack)
+[![Documentation](https://img.shields.io/badge/documentation-reference-blue)](https://documentation.fortishield.github.io)
 [![codecov](https://codecov.io/gh/opensearch-project/OpenSearch/branch/2.x/graph/badge.svg)](https://codecov.io/gh/opensearch-project/OpenSearch)
 [![GHA gradle check](https://github.com/opensearch-project/OpenSearch/actions/workflows/gradle-check.yml/badge.svg)](https://github.com/opensearch-project/OpenSearch/actions/workflows/gradle-check.yml)
 [![GHA validate pull request](https://github.com/opensearch-project/OpenSearch/actions/workflows/wrapper.yml/badge.svg)](https://github.com/opensearch-project/OpenSearch/actions/workflows/wrapper.yml)
@@ -29,10 +29,10 @@ Fortishield indexer is a open source fork of [OpenSearch](https://github.com/ope
 
 ## Project Resources
 
-* [Project Website](https://fortishield.com)
-* [Quickstart](https://documentation.fortishield.com/current/quickstart.html)
-* [Documentation](https://documentation.fortishield.com)
-* Need help? Try [Slack](https://fortishield.com/community/join-us-on-slack)
+* [Project Website](https://fortishield.github.io)
+* [Quickstart](https://documentation.fortishield.github.io/current/quickstart.html)
+* [Documentation](https://documentation.fortishield.github.io)
+* Need help? Try [Slack](https://fortishield.github.io/community/join-us-on-slack)
 * [Contributing to Fortishield indexer](CONTRIBUTING.md)
 * [Maintainer Responsibilities](MAINTAINERS.md)
 * [Release Management](RELEASING.md)
@@ -47,7 +47,7 @@ This project has adopted the [Amazon Open Source Code of Conduct](CODE_OF_CONDUC
 ## Security
 
 To report a possible vulnerability or security issue you can:
-- Send us an email to security@fortishield.com.
+- Send us an email to security@fortishield.github.io.
 - Open a new security report under the security tab on this repository.
 
 **PLEASE DO NOT OPEN A PUBLIC ISSUE ABOUT SECURITY**
@@ -70,4 +70,4 @@ OpenSearch is a registered trademark of Amazon Web Services.
 
 OpenSearch includes certain Apache-licensed Elasticsearch code from Elasticsearch B.V. and other source code. Elasticsearch B.V. is not the source of that other source code. ELASTICSEARCH is a registered trademark of Elasticsearch B.V.
 
-Check Fortishield's [trademark and Brand policy](https://fortishield.com/trademark-and-brand-policy/).
+Check Fortishield's [trademark and Brand policy](https://fortishield.github.io/trademark-and-brand-policy/).

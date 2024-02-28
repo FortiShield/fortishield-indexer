@@ -298,13 +298,13 @@ apply plugin: 'com.netflix.nebula.ospackage-base'
 
 // this is package indepdendent configuration
 ospackage {
-  maintainer 'Fortishield, Inc <info@fortishield.com>'
+  maintainer 'Fortishield, Inc <info@fortishield.github.io>'
   summary 'Distributed RESTful search engine built for the cloud'
   packageDescription '''
     Reference documentation can be found at
-    https://documentation.fortishield.com/current/getting-started/components/fortishield-indexer.html
+    https://documentation.fortishield.github.io/current/getting-started/components/fortishield-indexer.html
   '''.stripIndent().trim()
-  url 'https://documentation.fortishield.com/current/getting-started/components/fortishield-indexer.html'
+  url 'https://documentation.fortishield.github.io/current/getting-started/components/fortishield-indexer.html'
 
   // signing setup
   if (project.hasProperty('signing.password') && BuildParams.isSnapshotBuild() == false) {

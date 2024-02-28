@@ -44,7 +44,7 @@ import java.util.Arrays;
  *
  * @opensearch.internal
  */
-public class CompositeKey implements Writeable {
+class CompositeKey implements Writeable {
     private final Comparable[] values;
 
     CompositeKey(Comparable... values) {
@@ -64,11 +64,11 @@ public class CompositeKey implements Writeable {
         return values;
     }
 
-    public int size() {
+    int size() {
         return values.length;
     }
 
-    public Comparable get(int pos) {
+    Comparable get(int pos) {
         assert pos < values.length;
         return values[pos];
     }

@@ -111,12 +111,7 @@ public class OpenSearchTestBasePlugin implements Plugin<Project> {
                         test.systemProperty("java.locale.providers", "SPI,JRE");
                     } else {
                         test.systemProperty("java.locale.providers", "SPI,COMPAT");
-                        if (test.getJavaVersion().compareTo(JavaVersion.VERSION_17) < 0) {
-                            test.jvmArgs("--illegal-access=warn");
-                        }
-                    }
-                    if (test.getJavaVersion().compareTo(JavaVersion.VERSION_17) > 0) {
-                        test.jvmArgs("-Djava.security.manager=allow");
+                        test.jvmArgs("--illegal-access=warn");
                     }
                 }
             });

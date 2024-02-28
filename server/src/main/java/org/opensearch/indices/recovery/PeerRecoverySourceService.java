@@ -376,8 +376,7 @@ public class PeerRecoverySourceService extends AbstractLifecycleComponent implem
                     transportService,
                     request.targetNode(),
                     recoverySettings,
-                    throttleTime -> shard.recoveryStats().addThrottleTime(throttleTime),
-                    shard.isRemoteTranslogEnabled()
+                    throttleTime -> shard.recoveryStats().addThrottleTime(throttleTime)
                 );
                 handler = RecoverySourceHandlerFactory.create(shard, recoveryTarget, request, recoverySettings);
                 return Tuple.tuple(handler, recoveryTarget);

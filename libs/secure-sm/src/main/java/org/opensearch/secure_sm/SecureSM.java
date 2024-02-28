@@ -76,7 +76,6 @@ import java.util.Set;
  * @see <a href="http://cs.oswego.edu/pipermail/concurrency-interest/2009-August/006508.html">
  *         http://cs.oswego.edu/pipermail/concurrency-interest/2009-August/006508.html</a>
  */
-@SuppressWarnings("removal")
 public class SecureSM extends SecurityManager {
 
     private final String[] classesThatCanExit;

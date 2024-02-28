@@ -32,7 +32,6 @@
 package org.opensearch.index.query;
 
 import org.opensearch.client.Client;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.util.concurrent.CountDown;
 import org.opensearch.core.action.ActionListener;
 import org.opensearch.core.common.io.stream.NamedWriteableRegistry;
@@ -47,9 +46,8 @@ import java.util.function.LongSupplier;
 /**
  * Context object used to rewrite {@link QueryBuilder} instances into simplified version.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class QueryRewriteContext {
     private final NamedXContentRegistry xContentRegistry;
     private final NamedWriteableRegistry writeableRegistry;

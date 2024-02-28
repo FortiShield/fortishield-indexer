@@ -69,11 +69,9 @@ import java.net.InetSocketAddress;
 import java.nio.channels.CancelledKeyException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -364,7 +362,7 @@ public abstract class AbstractHttpServerTransport extends AbstractLifecycleCompo
      * @param httpChannel that received the http request
      */
     public void incomingRequest(final HttpRequest httpRequest, final HttpChannel httpChannel) {
-        final Span span = tracer.startSpan(SpanBuilder.from(httpRequest), extractHeaders(httpRequest.getHeaders()));
+        final Span span = tracer.startSpan(SpanBuilder.from(httpRequest), httpRequest.getHeaders());
         try (final SpanScope httpRequestSpanScope = tracer.withSpanInScope(span)) {
             HttpChannel traceableHttpChannel = TraceableHttpChannel.create(httpChannel, span, tracer);
             handleIncomingRequest(httpRequest, traceableHttpChannel, httpRequest.getInboundException());
@@ -484,10 +482,5 @@ public abstract class AbstractHttpServerTransport extends AbstractLifecycleCompo
         } else {
             return NO_OP;
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <Values extends Collection<String>> Map<String, Collection<String>> extractHeaders(Map<String, Values> headers) {
-        return (Map<String, Collection<String>>) headers;
     }
 }

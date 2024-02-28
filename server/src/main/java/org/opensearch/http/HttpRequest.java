@@ -33,7 +33,6 @@
 package org.opensearch.http;
 
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.core.rest.RestStatus;
 import org.opensearch.rest.RestRequest;
@@ -46,17 +45,15 @@ import java.util.Map;
  * A basic http request abstraction. Http modules needs to implement this interface to integrate with the
  * server package's rest handling.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface HttpRequest {
 
     /**
      * Which HTTP version being used
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     enum HttpVersion {
         HTTP_1_0,
         HTTP_1_1

@@ -10,15 +10,13 @@ package org.opensearch.action.admin.cluster.remotestore.stats;
 
 import org.opensearch.action.support.broadcast.BroadcastOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 
 /**
  * Builder for RemoteStoreStatsRequest
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.8.0")
 public class RemoteStoreStatsRequestBuilder extends BroadcastOperationRequestBuilder<
     RemoteStoreStatsRequest,
     RemoteStoreStatsResponse,

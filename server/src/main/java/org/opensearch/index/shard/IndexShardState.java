@@ -32,14 +32,11 @@
 
 package org.opensearch.index.shard;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * Index Shard States
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public enum IndexShardState {
     CREATED((byte) 0),
     RECOVERING((byte) 1),

@@ -33,7 +33,6 @@ package org.opensearch.search.lookup;
 
 import org.apache.lucene.index.LeafReader;
 import org.opensearch.OpenSearchParseException;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.index.fieldvisitor.SingleFieldsVisitor;
 import org.opensearch.index.mapper.MappedFieldType;
 import org.opensearch.index.mapper.MapperService;
@@ -51,9 +50,8 @@ import static java.util.Collections.singletonMap;
 /**
  * looks up multiple leaf fields
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class LeafFieldsLookup implements Map {
 
     private final MapperService mapperService;

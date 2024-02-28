@@ -35,7 +35,6 @@ package org.opensearch.action.admin.cluster.node.tasks.cancel;
 import org.opensearch.OpenSearchException;
 import org.opensearch.action.TaskOperationFailure;
 import org.opensearch.action.admin.cluster.node.tasks.list.ListTasksResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.xcontent.ConstructingObjectParser;
@@ -50,9 +49,8 @@ import java.util.List;
 /**
  * Returns the list of tasks that were cancelled
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class CancelTasksResponse extends ListTasksResponse {
 
     private static final ConstructingObjectParser<CancelTasksResponse, Void> PARSER = setupParser(

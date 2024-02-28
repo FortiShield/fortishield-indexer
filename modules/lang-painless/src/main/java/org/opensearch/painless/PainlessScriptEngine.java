@@ -67,7 +67,6 @@ import static org.opensearch.painless.WriterConstants.OBJECT_TYPE;
 /**
  * Implementation of a ScriptEngine for the Painless language.
  */
-@SuppressWarnings("removal")
 public final class PainlessScriptEngine implements ScriptEngine {
 
     /**

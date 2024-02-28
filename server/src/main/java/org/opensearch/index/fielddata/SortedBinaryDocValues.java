@@ -33,7 +33,6 @@
 package org.opensearch.index.fielddata;
 
 import org.apache.lucene.util.BytesRef;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.io.IOException;
 
@@ -42,9 +41,8 @@ import java.io.IOException;
  * according to {@link BytesRef#compareTo(BytesRef)}.
  * There might be dups however.
  *
-  * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 // TODO: Should it expose a count (current approach) or return null when there are no more values?
 public abstract class SortedBinaryDocValues {
 

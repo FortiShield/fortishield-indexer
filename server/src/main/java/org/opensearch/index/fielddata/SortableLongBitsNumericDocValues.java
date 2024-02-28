@@ -74,9 +74,4 @@ final class SortableLongBitsNumericDocValues extends AbstractNumericDocValues {
         return values;
     }
 
-    @Override
-    public int advance(int target) throws IOException {
-        return values.advance(target);
-    }
-
 }

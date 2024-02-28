@@ -392,8 +392,7 @@ public class TransportWriteActionForIndexingPressureTests extends OpenSearchTest
                 ignore -> ThreadPool.Names.SAME,
                 false,
                 TransportWriteActionForIndexingPressureTests.this.indexingPressureService,
-                new SystemIndices(emptyMap()),
-                NoopTracer.INSTANCE
+                new SystemIndices(emptyMap())
             );
         }
 

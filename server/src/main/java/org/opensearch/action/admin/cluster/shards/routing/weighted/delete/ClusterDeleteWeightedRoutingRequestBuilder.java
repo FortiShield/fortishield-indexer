@@ -10,14 +10,12 @@ package org.opensearch.action.admin.cluster.shards.routing.weighted.delete;
 
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * Request builder to delete weights for weighted round-robin shard routing policy.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public class ClusterDeleteWeightedRoutingRequestBuilder extends ClusterManagerNodeOperationRequestBuilder<
     ClusterDeleteWeightedRoutingRequest,
     ClusterDeleteWeightedRoutingResponse,

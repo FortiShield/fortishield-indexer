@@ -36,8 +36,6 @@ import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.core.index.Index;
-import org.opensearch.core.index.shard.ShardId;
 import org.opensearch.core.rest.RestStatus;
 import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.index.IndexSettings;
@@ -67,7 +65,6 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 public class MaxDocsLimitIT extends OpenSearchIntegTestCase {
 
     private static final AtomicInteger maxDocs = new AtomicInteger();
-    private static final ShardId shardId = new ShardId(new Index("test", "_na_"), 0);
 
     public static class TestEnginePlugin extends Plugin implements EnginePlugin {
         @Override
@@ -125,10 +122,7 @@ public class MaxDocsLimitIT extends OpenSearchIntegTestCase {
             IllegalArgumentException.class,
             () -> client().prepareDelete("test", "any-id").get()
         );
-        assertThat(
-            deleteError.getMessage(),
-            containsString("Number of documents in shard " + shardId + " exceeds the limit of [" + maxDocs.get() + "] documents per shard")
-        );
+        assertThat(deleteError.getMessage(), containsString("Number of documents in the index can't exceed [" + maxDocs.get() + "]"));
         client().admin().indices().prepareRefresh("test").get();
         SearchResponse searchResponse = client().prepareSearch("test")
             .setQuery(new MatchAllQueryBuilder())
@@ -214,16 +208,7 @@ public class MaxDocsLimitIT extends OpenSearchIntegTestCase {
                         assertThat(resp.status(), equalTo(RestStatus.CREATED));
                     } catch (IllegalArgumentException e) {
                         numFailure.incrementAndGet();
-                        assertThat(
-                            e.getMessage(),
-                            containsString(
-                                "Number of documents in shard "
-                                    + shardId
-                                    + " exceeds the limit of ["
-                                    + maxDocs.get()
-                                    + "] documents per shard"
-                            )
-                        );
+                        assertThat(e.getMessage(), containsString("Number of documents in the index can't exceed [" + maxDocs.get() + "]"));
                     }
                 }
             });

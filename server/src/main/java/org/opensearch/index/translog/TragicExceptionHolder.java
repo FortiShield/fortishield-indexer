@@ -34,16 +34,14 @@ package org.opensearch.index.translog;
 
 import org.apache.lucene.store.AlreadyClosedException;
 import org.opensearch.ExceptionsHelper;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Exception thrown if there are any massive OpenSearch failures
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class TragicExceptionHolder {
     private final AtomicReference<Exception> tragedy = new AtomicReference<>();
 

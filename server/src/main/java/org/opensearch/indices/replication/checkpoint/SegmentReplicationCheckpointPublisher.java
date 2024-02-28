@@ -8,7 +8,6 @@
 
 package org.opensearch.indices.replication.checkpoint;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.inject.Inject;
 import org.opensearch.index.shard.IndexShard;
 
@@ -17,9 +16,8 @@ import java.util.Objects;
 /**
  * Publish Segment Replication Checkpoint.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.2.0")
 public class SegmentReplicationCheckpointPublisher {
 
     private final PublishAction publishAction;
@@ -41,10 +39,7 @@ public class SegmentReplicationCheckpointPublisher {
 
     /**
      * Represents an action that is invoked to publish segment replication checkpoint to replica shard
-     *
-     * @opensearch.api
      */
-    @PublicApi(since = "2.2.0")
     public interface PublishAction {
         void publish(IndexShard indexShard, ReplicationCheckpoint checkpoint);
     }

@@ -33,7 +33,6 @@
 package org.opensearch.core.xcontent;
 
 import org.opensearch.common.Booleans;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.io.IOException;
 import java.util.Map;
@@ -43,17 +42,15 @@ import java.util.Map;
  * The output may or may not be a value object. Objects implementing {@link ToXContentObject} output a valid value
  * but those that don't may or may not require emitting a startObject and an endObject.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface ToXContent {
 
     /**
      * Base parameters class
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     interface Params {
         String param(String key);
 

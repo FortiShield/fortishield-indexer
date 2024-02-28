@@ -8,7 +8,6 @@
 
 package org.opensearch.cluster.routing;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -21,9 +20,8 @@ import java.util.Objects;
 /**
  * Entity for Weighted Round Robin weights
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public class WeightedRouting implements Writeable {
     private String attributeName;
     private Map<String, Double> weights;

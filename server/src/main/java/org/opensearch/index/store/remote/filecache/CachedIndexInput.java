@@ -9,7 +9,6 @@
 package org.opensearch.index.store.remote.filecache;
 
 import org.apache.lucene.store.IndexInput;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.io.IOException;
 
@@ -18,9 +17,8 @@ import java.io.IOException;
  * {@link IndexInput}. Exactly how the IndexInput is created is determined by
  * the implementations.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.7.0")
 public interface CachedIndexInput extends AutoCloseable {
     /**
      * Gets the {@link IndexInput} this cache entry represents.

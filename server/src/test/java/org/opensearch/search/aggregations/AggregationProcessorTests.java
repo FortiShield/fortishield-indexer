@@ -8,13 +8,10 @@
 
 package org.opensearch.search.aggregations;
 
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.CollectorManager;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.opensearch.index.engine.Engine;
 import org.opensearch.search.aggregations.bucket.global.GlobalAggregator;
 import org.opensearch.search.internal.ContextIndexSearcher;
 import org.opensearch.search.profile.query.CollectorResult;
@@ -23,17 +20,14 @@ import org.opensearch.test.TestSearchContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import org.mockito.ArgumentMatchers;
 
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class AggregationProcessorTests extends AggregationSetupTests {
     private final AggregationProcessor testAggregationProcessor = new ConcurrentAggregationProcessor();
@@ -158,31 +152,9 @@ public class AggregationProcessorTests extends AggregationSetupTests {
                 globalCollectors.add(context.queryCollectorManagers().get(GlobalAggCollectorManager.class).newCollector());
             }
         }
+        final ContextIndexSearcher testSearcher = mock(ContextIndexSearcher.class);
         final IndexSearcher.LeafSlice[] slicesToReturn = new IndexSearcher.LeafSlice[numSlices];
-
-        // Build a ContextIndexSearcher that stubs slices to return slicesToReturn. Slices is protected in IndexReader
-        // so this builds a real object. The DirectoryReader fetched to build the object is not used for any searches.
-        final DirectoryReader reader;
-        try (Engine.Searcher searcher = context.indexShard().acquireSearcher("test")) {
-            reader = searcher.getDirectoryReader();
-        }
-        ContextIndexSearcher testSearcher = spy(
-            new ContextIndexSearcher(
-                reader,
-                IndexSearcher.getDefaultSimilarity(),
-                IndexSearcher.getDefaultQueryCache(),
-                IndexSearcher.getDefaultQueryCachingPolicy(),
-                randomBoolean(),
-                mock(ExecutorService.class),
-                context
-            ) {
-                @Override
-                protected LeafSlice[] slices(List<LeafReaderContext> leaves) {
-                    return slicesToReturn;
-                }
-            }
-        );
-
+        when(testSearcher.getSlices()).thenReturn(slicesToReturn);
         ((TestSearchContext) context).setSearcher(testSearcher);
         AggregationCollectorManager collectorManager;
         if (expectedNonGlobalAggsPerSlice > 0) {
@@ -192,8 +164,8 @@ public class AggregationProcessorTests extends AggregationSetupTests {
         if (expectedGlobalAggs > 0) {
             collectorManager = (AggregationCollectorManager) context.queryCollectorManagers().get(GlobalAggCollectorManager.class);
             ReduceableSearchResult result = collectorManager.reduce(globalCollectors);
-            doReturn(result).when(testSearcher)
-                .search(nullable(Query.class), ArgumentMatchers.<CollectorManager<?, ReduceableSearchResult>>any());
+            when(testSearcher.search(nullable(Query.class), ArgumentMatchers.<CollectorManager<?, ReduceableSearchResult>>any()))
+                .thenReturn(result);
         }
         assertTrue(context.queryResult().hasAggs());
         if (withProfilers) {

@@ -32,8 +32,6 @@
 
 package org.opensearch.action.admin.indices.segments;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,9 +41,8 @@ import java.util.Map;
 /**
  * List of Index Segments
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class IndexSegments implements Iterable<IndexShardSegments> {
 
     private final String index;

@@ -32,8 +32,6 @@
 
 package org.opensearch.core.action;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -41,9 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * the is called is only called once. Subclasses should implement notification logic with
  * innerOnResponse and innerOnFailure.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class NotifyOnceListener<Response> implements ActionListener<Response> {
 
     private final AtomicBoolean hasBeenCalled = new AtomicBoolean(false);

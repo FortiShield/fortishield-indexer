@@ -35,7 +35,6 @@ package org.opensearch.action.admin.cluster.snapshots.status;
 import org.opensearch.OpenSearchParseException;
 import org.opensearch.action.support.broadcast.BroadcastShardResponse;
 import org.opensearch.cluster.metadata.IndexMetadata;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -57,9 +56,8 @@ import static org.opensearch.core.xcontent.ConstructingObjectParser.optionalCons
 /**
  * Status for snapshotting an Index Shard
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SnapshotIndexShardStatus extends BroadcastShardResponse implements ToXContentFragment {
 
     private SnapshotIndexShardStage stage = SnapshotIndexShardStage.INIT;

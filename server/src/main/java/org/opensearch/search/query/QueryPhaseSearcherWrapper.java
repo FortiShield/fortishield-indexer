@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.CollectorManager;
 import org.apache.lucene.search.Query;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.search.aggregations.AggregationProcessor;
 import org.opensearch.search.internal.ContextIndexSearcher;
 import org.opensearch.search.internal.SearchContext;
@@ -32,7 +33,9 @@ public class QueryPhaseSearcherWrapper implements QueryPhaseSearcher {
 
     public QueryPhaseSearcherWrapper() {
         this.defaultQueryPhaseSearcher = new QueryPhase.DefaultQueryPhaseSearcher();
-        this.concurrentQueryPhaseSearcher = new ConcurrentQueryPhaseSearcher();
+        this.concurrentQueryPhaseSearcher = FeatureFlags.isEnabled(FeatureFlags.CONCURRENT_SEGMENT_SEARCH)
+            ? new ConcurrentQueryPhaseSearcher()
+            : null;
     }
 
     /**
@@ -55,8 +58,10 @@ public class QueryPhaseSearcherWrapper implements QueryPhaseSearcher {
         boolean hasTimeout
     ) throws IOException {
         if (searchContext.shouldUseConcurrentSearch()) {
+            LOGGER.debug("Using concurrent search over segments (experimental) for request with context id {}", searchContext.id());
             return concurrentQueryPhaseSearcher.searchWith(searchContext, searcher, query, collectors, hasFilterCollector, hasTimeout);
         } else {
+            LOGGER.debug("Using non-concurrent search over segments for request with context id {}", searchContext.id());
             return defaultQueryPhaseSearcher.searchWith(searchContext, searcher, query, collectors, hasFilterCollector, hasTimeout);
         }
     }
@@ -69,8 +74,13 @@ public class QueryPhaseSearcherWrapper implements QueryPhaseSearcher {
     @Override
     public AggregationProcessor aggregationProcessor(SearchContext searchContext) {
         if (searchContext.shouldUseConcurrentSearch()) {
+            LOGGER.debug(
+                "Using concurrent aggregation processor over segments (experimental) for request with context id {}",
+                searchContext.id()
+            );
             return concurrentQueryPhaseSearcher.aggregationProcessor(searchContext);
         } else {
+            LOGGER.debug("Using non-concurrent aggregation processor over segments for request with context id {}", searchContext.id());
             return defaultQueryPhaseSearcher.aggregationProcessor(searchContext);
         }
     }

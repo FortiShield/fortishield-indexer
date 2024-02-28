@@ -33,7 +33,6 @@
 package org.opensearch.index.stats;
 
 import org.opensearch.LegacyESVersion;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -46,9 +45,8 @@ import java.io.IOException;
 /**
  * Base indexing pressure statistics
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.3.0")
 public class IndexingPressureStats implements Writeable, ToXContentFragment {
 
     private final long totalCombinedCoordinatingAndPrimaryBytes;

@@ -35,7 +35,6 @@ package org.opensearch.cluster.metadata;
 import org.opensearch.Version;
 import org.opensearch.cluster.Diff;
 import org.opensearch.cluster.NamedDiff;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.Setting;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.time.DateFormatter;
@@ -62,16 +61,15 @@ import java.util.Objects;
 
 /**
  * A collection of tombstones for explicitly marking indices as deleted in the cluster state.
- * <p>
+ *
  * The cluster state contains a list of index tombstones for indices that have been
  * deleted in the cluster.  Because cluster states are processed asynchronously by
  * nodes and a node could be removed from the cluster for a period of time, the
  * tombstones remain in the cluster state for a fixed period of time, after which
  * they are purged.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class IndexGraveyard implements Metadata.Custom {
 
     /**
@@ -193,9 +191,8 @@ public final class IndexGraveyard implements Metadata.Custom {
     /**
      * A class to build an IndexGraveyard.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static final class Builder {
         private List<Tombstone> tombstones;
         private int numPurged = -1;
@@ -253,7 +250,7 @@ public final class IndexGraveyard implements Metadata.Custom {
 
         /**
          * Purge tombstone entries.  Returns the number of entries that were purged.
-         * <p>
+         *
          * Tombstones are purged if the number of tombstones in the list
          * is greater than the input parameter of maximum allowed tombstones.
          * Tombstones are purged until the list is equal to the maximum allowed.
@@ -370,9 +367,8 @@ public final class IndexGraveyard implements Metadata.Custom {
     /**
      * An individual tombstone entry for representing a deleted index.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static final class Tombstone implements ToXContentObject, Writeable {
 
         private static final String INDEX_KEY = "index";

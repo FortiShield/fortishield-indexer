@@ -40,6 +40,7 @@ import org.opensearch.action.search.SearchType;
 import org.opensearch.common.Priority;
 import org.opensearch.common.action.ActionFuture;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.index.query.functionscore.DecayFunction;
@@ -51,7 +52,7 @@ import org.opensearch.plugins.SearchPlugin;
 import org.opensearch.search.SearchHits;
 import org.opensearch.test.OpenSearchIntegTestCase.ClusterScope;
 import org.opensearch.test.OpenSearchIntegTestCase.Scope;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 import org.opensearch.test.hamcrest.OpenSearchAssertions;
 
 import java.io.IOException;
@@ -70,10 +71,10 @@ import static org.opensearch.search.builder.SearchSourceBuilder.searchSource;
 import static org.hamcrest.Matchers.equalTo;
 
 @ClusterScope(scope = Scope.SUITE, supportsDedicatedMasters = false, numDataNodes = 1)
-public class FunctionScorePluginIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class FunctionScorePluginIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public FunctionScorePluginIT(Settings staticSettings) {
-        super(staticSettings);
+    public FunctionScorePluginIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -82,6 +83,11 @@ public class FunctionScorePluginIT extends ParameterizedStaticSettingsOpenSearch
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     @Override
@@ -116,7 +122,6 @@ public class FunctionScorePluginIT extends ParameterizedStaticSettingsOpenSearch
         ).actionGet();
 
         client().admin().indices().prepareRefresh().get();
-        indexRandomForConcurrentSearch("test");
         DecayFunctionBuilder<?> gfb = new CustomDistanceScoreBuilder("num1", "2013-05-28", "+1d");
 
         ActionFuture<SearchResponse> response = client().search(

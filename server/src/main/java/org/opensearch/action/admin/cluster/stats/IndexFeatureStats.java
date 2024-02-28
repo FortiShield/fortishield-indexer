@@ -32,7 +32,6 @@
 
 package org.opensearch.action.admin.cluster.stats;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -45,9 +44,8 @@ import java.util.Objects;
 /**
  * Statistics about an index feature.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class IndexFeatureStats implements ToXContent, Writeable {
 
     final String name;

@@ -35,6 +35,11 @@ public class RemoteIndexPrimaryRelocationIT extends IndexPrimaryRelocationIT {
             .build();
     }
 
+    @Override
+    protected boolean addMockInternalEngine() {
+        return false;
+    }
+
     public Settings indexSettings() {
         return Settings.builder()
             .put(super.indexSettings())

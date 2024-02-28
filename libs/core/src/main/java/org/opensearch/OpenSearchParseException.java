@@ -32,7 +32,6 @@
 
 package org.opensearch;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.rest.RestStatus;
 
@@ -41,9 +40,8 @@ import java.io.IOException;
 /**
  * Unchecked exception that is translated into a {@code 400 BAD REQUEST} error when it bubbles out over HTTP.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class OpenSearchParseException extends OpenSearchException {
 
     public OpenSearchParseException(String msg, Object... args) {

@@ -32,16 +32,13 @@
 
 package org.opensearch.common.lease;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import java.io.Closeable;
 
 /**
  * Specialization of {@link AutoCloseable} for calls that might not throw a checked exception.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface Releasable extends Closeable {
 
     @Override

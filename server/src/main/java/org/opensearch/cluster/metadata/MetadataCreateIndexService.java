@@ -40,7 +40,6 @@ import org.opensearch.LegacyESVersion;
 import org.opensearch.OpenSearchException;
 import org.opensearch.ResourceAlreadyExistsException;
 import org.opensearch.Version;
-import org.opensearch.action.admin.cluster.snapshots.restore.RestoreSnapshotRequest;
 import org.opensearch.action.admin.indices.alias.Alias;
 import org.opensearch.action.admin.indices.create.CreateIndexClusterStateUpdateRequest;
 import org.opensearch.action.admin.indices.shrink.ResizeType;
@@ -137,7 +136,6 @@ import static org.opensearch.cluster.metadata.IndexMetadata.SETTING_REMOTE_STORE
 import static org.opensearch.cluster.metadata.IndexMetadata.SETTING_REMOTE_TRANSLOG_STORE_REPOSITORY;
 import static org.opensearch.cluster.metadata.IndexMetadata.SETTING_REPLICATION_TYPE;
 import static org.opensearch.cluster.metadata.Metadata.DEFAULT_REPLICA_COUNT_SETTING;
-import static org.opensearch.index.IndexModule.INDEX_STORE_TYPE_SETTING;
 import static org.opensearch.indices.IndicesService.CLUSTER_REPLICATION_TYPE_SETTING;
 import static org.opensearch.node.remotestore.RemoteStoreNodeAttribute.isRemoteStoreAttributePresent;
 
@@ -757,7 +755,7 @@ public class MetadataCreateIndexService {
     /**
      * Parses the provided mappings json and the inheritable mappings from the templates (if any)
      * into a map.
-     * <p>
+     *
      * The template mappings are applied in the order they are encountered in the list (clients
      * should make sure the lower index, closer to the head of the list, templates have the highest
      * {@link IndexTemplateMetadata#order()}). This merging makes no distinction between field
@@ -795,7 +793,7 @@ public class MetadataCreateIndexService {
      * Validates and creates the settings for the new index based on the explicitly configured settings via the
      * {@link CreateIndexClusterStateUpdateRequest}, inherited from templates and, if recovering from another index (ie. split, shrink,
      * clone), the resize settings.
-     * <p>
+     *
      * The template mappings are applied in the order they are encountered in the list (clients should make sure the lower index, closer
      * to the head of the list, templates have the highest {@link IndexTemplateMetadata#order()})
      *
@@ -819,16 +817,6 @@ public class MetadataCreateIndexService {
         final Settings.Builder requestSettings = Settings.builder().put(request.settings());
 
         final Settings.Builder indexSettingsBuilder = Settings.builder();
-
-        // Store type of `remote_snapshot` is intended to be system-managed for searchable snapshot indexes so a special case is needed here
-        // to prevent a user specifying this value when creating an index
-        String storeTypeSetting = request.settings().get(INDEX_STORE_TYPE_SETTING.getKey());
-        if (storeTypeSetting != null && storeTypeSetting.equals(RestoreSnapshotRequest.StorageType.REMOTE_SNAPSHOT.toString())) {
-            throw new IllegalArgumentException(
-                "cannot create index with index setting \"index.store.type\" set to \"remote_snapshot\". Store type can be set to \"remote_snapshot\" only when restoring a remote snapshot by using \"storage_type\": \"remote_snapshot\""
-            );
-        }
-
         if (sourceMetadata == null) {
             final Settings.Builder additionalIndexSettings = Settings.builder();
             final Settings templateAndRequestSettings = Settings.builder().put(combinedTemplateSettings).put(request.settings()).build();
@@ -910,7 +898,7 @@ public class MetadataCreateIndexService {
         indexSettingsBuilder.put(IndexMetadata.SETTING_INDEX_PROVIDED_NAME, request.getProvidedName());
         indexSettingsBuilder.put(SETTING_INDEX_UUID, UUIDs.randomBase64UUID());
 
-        updateReplicationStrategy(indexSettingsBuilder, request.settings(), settings, combinedTemplateSettings);
+        updateReplicationStrategy(indexSettingsBuilder, request.settings(), settings);
         updateRemoteStoreSettings(indexSettingsBuilder, settings);
 
         if (sourceMetadata != null) {
@@ -925,10 +913,6 @@ public class MetadataCreateIndexService {
                 indexScopedSettings
             );
         }
-
-        List<String> validationErrors = new ArrayList<>();
-        validateIndexReplicationTypeSettings(indexSettingsBuilder.build(), clusterSettings).ifPresent(validationErrors::add);
-        validateErrors(request.index(), validationErrors);
 
         Settings indexSettings = indexSettingsBuilder.build();
         /*
@@ -957,33 +941,17 @@ public class MetadataCreateIndexService {
      * @param settingsBuilder index settings builder to be updated with relevant settings
      * @param requestSettings settings passed in during index create request
      * @param clusterSettings cluster level settings
-     * @param combinedTemplateSettings combined template settings which satisfy the index
      */
-    private static void updateReplicationStrategy(
-        Settings.Builder settingsBuilder,
-        Settings requestSettings,
-        Settings clusterSettings,
-        Settings combinedTemplateSettings
-    ) {
-        // The replication setting is applied in the following order:
-        // 1. Explicit index creation request parameter
-        // 2. Template property for replication type
-        // 3. Defaults to segment if remote store attributes on the cluster
-        // 4. Default cluster level setting
-
-        final ReplicationType indexReplicationType;
+    private static void updateReplicationStrategy(Settings.Builder settingsBuilder, Settings requestSettings, Settings clusterSettings) {
         if (INDEX_REPLICATION_TYPE_SETTING.exists(requestSettings)) {
-            indexReplicationType = INDEX_REPLICATION_TYPE_SETTING.get(requestSettings);
-        } else if (INDEX_REPLICATION_TYPE_SETTING.exists(combinedTemplateSettings)) {
-            indexReplicationType = INDEX_REPLICATION_TYPE_SETTING.get(combinedTemplateSettings);
+            settingsBuilder.put(SETTING_REPLICATION_TYPE, INDEX_REPLICATION_TYPE_SETTING.get(requestSettings));
         } else if (CLUSTER_REPLICATION_TYPE_SETTING.exists(clusterSettings)) {
-            indexReplicationType = CLUSTER_REPLICATION_TYPE_SETTING.get(clusterSettings);
+            settingsBuilder.put(SETTING_REPLICATION_TYPE, CLUSTER_REPLICATION_TYPE_SETTING.get(clusterSettings));
         } else if (isRemoteStoreAttributePresent(clusterSettings)) {
-            indexReplicationType = ReplicationType.SEGMENT;
+            settingsBuilder.put(SETTING_REPLICATION_TYPE, ReplicationType.SEGMENT);
         } else {
-            indexReplicationType = CLUSTER_REPLICATION_TYPE_SETTING.getDefault(clusterSettings);
+            settingsBuilder.put(SETTING_REPLICATION_TYPE, CLUSTER_REPLICATION_TYPE_SETTING.getDefault(clusterSettings));
         }
-        settingsBuilder.put(SETTING_REPLICATION_TYPE, indexReplicationType);
     }
 
     /**
@@ -1063,7 +1031,7 @@ public class MetadataCreateIndexService {
     /**
      * Validate and resolve the aliases explicitly set for the index, together with the ones inherited from the specified
      * templates.
-     * <p>
+     *
      * The template mappings are applied in the order they are encountered in the list (clients should make sure the lower index, closer
      * to the head of the list, templates have the highest {@link IndexTemplateMetadata#order()})
      *
@@ -1284,11 +1252,7 @@ public class MetadataCreateIndexService {
     public void validateIndexSettings(String indexName, final Settings settings, final boolean forbidPrivateIndexSettings)
         throws IndexCreationException {
         List<String> validationErrors = getIndexSettingsValidationErrors(settings, forbidPrivateIndexSettings, indexName);
-        validateIndexReplicationTypeSettings(settings, clusterService.getClusterSettings()).ifPresent(validationErrors::add);
-        validateErrors(indexName, validationErrors);
-    }
 
-    private static void validateErrors(String indexName, List<String> validationErrors) {
         if (validationErrors.isEmpty() == false) {
             ValidationException validationException = new ValidationException();
             validationException.addValidationErrors(validationErrors);
@@ -1362,27 +1326,6 @@ public class MetadataCreateIndexService {
             }
         }
         return validationErrors;
-    }
-
-    /**
-     * Validates {@code index.replication.type} is matches with cluster level setting {@code cluster.indices.replication.strategy}
-     * when {@code cluster.index.restrict.replication.type} is set to true.
-     *
-     * @param requestSettings settings passed in during index create request
-     * @param clusterSettings cluster setting
-     */
-    private static Optional<String> validateIndexReplicationTypeSettings(Settings requestSettings, ClusterSettings clusterSettings) {
-        if (clusterSettings.get(IndicesService.CLUSTER_INDEX_RESTRICT_REPLICATION_TYPE_SETTING)
-            && requestSettings.hasValue(SETTING_REPLICATION_TYPE)
-            && requestSettings.get(INDEX_REPLICATION_TYPE_SETTING.getKey())
-                .equals(clusterSettings.get(CLUSTER_REPLICATION_TYPE_SETTING).name()) == false) {
-            return Optional.of(
-                "index setting [index.replication.type] is not allowed to be set as ["
-                    + IndicesService.CLUSTER_INDEX_RESTRICT_REPLICATION_TYPE_SETTING.getKey()
-                    + "=true]"
-            );
-        }
-        return Optional.empty();
     }
 
     /**
@@ -1579,7 +1522,7 @@ public class MetadataCreateIndexService {
      * @param requestSettings settings passed in during index create/update request
      * @param clusterSettings cluster setting
      */
-    public static void validateRefreshIntervalSettings(Settings requestSettings, ClusterSettings clusterSettings) {
+    static void validateRefreshIntervalSettings(Settings requestSettings, ClusterSettings clusterSettings) {
         if (IndexSettings.INDEX_REFRESH_INTERVAL_SETTING.exists(requestSettings) == false) {
             return;
         }

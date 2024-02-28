@@ -31,7 +31,6 @@ import org.mockito.plugins.MockMaker;
  * Mockito plugin which wraps the Mockito calls into priviledged execution blocks and respects
  * SecurityManager presence.
  */
-@SuppressWarnings("removal")
 @SuppressForbidden(reason = "allow URL#getFile() to be used in tests")
 public class PriviledgedMockMaker implements MockMaker {
     private static AccessControlContext context;
@@ -44,7 +43,7 @@ public class PriviledgedMockMaker implements MockMaker {
      * since Mockito does not support SecurityManager out of the box. The method has to be called by
      * test framework before the SecurityManager is being set, otherwise additional permissions have
      * to be granted to the caller:
-     * <p>
+     *
      *     permission java.security.Permission "createAccessControlContext"
      *
      */

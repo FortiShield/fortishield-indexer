@@ -40,7 +40,6 @@ import org.opensearch.action.CompositeIndicesRequest;
 import org.opensearch.action.DocWriteRequest;
 import org.opensearch.action.support.replication.ReplicatedWriteRequest;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lucene.uid.Versions;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -66,9 +65,8 @@ import static org.opensearch.index.seqno.SequenceNumbers.UNASSIGNED_SEQ_NO;
  * @see org.opensearch.client.Client#delete(DeleteRequest)
  * @see org.opensearch.client.Requests#deleteRequest(String)
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class DeleteRequest extends ReplicatedWriteRequest<DeleteRequest>
     implements
         DocWriteRequest<DeleteRequest>,
@@ -211,7 +209,7 @@ public class DeleteRequest extends ReplicatedWriteRequest<DeleteRequest>
 
     /**
      * If set, only perform this delete request if the document was last modification was assigned this primary term.
-     * <p>
+     *
      * If the document last modification was assigned a different term a
      * {@link org.opensearch.index.engine.VersionConflictEngineException} will be thrown.
      */

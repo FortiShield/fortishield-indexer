@@ -247,7 +247,7 @@ public final class IndicesRequestCache implements RemovalListener<IndicesRequest
      *
      * @opensearch.internal
      */
-    public static class Key implements Accountable {
+    static class Key implements Accountable {
         private static final long BASE_RAM_BYTES_USED = RamUsageEstimator.shallowSizeOfInstance(Key.class);
 
         public final CacheEntity entity; // use as identity equality
@@ -328,9 +328,6 @@ public final class IndicesRequestCache implements RemovalListener<IndicesRequest
         }
     }
 
-    /**
-     * Logic to clean up in-memory cache.
-     */
     synchronized void cleanCache() {
         final Set<CleanupKey> currentKeysToClean = new HashSet<>();
         final Set<Object> currentFullClean = new HashSet<>();
@@ -358,6 +355,7 @@ public final class IndicesRequestCache implements RemovalListener<IndicesRequest
                 }
             }
         }
+
         cache.refresh();
     }
 

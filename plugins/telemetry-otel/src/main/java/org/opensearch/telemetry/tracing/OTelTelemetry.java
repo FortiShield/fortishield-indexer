@@ -8,39 +8,34 @@
 
 package org.opensearch.telemetry.tracing;
 
-import org.opensearch.common.concurrent.RefCountedReleasable;
 import org.opensearch.telemetry.Telemetry;
 import org.opensearch.telemetry.metrics.MetricsTelemetry;
-import org.opensearch.telemetry.metrics.OTelMetricsTelemetry;
-
-import io.opentelemetry.sdk.OpenTelemetrySdk;
 
 /**
  * Otel implementation of Telemetry
  */
 public class OTelTelemetry implements Telemetry {
 
-    private final RefCountedReleasable<OpenTelemetrySdk> refCountedOpenTelemetry;
+    private final TracingTelemetry tracingTelemetry;
+    private final MetricsTelemetry metricsTelemetry;
 
     /**
      * Creates Telemetry instance
-
+     * @param tracingTelemetry tracing telemetry
+     * @param metricsTelemetry metrics telemetry
      */
-    /**
-     * Creates Telemetry instance
-     * @param refCountedOpenTelemetry open telemetry.
-     */
-    public OTelTelemetry(RefCountedReleasable<OpenTelemetrySdk> refCountedOpenTelemetry) {
-        this.refCountedOpenTelemetry = refCountedOpenTelemetry;
+    public OTelTelemetry(TracingTelemetry tracingTelemetry, MetricsTelemetry metricsTelemetry) {
+        this.tracingTelemetry = tracingTelemetry;
+        this.metricsTelemetry = metricsTelemetry;
     }
 
     @Override
     public TracingTelemetry getTracingTelemetry() {
-        return new OTelTracingTelemetry<>(refCountedOpenTelemetry, refCountedOpenTelemetry.get().getSdkTracerProvider());
+        return tracingTelemetry;
     }
 
     @Override
     public MetricsTelemetry getMetricsTelemetry() {
-        return new OTelMetricsTelemetry<>(refCountedOpenTelemetry, refCountedOpenTelemetry.get().getSdkMeterProvider());
+        return metricsTelemetry;
     }
 }

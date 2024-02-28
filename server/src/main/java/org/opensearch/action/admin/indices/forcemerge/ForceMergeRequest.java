@@ -37,7 +37,6 @@ import org.opensearch.Version;
 import org.opensearch.action.support.broadcast.BroadcastRequest;
 import org.opensearch.common.Nullable;
 import org.opensearch.common.UUIDs;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 
@@ -56,9 +55,8 @@ import java.util.Arrays;
  * @see org.opensearch.client.IndicesAdminClient#forceMerge(ForceMergeRequest)
  * @see ForceMergeResponse
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ForceMergeRequest extends BroadcastRequest<ForceMergeRequest> {
 
     /**

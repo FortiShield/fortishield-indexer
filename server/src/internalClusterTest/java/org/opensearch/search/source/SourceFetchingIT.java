@@ -36,7 +36,8 @@ import com.carrotsearch.randomizedtesting.annotations.ParametersFactory;
 
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.common.settings.Settings;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.common.util.FeatureFlags;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,10 +47,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class SourceFetchingIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class SourceFetchingIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public SourceFetchingIT(Settings staticSettings) {
-        super(staticSettings);
+    public SourceFetchingIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -60,13 +61,17 @@ public class SourceFetchingIT extends ParameterizedStaticSettingsOpenSearchInteg
         );
     }
 
-    public void testSourceDefaultBehavior() throws InterruptedException {
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
+    }
+
+    public void testSourceDefaultBehavior() {
         createIndex("test");
         ensureGreen();
 
         index("test", "type1", "1", "field", "value");
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse response = client().prepareSearch("test").get();
         assertThat(response.getHits().getAt(0).getSourceAsString(), notNullValue());
@@ -79,13 +84,12 @@ public class SourceFetchingIT extends ParameterizedStaticSettingsOpenSearchInteg
 
     }
 
-    public void testSourceFiltering() throws InterruptedException {
+    public void testSourceFiltering() {
         createIndex("test");
         ensureGreen();
 
         client().prepareIndex("test").setId("1").setSource("field1", "value", "field2", "value2").get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse response = client().prepareSearch("test").setFetchSource(false).get();
         assertThat(response.getHits().getAt(0).getSourceAsString(), nullValue());
@@ -113,13 +117,12 @@ public class SourceFetchingIT extends ParameterizedStaticSettingsOpenSearchInteg
      * Test Case for #5132: Source filtering with wildcards broken when given multiple patterns
      * https://github.com/elastic/elasticsearch/issues/5132
      */
-    public void testSourceWithWildcardFiltering() throws InterruptedException {
+    public void testSourceWithWildcardFiltering() {
         createIndex("test");
         ensureGreen();
 
         client().prepareIndex("test").setId("1").setSource("field", "value").get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse response = client().prepareSearch("test").setFetchSource(new String[] { "*.notexisting", "field" }, null).get();
         assertThat(response.getHits().getAt(0).getSourceAsString(), notNullValue());

@@ -8,7 +8,6 @@
 
 package org.opensearch.indices.replication.common;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -34,9 +33,8 @@ import java.util.Map;
  * Represents the Lucene Index (set of files on a single shard) involved
  * in the replication process.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class ReplicationLuceneIndex extends ReplicationTimer implements ToXContentFragment, Writeable {
     private final FilesDetails filesDetails;
 
@@ -401,9 +399,8 @@ public final class ReplicationLuceneIndex extends ReplicationTimer implements To
     /**
      * Metadata about a file
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static final class FileMetadata implements ToXContentObject, Writeable {
         private String name;
         private long length;

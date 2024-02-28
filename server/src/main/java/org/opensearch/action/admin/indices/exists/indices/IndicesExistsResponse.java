@@ -32,7 +32,6 @@
 
 package org.opensearch.action.admin.indices.exists.indices;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.action.ActionResponse;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -42,9 +41,8 @@ import java.io.IOException;
 /**
  * Transport response for checking if an index exists
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class IndicesExistsResponse extends ActionResponse {
 
     private boolean exists;

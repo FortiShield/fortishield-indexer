@@ -457,6 +457,7 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
                     logger.debug("unregistering repository [{}]", entry.getKey());
                     Repository repository = entry.getValue();
                     closeRepository(repository);
+                    archiveRepositoryStats(repository, state.version());
                 } else {
                     survivors.put(entry.getKey(), entry.getValue());
                 }
@@ -484,6 +485,7 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
                             } else {
                                 logger.debug("updating repository [{}]", repositoryMetadata.name());
                                 closeRepository(repository);
+                                archiveRepositoryStats(repository, state.version());
                                 repository = null;
                                 try {
                                     repository = createRepository(repositoryMetadata, typesRegistry);
@@ -573,12 +575,12 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
     }
 
     public List<RepositoryStatsSnapshot> repositoriesStats() {
+        List<RepositoryStatsSnapshot> archivedRepoStats = repositoriesStatsArchive.getArchivedStats();
         List<RepositoryStatsSnapshot> activeRepoStats = getRepositoryStatsForActiveRepositories();
-        return activeRepoStats;
-    }
 
-    public RepositoriesStats getRepositoriesStats() {
-        return new RepositoriesStats(repositoriesStats());
+        List<RepositoryStatsSnapshot> repositoriesStats = new ArrayList<>(archivedRepoStats);
+        repositoriesStats.addAll(activeRepoStats);
+        return repositoriesStats;
     }
 
     private List<RepositoryStatsSnapshot> getRepositoryStatsForActiveRepositories() {
@@ -636,6 +638,15 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
     public void closeRepository(Repository repository) {
         logger.debug("closing repository [{}][{}]", repository.getMetadata().type(), repository.getMetadata().name());
         repository.close();
+    }
+
+    private void archiveRepositoryStats(Repository repository, long clusterStateVersion) {
+        if (repository instanceof MeteredBlobStoreRepository) {
+            RepositoryStatsSnapshot stats = ((MeteredBlobStoreRepository) repository).statsSnapshotForArchival(clusterStateVersion);
+            if (repositoriesStatsArchive.archive(stats) == false) {
+                logger.warn("Unable to archive the repository stats [{}] as the archive is full.", stats);
+            }
+        }
     }
 
     /**

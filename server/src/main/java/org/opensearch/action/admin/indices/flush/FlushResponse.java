@@ -33,7 +33,6 @@
 package org.opensearch.action.admin.indices.flush;
 
 import org.opensearch.action.support.broadcast.BroadcastResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.action.support.DefaultShardOperationFailedException;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.xcontent.ConstructingObjectParser;
@@ -46,9 +45,8 @@ import java.util.List;
 /**
  * A response to flush action.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class FlushResponse extends BroadcastResponse {
 
     private static final ConstructingObjectParser<FlushResponse, Void> PARSER = new ConstructingObjectParser<>("flush", true, arg -> {

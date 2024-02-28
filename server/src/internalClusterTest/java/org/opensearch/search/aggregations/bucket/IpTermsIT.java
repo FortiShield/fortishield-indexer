@@ -51,8 +51,8 @@ import static org.opensearch.test.hamcrest.OpenSearchAssertions.assertSearchResp
 
 public class IpTermsIT extends AbstractTermsTestCase {
 
-    public IpTermsIT(Settings staticSettings) {
-        super(staticSettings);
+    public IpTermsIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @Override

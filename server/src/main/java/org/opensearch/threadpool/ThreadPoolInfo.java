@@ -32,7 +32,6 @@
 
 package org.opensearch.threadpool;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.service.ReportingService;
@@ -46,9 +45,8 @@ import java.util.List;
 /**
  * Information about a threadpool
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ThreadPoolInfo implements ReportingService.Info, Iterable<ThreadPool.Info> {
 
     private final List<ThreadPool.Info> infos;

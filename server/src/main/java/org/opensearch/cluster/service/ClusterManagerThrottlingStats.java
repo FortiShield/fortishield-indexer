@@ -8,7 +8,6 @@
 
 package org.opensearch.cluster.service;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.metrics.CounterMetric;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -24,10 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Contains stats of Cluster Manager Task Throttling.
  * It stores the total cumulative count of throttled tasks per task type.
- *
- * @opensearch.api
  */
-@PublicApi(since = "2.5.0")
 public class ClusterManagerThrottlingStats implements ClusterManagerTaskThrottlerListener, Writeable, ToXContentFragment {
 
     private Map<String, CounterMetric> throttledTasksCount;

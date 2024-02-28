@@ -12,7 +12,6 @@ import org.apache.lucene.store.RateLimiter;
 import org.opensearch.common.StreamLimiter;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
@@ -39,10 +38,6 @@ public class RateLimitingOffsetRangeInputStream extends OffsetRangeInputStream {
     ) {
         this.streamLimiter = new StreamLimiter(rateLimiterSupplier, listener);
         this.delegate = delegate;
-    }
-
-    public void setReadBlock(AtomicBoolean readBlock) {
-        delegate.setReadBlock(readBlock);
     }
 
     @Override

@@ -35,14 +35,12 @@ package org.opensearch.action.admin.cluster.snapshots.delete;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeOperationRequestBuilder;
 import org.opensearch.action.support.master.AcknowledgedResponse;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * Delete snapshot request builder
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class DeleteSnapshotRequestBuilder extends ClusterManagerNodeOperationRequestBuilder<
     DeleteSnapshotRequest,
     AcknowledgedResponse,

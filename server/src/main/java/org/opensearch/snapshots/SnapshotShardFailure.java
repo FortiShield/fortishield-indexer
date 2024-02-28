@@ -35,7 +35,6 @@ package org.opensearch.snapshots;
 import org.opensearch.OpenSearchParseException;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.action.ShardOperationFailedException;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -53,9 +52,8 @@ import java.util.Objects;
 /**
  * Stores information about failures that occurred during shard snapshotting process
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SnapshotShardFailure extends ShardOperationFailedException {
 
     @Nullable

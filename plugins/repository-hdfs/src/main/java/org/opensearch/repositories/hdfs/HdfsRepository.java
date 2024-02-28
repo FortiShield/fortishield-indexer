@@ -254,7 +254,6 @@ public final class HdfsRepository extends BlobStoreRepository {
         }
     }
 
-    @SuppressWarnings("removal")
     @Override
     protected HdfsBlobStore createBlobStore() {
         // initialize our blobstore using elevated privileges.

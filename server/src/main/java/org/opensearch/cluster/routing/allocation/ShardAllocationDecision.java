@@ -32,7 +32,6 @@
 
 package org.opensearch.cluster.routing.allocation;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -54,9 +53,8 @@ import java.io.IOException;
  * then both {@link #getAllocateDecision()} and {@link #getMoveDecision()} will return
  * objects whose {@code isDecisionTaken()} method returns {@code false}.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class ShardAllocationDecision implements ToXContentFragment, Writeable {
     public static final ShardAllocationDecision NOT_TAKEN = new ShardAllocationDecision(
         AllocateUnassignedDecision.NOT_TAKEN,

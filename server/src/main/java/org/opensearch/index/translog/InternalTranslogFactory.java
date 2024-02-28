@@ -28,7 +28,7 @@ public class InternalTranslogFactory implements TranslogFactory {
         LongSupplier globalCheckpointSupplier,
         LongSupplier primaryTermSupplier,
         LongConsumer persistedSequenceNumberConsumer,
-        BooleanSupplier startedPrimarySupplier
+        BooleanSupplier primaryModeSupplier
     ) throws IOException {
 
         return new LocalTranslog(

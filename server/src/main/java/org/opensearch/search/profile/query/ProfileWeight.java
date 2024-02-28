@@ -34,7 +34,6 @@ package org.opensearch.search.profile.query;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.BulkScorer;
-import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Scorer;
@@ -138,7 +137,4 @@ public final class ProfileWeight extends Weight {
         return false;
     }
 
-    public void associateCollectorToLeaves(LeafReaderContext leaf, Collector collector) {
-        profile.associateCollectorToLeaves(collector, leaf);
-    }
 }

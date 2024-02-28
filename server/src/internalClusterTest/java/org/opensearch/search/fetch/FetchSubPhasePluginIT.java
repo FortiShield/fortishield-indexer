@@ -42,6 +42,7 @@ import org.apache.lucene.util.BytesRef;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.common.document.DocumentField;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.common.ParsingException;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -53,7 +54,7 @@ import org.opensearch.search.SearchExtBuilder;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.test.OpenSearchIntegTestCase.ClusterScope;
 import org.opensearch.test.OpenSearchIntegTestCase.Scope;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,10 +74,10 @@ import static org.opensearch.test.hamcrest.OpenSearchAssertions.assertSearchResp
 import static org.hamcrest.CoreMatchers.equalTo;
 
 @ClusterScope(scope = Scope.SUITE, supportsDedicatedMasters = false, numDataNodes = 2)
-public class FetchSubPhasePluginIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class FetchSubPhasePluginIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public FetchSubPhasePluginIT(Settings staticSettings) {
-        super(staticSettings);
+    public FetchSubPhasePluginIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -85,6 +86,11 @@ public class FetchSubPhasePluginIT extends ParameterizedStaticSettingsOpenSearch
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     @Override
@@ -113,7 +119,6 @@ public class FetchSubPhasePluginIT extends ParameterizedStaticSettingsOpenSearch
             .actionGet();
 
         client().admin().indices().prepareRefresh().get();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse response = client().prepareSearch()
             .setSource(new SearchSourceBuilder().ext(Collections.singletonList(new TermVectorsFetchBuilder("test"))))

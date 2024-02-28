@@ -72,7 +72,6 @@ import org.opensearch.gateway.GatewayService;
 import org.opensearch.index.IndexSettings;
 import org.opensearch.index.VersionType;
 import org.opensearch.index.analysis.AnalysisRegistry;
-import org.opensearch.indices.IndicesService;
 import org.opensearch.plugins.IngestPlugin;
 import org.opensearch.script.ScriptService;
 import org.opensearch.threadpool.ThreadPool;
@@ -129,8 +128,7 @@ public class IngestService implements ClusterStateApplier, ReportingService<Inge
         ScriptService scriptService,
         AnalysisRegistry analysisRegistry,
         List<IngestPlugin> ingestPlugins,
-        Client client,
-        IndicesService indicesService
+        Client client
     ) {
         this.clusterService = clusterService;
         this.scriptService = scriptService;
@@ -145,8 +143,7 @@ public class IngestService implements ClusterStateApplier, ReportingService<Inge
                 (delay, command) -> threadPool.schedule(command, TimeValue.timeValueMillis(delay), ThreadPool.Names.GENERIC),
                 this,
                 client,
-                threadPool.generic()::execute,
-                indicesService
+                threadPool.generic()::execute
             )
         );
         this.threadPool = threadPool;
@@ -698,7 +695,7 @@ public class IngestService implements ClusterStateApplier, ReportingService<Inge
     /**
      * Adds a listener that gets invoked with the current cluster state before processor factories
      * get invoked.
-     * <p>
+     *
      * This is useful for components that are used by ingest processors, so that they have the opportunity to update
      * before these components get used by the ingest processor factory.
      */

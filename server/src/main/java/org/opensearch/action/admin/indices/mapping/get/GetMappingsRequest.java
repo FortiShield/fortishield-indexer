@@ -34,7 +34,6 @@ package org.opensearch.action.admin.indices.mapping.get;
 
 import org.opensearch.action.ActionRequestValidationException;
 import org.opensearch.action.support.master.info.ClusterInfoRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 
 import java.io.IOException;
@@ -42,9 +41,8 @@ import java.io.IOException;
 /**
  * Transport request to get field mappings.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class GetMappingsRequest extends ClusterInfoRequest<GetMappingsRequest> {
 
     public GetMappingsRequest() {}

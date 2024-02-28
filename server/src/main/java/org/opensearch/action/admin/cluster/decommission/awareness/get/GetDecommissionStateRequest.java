@@ -10,7 +10,6 @@ package org.opensearch.action.admin.cluster.decommission.awareness.get;
 
 import org.opensearch.action.ActionRequestValidationException;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeReadRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -22,9 +21,8 @@ import static org.opensearch.action.ValidateActions.addValidationError;
 /**
  * Get Decommissioned attribute request
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public class GetDecommissionStateRequest extends ClusterManagerNodeReadRequest<GetDecommissionStateRequest> {
 
     private String attributeName;

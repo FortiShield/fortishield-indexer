@@ -36,24 +36,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.store.RateLimiter;
 import org.apache.lucene.store.RateLimiter.SimpleRateLimiter;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.ClusterSettings;
 import org.opensearch.common.settings.Setting;
 import org.opensearch.common.settings.Setting.Property;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.unit.TimeValue;
-import org.opensearch.common.util.concurrent.OpenSearchExecutors;
 import org.opensearch.core.common.unit.ByteSizeUnit;
 import org.opensearch.core.common.unit.ByteSizeValue;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Settings for the recovery mechanism
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class RecoverySettings {
 
     private static final Logger logger = LogManager.getLogger(RecoverySettings.class);
@@ -92,10 +87,10 @@ public class RecoverySettings {
     /**
      * Controls the maximum number of streams that can be started concurrently per recovery when downloading from the remote store.
      */
-    public static final Setting<Integer> INDICES_RECOVERY_MAX_CONCURRENT_REMOTE_STORE_STREAMS_SETTING = new Setting<>(
+    public static final Setting<Integer> INDICES_RECOVERY_MAX_CONCURRENT_REMOTE_STORE_STREAMS_SETTING = Setting.intSetting(
         "indices.recovery.max_concurrent_remote_store_streams",
-        (s) -> Integer.toString(Math.max(1, OpenSearchExecutors.allocatedProcessors(s) / 2)),
-        (s) -> Setting.parseInt(s, 1, "indices.recovery.max_concurrent_remote_store_streams"),
+        10,
+        1,
         Property.Dynamic,
         Property.NodeScope
     );
@@ -159,32 +154,6 @@ public class RecoverySettings {
         Property.NodeScope
     );
 
-    /**
-     * Controls minimum number of metadata files to keep in remote segment store.
-     * {@code value < 1} will disable deletion of stale segment metadata files.
-     */
-    public static final Setting<Integer> CLUSTER_REMOTE_INDEX_SEGMENT_METADATA_RETENTION_MAX_COUNT_SETTING = Setting.intSetting(
-        "cluster.remote_store.index.segment_metadata.retention.max_count",
-        10,
-        -1,
-        v -> {
-            if (v == 0) {
-                throw new IllegalArgumentException(
-                    "Value 0 is not allowed for this setting as it would delete all the data from remote segment store"
-                );
-            }
-        },
-        Property.NodeScope,
-        Property.Dynamic
-    );
-
-    public static final Setting<TimeValue> INDICES_INTERNAL_REMOTE_UPLOAD_TIMEOUT = Setting.timeSetting(
-        "indices.recovery.internal_remote_upload_timeout",
-        new TimeValue(1, TimeUnit.HOURS),
-        Property.Dynamic,
-        Property.NodeScope
-    );
-
     // choose 512KB-16B to ensure that the resulting byte[] is not a humongous allocation in G1.
     public static final ByteSizeValue DEFAULT_CHUNK_SIZE = new ByteSizeValue(512 * 1024 - 16, ByteSizeUnit.BYTES);
 
@@ -199,10 +168,8 @@ public class RecoverySettings {
     private volatile TimeValue internalActionTimeout;
     private volatile TimeValue internalActionRetryTimeout;
     private volatile TimeValue internalActionLongTimeout;
-    private volatile int minRemoteSegmentMetadataFiles;
 
     private volatile ByteSizeValue chunkSize = DEFAULT_CHUNK_SIZE;
-    private volatile TimeValue internalRemoteUploadTimeout;
 
     public RecoverySettings(Settings settings, ClusterSettings clusterSettings) {
         this.retryDelayStateSync = INDICES_RECOVERY_RETRY_DELAY_STATE_SYNC_SETTING.get(settings);
@@ -226,7 +193,6 @@ public class RecoverySettings {
         }
 
         logger.debug("using max_bytes_per_sec[{}]", maxBytesPerSec);
-        this.internalRemoteUploadTimeout = INDICES_INTERNAL_REMOTE_UPLOAD_TIMEOUT.get(settings);
 
         clusterSettings.addSettingsUpdateConsumer(INDICES_RECOVERY_MAX_BYTES_PER_SEC_SETTING, this::setMaxBytesPerSec);
         clusterSettings.addSettingsUpdateConsumer(INDICES_RECOVERY_MAX_CONCURRENT_FILE_CHUNKS_SETTING, this::setMaxConcurrentFileChunks);
@@ -243,13 +209,6 @@ public class RecoverySettings {
             this::setInternalActionLongTimeout
         );
         clusterSettings.addSettingsUpdateConsumer(INDICES_RECOVERY_ACTIVITY_TIMEOUT_SETTING, this::setActivityTimeout);
-        minRemoteSegmentMetadataFiles = CLUSTER_REMOTE_INDEX_SEGMENT_METADATA_RETENTION_MAX_COUNT_SETTING.get(settings);
-        clusterSettings.addSettingsUpdateConsumer(
-            CLUSTER_REMOTE_INDEX_SEGMENT_METADATA_RETENTION_MAX_COUNT_SETTING,
-            this::setMinRemoteSegmentMetadataFiles
-        );
-        clusterSettings.addSettingsUpdateConsumer(INDICES_INTERNAL_REMOTE_UPLOAD_TIMEOUT, this::setInternalRemoteUploadTimeout);
-
     }
 
     public RateLimiter rateLimiter() {
@@ -278,10 +237,6 @@ public class RecoverySettings {
 
     public TimeValue internalActionLongTimeout() {
         return internalActionLongTimeout;
-    }
-
-    public TimeValue internalRemoteUploadTimeout() {
-        return internalRemoteUploadTimeout;
     }
 
     public ByteSizeValue getChunkSize() {
@@ -313,10 +268,6 @@ public class RecoverySettings {
 
     public void setInternalActionLongTimeout(TimeValue internalActionLongTimeout) {
         this.internalActionLongTimeout = internalActionLongTimeout;
-    }
-
-    public void setInternalRemoteUploadTimeout(TimeValue internalRemoteUploadTimeout) {
-        this.internalRemoteUploadTimeout = internalRemoteUploadTimeout;
     }
 
     private void setMaxBytesPerSec(ByteSizeValue maxBytesPerSec) {
@@ -352,13 +303,5 @@ public class RecoverySettings {
 
     private void setMaxConcurrentRemoteStoreStreams(int maxConcurrentRemoteStoreStreams) {
         this.maxConcurrentRemoteStoreStreams = maxConcurrentRemoteStoreStreams;
-    }
-
-    private void setMinRemoteSegmentMetadataFiles(int minRemoteSegmentMetadataFiles) {
-        this.minRemoteSegmentMetadataFiles = minRemoteSegmentMetadataFiles;
-    }
-
-    public int getMinRemoteSegmentMetadataFiles() {
-        return this.minRemoteSegmentMetadataFiles;
     }
 }

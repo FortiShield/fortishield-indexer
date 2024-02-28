@@ -39,7 +39,6 @@ import org.opensearch.action.AliasesRequest;
 import org.opensearch.action.support.IndicesOptions;
 import org.opensearch.action.support.master.AcknowledgedRequest;
 import org.opensearch.cluster.metadata.AliasAction;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.ParsingException;
@@ -74,9 +73,8 @@ import static org.opensearch.core.xcontent.ObjectParser.fromList;
 /**
  * A request to add/remove aliases for one or more indices.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class IndicesAliasesRequest extends AcknowledgedRequest<IndicesAliasesRequest> implements ToXContentObject {
 
     private List<AliasActions> allAliasActions = new ArrayList<>();
@@ -102,9 +100,8 @@ public class IndicesAliasesRequest extends AcknowledgedRequest<IndicesAliasesReq
     /**
      * Request to take one or more actions on one or more indexes and alias combinations.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class AliasActions implements AliasesRequest, Writeable, ToXContentObject {
 
         private static final ParseField INDEX = new ParseField("index");
@@ -126,9 +123,8 @@ public class IndicesAliasesRequest extends AcknowledgedRequest<IndicesAliasesReq
         /**
          * The type of request.
          *
-         * @opensearch.api
+         * @opensearch.internal
          */
-        @PublicApi(since = "1.0.0")
         public enum Type {
             ADD((byte) 0, AliasActions.ADD),
             REMOVE((byte) 1, AliasActions.REMOVE),
@@ -225,11 +221,9 @@ public class IndicesAliasesRequest extends AcknowledgedRequest<IndicesAliasesReq
             ADD_PARSER.declareField(AliasActions::searchRouting, XContentParser::text, SEARCH_ROUTING, ValueType.INT);
             ADD_PARSER.declareField(AliasActions::writeIndex, XContentParser::booleanValue, IS_WRITE_INDEX, ValueType.BOOLEAN);
             ADD_PARSER.declareField(AliasActions::isHidden, XContentParser::booleanValue, IS_HIDDEN, ValueType.BOOLEAN);
+            ADD_PARSER.declareField(AliasActions::mustExist, XContentParser::booleanValue, MUST_EXIST, ValueType.BOOLEAN);
         }
         private static final ObjectParser<AliasActions, Void> REMOVE_PARSER = parser(REMOVE.getPreferredName(), AliasActions::remove);
-        static {
-            REMOVE_PARSER.declareField(AliasActions::mustExist, XContentParser::booleanValue, MUST_EXIST, ValueType.BOOLEAN);
-        }
         private static final ObjectParser<AliasActions, Void> REMOVE_INDEX_PARSER = parser(
             REMOVE_INDEX.getPreferredName(),
             AliasActions::removeIndex
@@ -577,9 +571,6 @@ public class IndicesAliasesRequest extends AcknowledgedRequest<IndicesAliasesReq
             if (null != isHidden) {
                 builder.field(IS_HIDDEN.getPreferredName(), isHidden);
             }
-            if (null != mustExist) {
-                builder.field(MUST_EXIST.getPreferredName(), mustExist);
-            }
             builder.endObject();
             builder.endObject();
             return builder;
@@ -608,8 +599,6 @@ public class IndicesAliasesRequest extends AcknowledgedRequest<IndicesAliasesReq
                 + searchRouting
                 + ",writeIndex="
                 + writeIndex
-                + ",mustExist="
-                + mustExist
                 + "]";
         }
 
@@ -628,13 +617,12 @@ public class IndicesAliasesRequest extends AcknowledgedRequest<IndicesAliasesReq
                 && Objects.equals(indexRouting, other.indexRouting)
                 && Objects.equals(searchRouting, other.searchRouting)
                 && Objects.equals(writeIndex, other.writeIndex)
-                && Objects.equals(isHidden, other.isHidden)
-                && Objects.equals(mustExist, other.mustExist);
+                && Objects.equals(isHidden, other.isHidden);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, indices, aliases, filter, routing, indexRouting, searchRouting, writeIndex, isHidden, mustExist);
+            return Objects.hash(type, indices, aliases, filter, routing, indexRouting, searchRouting, writeIndex, isHidden);
         }
     }
 

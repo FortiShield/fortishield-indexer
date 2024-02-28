@@ -136,7 +136,7 @@ public class RangeAggregatorTests extends AggregatorTestCase {
             true,
             false,
             true,
-            DateFieldMapper.getDefaultDateTimeFormatter(),
+            DateFieldMapper.DEFAULT_DATE_TIME_FORMATTER,
             DateFieldMapper.Resolution.NANOSECONDS,
             null,
             Collections.emptyMap()
@@ -167,7 +167,7 @@ public class RangeAggregatorTests extends AggregatorTestCase {
             true,
             false,
             true,
-            DateFieldMapper.getDefaultDateTimeFormatter(),
+            DateFieldMapper.DEFAULT_DATE_TIME_FORMATTER,
             DateFieldMapper.Resolution.NANOSECONDS,
             null,
             Collections.emptyMap()

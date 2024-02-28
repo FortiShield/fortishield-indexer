@@ -79,8 +79,8 @@ import static org.hamcrest.core.IsNull.notNullValue;
 @OpenSearchIntegTestCase.SuiteScopeTestCase
 public class StringTermsIT extends BaseStringTermsTestCase {
 
-    public StringTermsIT(Settings staticSettings) {
-        super(staticSettings);
+    public StringTermsIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     // the main purpose of this test is to make sure we're not allocating 2GB of memory per shard

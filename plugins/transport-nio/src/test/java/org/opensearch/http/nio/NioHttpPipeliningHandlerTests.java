@@ -80,7 +80,7 @@ public class NioHttpPipeliningHandlerTests extends OpenSearchTestCase {
     @After
     public void cleanup() throws Exception {
         waitingRequests.keySet().forEach(this::finishRequest);
-        shutdownExecutorServices();
+        shutdownExecutorService();
     }
 
     private CountDownLatch finishRequest(String url) {
@@ -88,7 +88,7 @@ public class NioHttpPipeliningHandlerTests extends OpenSearchTestCase {
         return finishingRequests.get(url);
     }
 
-    private void shutdownExecutorServices() throws InterruptedException {
+    private void shutdownExecutorService() throws InterruptedException {
         if (!handlerService.isShutdown()) {
             handlerService.shutdown();
             handlerService.awaitTermination(10, TimeUnit.SECONDS);

@@ -40,7 +40,6 @@ import java.security.PrivilegedAction;
 /**
  * Provides access to the native method sd_notify from libsystemd.
  */
-@SuppressWarnings("removal")
 class Libsystemd {
 
     static {

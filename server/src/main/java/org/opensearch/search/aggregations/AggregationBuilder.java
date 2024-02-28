@@ -31,7 +31,6 @@
 
 package org.opensearch.search.aggregations;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.NamedWriteable;
@@ -51,9 +50,8 @@ import java.util.Map;
 /**
  * A factory that knows how to create an {@link Aggregator} of a specific type.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class AggregationBuilder
     implements
         NamedWriteable,
@@ -170,9 +168,8 @@ public abstract class AggregationBuilder
      * Unlike {@link CardinalityUpperBound} which is <strong>total</strong>
      * instead of <strong>per parent bucket</strong>.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public enum BucketCardinality {
         NONE,
         ONE,

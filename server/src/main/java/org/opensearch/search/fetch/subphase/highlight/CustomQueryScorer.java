@@ -33,7 +33,6 @@
 package org.opensearch.search.fetch.subphase.highlight;
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.IndexOrDocValuesQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.WeightedSpanTerm;
@@ -105,8 +104,6 @@ public final class CustomQueryScorer extends QueryScorer {
                 super.extract(((FunctionScoreQuery) query).getSubQuery(), boost, terms);
             } else if (query instanceof OpenSearchToParentBlockJoinQuery) {
                 super.extract(((OpenSearchToParentBlockJoinQuery) query).getChildQuery(), boost, terms);
-            } else if (query instanceof IndexOrDocValuesQuery) {
-                super.extract(((IndexOrDocValuesQuery) query).getIndexQuery(), boost, terms);
             } else {
                 super.extract(query, boost, terms);
             }

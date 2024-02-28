@@ -1,3 +1,8 @@
+# build files
+artifacts/
+
+.java
+.m2
 
 # intellij files
 .idea/
@@ -64,3 +69,6 @@ testfixtures_shared/
 
 # build files generated
 doc-tools/missing-doclet/bin/
+
+# Fortishield template (currently downloaded from the fortishield/fortishield repo directly)
+distribution/src/config/fortishield-template.json

@@ -34,7 +34,6 @@ package org.opensearch.index.analysis;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.search.fetch.subphase.highlight.FastVectorHighlighter;
 
 import java.util.List;
@@ -43,9 +42,8 @@ import java.util.function.Function;
 /**
  * Base token filter factory used in analysis chain
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface TokenFilterFactory {
     String name();
 
@@ -53,7 +51,7 @@ public interface TokenFilterFactory {
 
     /**
      * Normalize a tokenStream for use in multi-term queries
-     * <p>
+     *
      * The default implementation is a no-op
      */
     default TokenStream normalize(TokenStream tokenStream) {
@@ -88,7 +86,7 @@ public interface TokenFilterFactory {
 
     /**
      * Return a version of this TokenFilterFactory appropriate for synonym parsing
-     * <p>
+     *
      * Filters that should not be applied to synonyms (for example, those that produce
      * multiple tokens) should throw an exception
      *

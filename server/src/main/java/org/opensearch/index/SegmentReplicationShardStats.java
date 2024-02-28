@@ -9,7 +9,6 @@
 package org.opensearch.index;
 
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -24,9 +23,8 @@ import java.io.IOException;
 /**
  * SegRep stats for a single shard.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.7.0")
 public class SegmentReplicationShardStats implements Writeable, ToXContentFragment {
     private final String allocationId;
     private final long checkpointsBehindCount;

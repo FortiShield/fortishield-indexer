@@ -54,7 +54,6 @@ public class TaskInfo {
     private long runningTimeNanos;
     private boolean cancellable;
     private boolean cancelled;
-    private Long cancellationStartTime;
     private TaskId parentTaskId;
     private final Map<String, Object> status = new HashMap<>();
     private final Map<String, String> headers = new HashMap<>();
@@ -128,14 +127,6 @@ public class TaskInfo {
         this.cancelled = cancelled;
     }
 
-    public Long getCancellationStartTime() {
-        return this.cancellationStartTime;
-    }
-
-    public void setCancellationStartTime(Long cancellationStartTime) {
-        this.cancellationStartTime = cancellationStartTime;
-    }
-
     public TaskId getParentTaskId() {
         return parentTaskId;
     }
@@ -189,7 +180,6 @@ public class TaskInfo {
         parser.declareString(TaskInfo::setParentTaskId, new ParseField("parent_task_id"));
         parser.declareObject(TaskInfo::setHeaders, (p, c) -> p.mapStrings(), new ParseField("headers"));
         parser.declareObject(TaskInfo::setResourceStats, (p, c) -> p.map(), new ParseField("resource_stats"));
-        parser.declareLong(TaskInfo::setCancellationStartTime, new ParseField("cancellation_time_millis"));
         PARSER = (XContentParser p, Void v, String name) -> parser.parse(p, new TaskInfo(new TaskId(name)), null);
     }
 
@@ -209,8 +199,7 @@ public class TaskInfo {
             && Objects.equals(getParentTaskId(), taskInfo.getParentTaskId())
             && Objects.equals(status, taskInfo.status)
             && Objects.equals(getHeaders(), taskInfo.getHeaders())
-            && Objects.equals(getResourceStats(), taskInfo.getResourceStats())
-            && Objects.equals(getCancellationStartTime(), taskInfo.cancellationStartTime);
+            && Objects.equals(getResourceStats(), taskInfo.getResourceStats());
     }
 
     @Override
@@ -227,8 +216,7 @@ public class TaskInfo {
             getParentTaskId(),
             status,
             getHeaders(),
-            getResourceStats(),
-            getCancellationStartTime()
+            getResourceStats()
         );
     }
 
@@ -262,8 +250,6 @@ public class TaskInfo {
             + headers
             + ", resource_stats="
             + resourceStats
-            + ", cancellationStartTime="
-            + cancellationStartTime
             + '}';
     }
 }

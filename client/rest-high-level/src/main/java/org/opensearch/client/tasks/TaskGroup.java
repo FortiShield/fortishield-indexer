@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 /**
  * Client side counterpart of server side version.
+ *
  * {@link org.opensearch.action.admin.cluster.node.tasks.list.TaskGroup}
  */
 public class TaskGroup {

@@ -33,7 +33,7 @@ apply plugin: 'opensearch.publish'
 
 base {
   group = 'org.opensearch.plugin'
-  archivesName = 'opensearch-scripting-painless-spi'
+  archivesBaseName = 'opensearch-scripting-painless-spi'
 }
 
 dependencies {

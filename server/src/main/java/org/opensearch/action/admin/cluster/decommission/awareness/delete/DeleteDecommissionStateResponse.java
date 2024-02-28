@@ -9,7 +9,6 @@
 package org.opensearch.action.admin.cluster.decommission.awareness.delete;
 
 import org.opensearch.action.support.master.AcknowledgedResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 
@@ -18,9 +17,8 @@ import java.io.IOException;
 /**
  * Response returned after deletion of decommission request.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public class DeleteDecommissionStateResponse extends AcknowledgedResponse {
 
     public DeleteDecommissionStateResponse(StreamInput in) throws IOException {

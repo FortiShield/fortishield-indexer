@@ -35,7 +35,6 @@ package org.opensearch.index.mapper;
 import org.opensearch.Version;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.time.DateFormatter;
 import org.opensearch.core.xcontent.ToXContentFragment;
@@ -52,17 +51,15 @@ import java.util.function.Supplier;
 /**
  * The foundation OpenSearch mapper
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class Mapper implements ToXContentFragment, Iterable<Mapper> {
 
     /**
      * The builder context used in field mappings
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class BuilderContext {
         private final Settings indexSettings;
         private final ContentPath contentPath;
@@ -97,9 +94,8 @@ public abstract class Mapper implements ToXContentFragment, Iterable<Mapper> {
     /**
      * Base mapper builder
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public abstract static class Builder<T extends Builder> {
 
         public String name;
@@ -121,17 +117,15 @@ public abstract class Mapper implements ToXContentFragment, Iterable<Mapper> {
     /**
      * Type parser for the mapper
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public interface TypeParser {
 
         /**
          * Parser context for the type parser
          *
-         * @opensearch.api
+         * @opensearch.internal
          */
-        @PublicApi(since = "1.0.0")
         class ParserContext {
 
             private final Function<String, SimilarityProvider> similarityLookupService;
@@ -196,7 +190,7 @@ public abstract class Mapper implements ToXContentFragment, Iterable<Mapper> {
 
             /**
              * Gets an optional default date format for date fields that do not have an explicit format set
-             * <p>
+             *
              * If {@code null}, then date fields will default to {@link DateFieldMapper#DEFAULT_DATE_TIME_FORMATTER}.
              */
             public DateFormatter getDateFormatter() {

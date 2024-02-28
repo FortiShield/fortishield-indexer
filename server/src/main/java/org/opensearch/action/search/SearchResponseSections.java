@@ -32,7 +32,6 @@
 
 package org.opensearch.action.search;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.xcontent.ToXContentFragment;
@@ -54,14 +53,13 @@ import java.util.Objects;
 /**
  * Base class that holds the various sections which a search response is
  * composed of (hits, aggs, suggestions etc.) and allows to retrieve them.
- * <p>
+ *
  * The reason why this class exists is that the high level REST client uses its own classes
  * to parse aggregations into, which are not serializable. This is the common part that can be
  * shared between core and client.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SearchResponseSections implements ToXContentFragment {
 
     public static final ParseField EXT_FIELD = new ParseField("ext");

@@ -219,17 +219,20 @@ public class RepositoriesServiceTests extends OpenSearchTestCase {
         assertThat(repositoriesService.repositoriesStats().size(), equalTo(1));
 
         repositoriesService.applyClusterState(new ClusterChangedEvent("new repo", emptyState(), clusterStateWithRepoTypeA));
-        assertThat(repositoriesService.repositoriesStats().size(), equalTo(0));
+        assertThat(repositoriesService.repositoriesStats().size(), equalTo(1));
 
         ClusterState clusterStateWithRepoTypeB = createClusterStateWithRepo(repoName, MeteredRepositoryTypeB.TYPE);
         repositoriesService.applyClusterState(new ClusterChangedEvent("new repo", clusterStateWithRepoTypeB, emptyState()));
 
         List<RepositoryStatsSnapshot> repositoriesStats = repositoriesService.repositoriesStats();
-        assertThat(repositoriesStats.size(), equalTo(1));
+        assertThat(repositoriesStats.size(), equalTo(2));
         RepositoryStatsSnapshot repositoryStatsTypeA = repositoriesStats.get(0);
-        assertThat(repositoryStatsTypeA.getRepositoryInfo().type, equalTo(MeteredRepositoryTypeB.TYPE));
-        assertThat(repositoryStatsTypeA.getRepositoryStats(), equalTo(MeteredRepositoryTypeB.STATS));
+        assertThat(repositoryStatsTypeA.getRepositoryInfo().type, equalTo(MeteredRepositoryTypeA.TYPE));
+        assertThat(repositoryStatsTypeA.getRepositoryStats(), equalTo(MeteredRepositoryTypeA.STATS));
 
+        RepositoryStatsSnapshot repositoryStatsTypeB = repositoriesStats.get(1);
+        assertThat(repositoryStatsTypeB.getRepositoryInfo().type, equalTo(MeteredRepositoryTypeB.TYPE));
+        assertThat(repositoryStatsTypeB.getRepositoryStats(), equalTo(MeteredRepositoryTypeB.STATS));
     }
 
     public void testWithSameKeyProviderNames() {
@@ -255,7 +258,7 @@ public class RepositoriesServiceTests extends OpenSearchTestCase {
             kpTypeA
         );
         repositoriesService.applyClusterState(new ClusterChangedEvent("new repo", clusterStateWithRepoTypeB, emptyState()));
-        assertThat(repositoriesService.repositoriesStats().size(), equalTo(1));
+        assertThat(repositoriesService.repositoriesStats().size(), equalTo(2));
         MeteredRepositoryTypeB repositoryB = (MeteredRepositoryTypeB) repositoriesService.repository("repoName");
         assertNotNull(repositoryB);
         assertNotNull(repository.cryptoHandler);

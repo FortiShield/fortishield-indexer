@@ -34,7 +34,6 @@ package org.opensearch.cluster;
 
 import org.opensearch.Version;
 import org.opensearch.cluster.ClusterState.Custom;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -55,9 +54,8 @@ import java.util.UUID;
 /**
  * Meta data about restore processes that are currently executing
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class RestoreInProgress extends AbstractNamedDiffable<Custom> implements Custom, Iterable<RestoreInProgress.Entry> {
 
     /**
@@ -141,9 +139,8 @@ public class RestoreInProgress extends AbstractNamedDiffable<Custom> implements 
     /**
      * Restore metadata
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Entry {
         private final String uuid;
         private final State state;
@@ -192,7 +189,7 @@ public class RestoreInProgress extends AbstractNamedDiffable<Custom> implements 
         /**
          * Returns list of shards that being restore and their status
          *
-         * @return map of shard id to shard restore status
+         * @return list of shards
          */
         public Map<ShardId, ShardRestoreStatus> shards() {
             return this.shards;
@@ -241,9 +238,8 @@ public class RestoreInProgress extends AbstractNamedDiffable<Custom> implements 
     /**
      * Represents status of a restored shard
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class ShardRestoreStatus implements Writeable {
         private State state;
         private String nodeId;
@@ -367,9 +363,8 @@ public class RestoreInProgress extends AbstractNamedDiffable<Custom> implements 
     /**
      * Shard restore process state
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public enum State {
         /**
          * Initializing state

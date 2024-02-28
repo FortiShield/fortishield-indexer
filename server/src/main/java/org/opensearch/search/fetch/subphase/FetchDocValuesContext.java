@@ -31,7 +31,6 @@
 
 package org.opensearch.search.fetch.subphase;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.index.IndexSettings;
 
 import java.util.ArrayList;
@@ -43,9 +42,8 @@ import java.util.function.Function;
 /**
  * All the required context to pull a field from the doc values.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class FetchDocValuesContext {
     private final List<FieldAndFormat> fields;
 

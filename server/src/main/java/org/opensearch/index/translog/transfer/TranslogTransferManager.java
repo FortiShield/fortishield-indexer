@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static org.opensearch.index.translog.transfer.FileSnapshot.TransferFileSnapshot;
@@ -155,17 +156,14 @@ public class TranslogTransferManager {
 
             try {
                 if (latch.await(TRANSFER_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS) == false) {
-                    Exception ex = new TranslogUploadFailedException(
-                        "Timed out waiting for transfer of snapshot " + transferSnapshot + " to complete"
-                    );
+                    Exception ex = new TimeoutException("Timed out waiting for transfer of snapshot " + transferSnapshot + " to complete");
                     exceptionList.forEach(ex::addSuppressed);
                     throw ex;
                 }
             } catch (InterruptedException ex) {
-                Exception exception = new TranslogUploadFailedException("Failed to upload " + transferSnapshot, ex);
-                exceptionList.forEach(exception::addSuppressed);
+                exceptionList.forEach(ex::addSuppressed);
                 Thread.currentThread().interrupt();
-                throw exception;
+                throw ex;
             }
             if (exceptionList.isEmpty()) {
                 TransferFileSnapshot tlogMetadata = prepareMetadata(transferSnapshot);
@@ -178,7 +176,7 @@ public class TranslogTransferManager {
                     remoteTranslogTransferTracker.addUploadTimeInMillis((System.nanoTime() - metadataUploadStartTime) / 1_000_000L);
                     remoteTranslogTransferTracker.addUploadBytesFailed(metadataBytesToUpload);
                     // outer catch handles capturing stats on upload failure
-                    throw new TranslogUploadFailedException("Failed to upload " + tlogMetadata.getName(), exception);
+                    throw exception;
                 }
 
                 remoteTranslogTransferTracker.addUploadTimeInMillis((System.nanoTime() - metadataUploadStartTime) / 1_000_000L);
@@ -187,7 +185,7 @@ public class TranslogTransferManager {
                 translogTransferListener.onUploadComplete(transferSnapshot);
                 return true;
             } else {
-                Exception ex = new TranslogUploadFailedException("Failed to upload " + exceptionList.size() + " files during transfer");
+                Exception ex = new IOException("Failed to upload " + exceptionList.size() + " files during transfer");
                 exceptionList.forEach(ex::addSuppressed);
                 throw ex;
             }

@@ -34,15 +34,13 @@ package org.opensearch.action.admin.cluster.snapshots.get;
 
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.util.ArrayUtils;
 
 /**
  * Get snapshots request builder
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class GetSnapshotsRequestBuilder extends ClusterManagerNodeOperationRequestBuilder<
     GetSnapshotsRequest,
     GetSnapshotsResponse,

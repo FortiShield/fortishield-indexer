@@ -35,9 +35,7 @@ package org.opensearch.search;
 import org.apache.lucene.document.InetAddressPoint;
 import org.apache.lucene.util.BytesRef;
 import org.opensearch.LegacyESVersion;
-import org.opensearch.Version;
 import org.opensearch.common.Numbers;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.joda.Joda;
 import org.opensearch.common.joda.JodaDateFormatter;
 import org.opensearch.common.network.InetAddresses;
@@ -69,9 +67,8 @@ import java.util.function.LongSupplier;
 /**
  * A formatter for values as returned by the fielddata/doc-values APIs.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface DocValueFormat extends NamedWriteable {
     long MASK_2_63 = 0x8000000000000000L;
     BigInteger BIGINTEGER_2_64_MINUS_ONE = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE); // 2^64 -1
@@ -250,10 +247,7 @@ public interface DocValueFormat extends NamedWriteable {
 
         public DateTime(StreamInput in) throws IOException {
             String datePattern = in.readString();
-            String printPattern = null;
-            if (in.getVersion().onOrAfter(Version.V_2_12_0)) {
-                printPattern = in.readOptionalString();
-            }
+
             String zoneId = in.readString();
             if (in.getVersion().before(LegacyESVersion.V_7_0_0)) {
                 this.timeZone = DateUtils.of(zoneId);
@@ -277,7 +271,7 @@ public interface DocValueFormat extends NamedWriteable {
                  */
                 isJoda = Joda.isJodaPattern(in.getVersion(), datePattern);
             }
-            this.formatter = isJoda ? Joda.forPattern(datePattern) : DateFormatter.forPattern(datePattern, printPattern);
+            this.formatter = isJoda ? Joda.forPattern(datePattern) : DateFormatter.forPattern(datePattern);
 
             this.parser = formatter.toDateMathParser();
 
@@ -290,14 +284,7 @@ public interface DocValueFormat extends NamedWriteable {
 
         @Override
         public void writeTo(StreamOutput out) throws IOException {
-            if (out.getVersion().before(Version.V_2_12_0) && formatter.equals(DateFieldMapper.DEFAULT_DATE_TIME_FORMATTER)) {
-                out.writeString(DateFieldMapper.LEGACY_DEFAULT_DATE_TIME_FORMATTER.pattern()); // required for backwards compatibility
-            } else {
-                out.writeString(formatter.pattern());
-            }
-            if (out.getVersion().onOrAfter(Version.V_2_12_0)) {
-                out.writeOptionalString(formatter.printPattern());
-            }
+            out.writeString(formatter.pattern());
             if (out.getVersion().before(LegacyESVersion.V_7_0_0)) {
                 out.writeString(DateUtils.zoneIdToDateTimeZone(timeZone).getID());
             } else {

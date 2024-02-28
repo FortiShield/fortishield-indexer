@@ -36,7 +36,6 @@ import org.opensearch.cluster.ClusterState;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.cluster.routing.IndexRoutingTable;
 import org.opensearch.cluster.routing.IndexShardRoutingTable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -49,9 +48,8 @@ import static org.opensearch.cluster.metadata.IndexMetadata.SETTING_WAIT_FOR_ACT
  * A class whose instances represent a value for counting the number
  * of active shard copies for a given shard in an index.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class ActiveShardCount implements Writeable {
 
     private static final int ACTIVE_SHARD_COUNT_DEFAULT = -2;

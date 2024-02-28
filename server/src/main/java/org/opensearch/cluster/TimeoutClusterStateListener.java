@@ -32,15 +32,13 @@
 
 package org.opensearch.cluster;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 
 /**
  * An exception to cluster state listener that allows for timeouts and for post added notifications.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface TimeoutClusterStateListener extends ClusterStateListener {
 
     void postAdded();

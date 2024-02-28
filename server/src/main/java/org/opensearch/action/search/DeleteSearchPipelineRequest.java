@@ -10,7 +10,6 @@ package org.opensearch.action.search;
 
 import org.opensearch.action.ActionRequestValidationException;
 import org.opensearch.action.support.master.AcknowledgedRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 
@@ -20,9 +19,8 @@ import java.util.Objects;
 /**
  * Request to delete a search pipeline
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.7.0")
 public class DeleteSearchPipelineRequest extends AcknowledgedRequest<DeleteSearchPipelineRequest> {
     private String id;
 

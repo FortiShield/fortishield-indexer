@@ -8,6 +8,7 @@
 
 package org.opensearch.telemetry.tracing.handler;
 
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.transport.TransportResponse;
 import org.opensearch.telemetry.tracing.Span;
@@ -54,7 +55,7 @@ public class TraceableTransportResponseHandler<T extends TransportResponse> impl
         Span span,
         Tracer tracer
     ) {
-        if (tracer.isRecording() == true) {
+        if (FeatureFlags.isEnabled(FeatureFlags.TELEMETRY) == true) {
             return new TraceableTransportResponseHandler<S>(delegate, span, tracer);
         } else {
             return delegate;

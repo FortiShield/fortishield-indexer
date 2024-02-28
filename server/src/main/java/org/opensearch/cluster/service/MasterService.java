@@ -54,7 +54,6 @@ import org.opensearch.cluster.node.DiscoveryNodes;
 import org.opensearch.cluster.routing.RoutingTable;
 import org.opensearch.common.Nullable;
 import org.opensearch.common.Priority;
-import org.opensearch.common.annotation.DeprecatedApi;
 import org.opensearch.common.lifecycle.AbstractLifecycleComponent;
 import org.opensearch.common.settings.ClusterSettings;
 import org.opensearch.common.settings.Setting;
@@ -88,11 +87,10 @@ import static org.opensearch.common.util.concurrent.OpenSearchExecutors.daemonTh
 /**
  * Main Master Node Service
  *
- * @opensearch.api
+ * @opensearch.internal
  * @deprecated As of 2.2, because supporting inclusive language, replaced by {@link ClusterManagerService}.
  */
 @Deprecated
-@DeprecatedApi(since = "2.2.0")
 public class MasterService extends AbstractLifecycleComponent {
     private static final Logger logger = LogManager.getLogger(MasterService.class);
 
@@ -114,9 +112,7 @@ public class MasterService extends AbstractLifecycleComponent {
 
     static final String CLUSTER_MANAGER_UPDATE_THREAD_NAME = "clusterManagerService#updateTask";
 
-    /**
-     * @deprecated As of 2.2, because supporting inclusive language, replaced by {@link #CLUSTER_MANAGER_UPDATE_THREAD_NAME}
-     */
+    /** @deprecated As of 2.2, because supporting inclusive language, replaced by {@link #CLUSTER_MANAGER_UPDATE_THREAD_NAME} */
     @Deprecated
     static final String MASTER_UPDATE_THREAD_NAME = "masterService#updateTask";
 
@@ -134,7 +130,6 @@ public class MasterService extends AbstractLifecycleComponent {
     private volatile Batcher taskBatcher;
     protected final ClusterManagerTaskThrottler clusterManagerTaskThrottler;
     private final ClusterManagerThrottlingStats throttlingStats;
-    private final ClusterStateStats stateStats;
 
     public MasterService(Settings settings, ClusterSettings clusterSettings, ThreadPool threadPool) {
         this.nodeName = Objects.requireNonNull(Node.NODE_NAME_SETTING.get(settings));
@@ -152,7 +147,6 @@ public class MasterService extends AbstractLifecycleComponent {
             this::getMinNodeVersion,
             throttlingStats
         );
-        this.stateStats = new ClusterStateStats();
         this.threadPool = threadPool;
     }
 
@@ -345,7 +339,7 @@ public class MasterService extends AbstractLifecycleComponent {
         return TimeValue.timeValueMillis(TimeValue.nsecToMSec(threadPool.preciseRelativeTimeInNanos() - startTimeNanos));
     }
 
-    protected void publish(ClusterChangedEvent clusterChangedEvent, TaskOutputs taskOutputs, long startTimeNanos) {
+    protected void publish(ClusterChangedEvent clusterChangedEvent, TaskOutputs taskOutputs, long startTimeMillis) {
         final PlainActionFuture<Void> fut = new PlainActionFuture<Void>() {
             @Override
             protected boolean blockingAllowed() {
@@ -358,12 +352,8 @@ public class MasterService extends AbstractLifecycleComponent {
         try {
             FutureUtils.get(fut);
             onPublicationSuccess(clusterChangedEvent, taskOutputs);
-            final long durationMillis = getTimeSince(startTimeNanos).millis();
-            stateStats.stateUpdateTook(durationMillis);
-            stateStats.stateUpdated();
         } catch (Exception e) {
-            stateStats.stateUpdateFailed();
-            onPublicationFailed(clusterChangedEvent, taskOutputs, startTimeNanos, e);
+            onPublicationFailed(clusterChangedEvent, taskOutputs, startTimeMillis, e);
         }
     }
 
@@ -474,6 +464,7 @@ public class MasterService extends AbstractLifecycleComponent {
      * @param source     the source of the cluster state update task
      * @param updateTask the full context for the cluster state update
      *                   task
+     *
      */
     public <T extends ClusterStateTaskConfig & ClusterStateTaskExecutor<T> & ClusterStateTaskListener> void submitStateUpdateTask(
         String source,
@@ -499,6 +490,7 @@ public class MasterService extends AbstractLifecycleComponent {
      * @param listener callback after the cluster state update task
      *                 completes
      * @param <T>      the type of the cluster state update task state
+     *
      */
     public <T> void submitStateUpdateTask(
         String source,
@@ -955,7 +947,7 @@ public class MasterService extends AbstractLifecycleComponent {
     /**
      * Functionality for register task key to cluster manager node.
      *
-     * @param taskKey           - task key of task
+     * @param taskKey - task key of task
      * @param throttlingEnabled - throttling is enabled for task or not i.e does data node perform retries on it or not
      * @return throttling task key which needs to be passed while submitting task to cluster manager
      */
@@ -974,6 +966,7 @@ public class MasterService extends AbstractLifecycleComponent {
      *                 that share the same executor will be executed
      *                 batches on this executor
      * @param <T>      the type of the cluster state update task state
+     *
      */
     public <T> void submitStateUpdateTasks(
         final String source,
@@ -1001,10 +994,6 @@ public class MasterService extends AbstractLifecycleComponent {
                 throw e;
             }
         }
-    }
-
-    public ClusterStateStats getClusterStateStats() {
-        return stateStats;
     }
 
 }

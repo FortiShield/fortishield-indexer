@@ -35,7 +35,6 @@ import org.opensearch.action.admin.indices.alias.Alias;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeOperationRequestBuilder;
 import org.opensearch.action.support.master.AcknowledgedResponse;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.core.common.bytes.BytesReference;
@@ -48,9 +47,8 @@ import java.util.Map;
 /**
  * A request builder for putting an index template into the cluster state
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class PutIndexTemplateRequestBuilder extends ClusterManagerNodeOperationRequestBuilder<
     PutIndexTemplateRequest,
     AcknowledgedResponse,

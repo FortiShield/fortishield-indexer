@@ -46,6 +46,7 @@ import org.opensearch.common.lucene.search.function.CombineFunction;
 import org.opensearch.common.lucene.search.function.FunctionScoreQuery;
 import org.opensearch.common.lucene.search.function.FunctionScoreQuery.ScoreMode;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
@@ -55,7 +56,7 @@ import org.opensearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.opensearch.search.MultiValueMode;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.SearchHits;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 import org.opensearch.test.VersionUtils;
 
 import java.time.ZoneOffset;
@@ -90,10 +91,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
-public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class DecayFunctionScoreIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public DecayFunctionScoreIT(Settings staticSettings) {
-        super(staticSettings);
+    public DecayFunctionScoreIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -102,6 +103,11 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     @Override
@@ -392,7 +398,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
                 )
         );
         indexRandom(true, false, indexBuilders); // force no dummy docs
-        indexRandomForConcurrentSearch("test");
 
         // Test Gauss
         List<Float> lonlat = new ArrayList<>();
@@ -477,7 +482,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
             constantScoreQuery(termQuery("test", "value")),
             ScoreFunctionBuilders.weightFactorFunction(randomIntBetween(1, 10))
         );
-        indexRandomForConcurrentSearch("test");
         GeoPoint point = new GeoPoint(20, 11);
         ActionFuture<SearchResponse> response = client().search(
             searchRequest().searchType(SearchType.QUERY_THEN_FETCH)
@@ -531,7 +535,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
             .setRefreshPolicy(IMMEDIATE)
             .setSource(jsonBuilder().startObject().field("test", "value value").field("num", 1.0).endObject())
             .get();
-        indexRandomForConcurrentSearch("test");
         FunctionScoreQueryBuilder baseQuery = functionScoreQuery(
             constantScoreQuery(termQuery("test", "value")),
             ScoreFunctionBuilders.weightFactorFunction(2)
@@ -651,7 +654,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
             constantScoreQuery(termQuery("test", "value")).queryName("query1"),
             ScoreFunctionBuilders.weightFactorFunction(2, "weight1")
         );
-        indexRandomForConcurrentSearch("test");
         // decay score should return 0.5 for this function and baseQuery should return 2.0f as it's score
         ActionFuture<SearchResponse> response = client().search(
             searchRequest().searchType(SearchType.QUERY_THEN_FETCH)
@@ -760,7 +762,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
         ).actionGet();
         refresh();
 
-        indexRandomForConcurrentSearch("test");
         SearchResponse sr = client().search(
             searchRequest().source(
                 searchSource().query(functionScoreQuery(termQuery("test", "value"), gaussDecayFunction("num1", "now", "2d")))
@@ -816,7 +817,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
         ).actionGet();
 
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         ActionFuture<SearchResponse> response = client().search(
             searchRequest().searchType(SearchType.QUERY_THEN_FETCH)
@@ -893,7 +893,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
         ).actionGet();
 
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         ActionFuture<SearchResponse> response = client().search(
             searchRequest().searchType(SearchType.QUERY_THEN_FETCH)
@@ -975,7 +974,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
         List<Float> lonlat = new ArrayList<>();
         lonlat.add(100f);
         lonlat.add(110f);
-        indexRandomForConcurrentSearch("test");
         ActionFuture<SearchResponse> response = client().search(
             searchRequest().searchType(SearchType.QUERY_THEN_FETCH)
                 .source(
@@ -1109,7 +1107,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
         client().index(indexRequest("test").source(jsonBuilder().startObject().field("test", "value").field("num", 1.0).endObject()))
             .actionGet();
         refresh();
-        indexRandomForConcurrentSearch("test");
         // so, we indexed a string field, but now we try to score a num field
         ActionFuture<SearchResponse> response = client().search(
             searchRequest().searchType(SearchType.QUERY_THEN_FETCH)
@@ -1174,7 +1171,6 @@ public class DecayFunctionScoreIT extends ParameterizedStaticSettingsOpenSearchI
             );
 
         indexRandom(true, doc1, doc2);
-        indexRandomForConcurrentSearch("test");
 
         ActionFuture<SearchResponse> response = client().search(searchRequest().source(searchSource().query(baseQuery)));
         SearchResponse sr = response.actionGet();

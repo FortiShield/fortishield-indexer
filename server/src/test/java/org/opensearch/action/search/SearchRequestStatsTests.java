@@ -8,13 +8,9 @@
 
 package org.opensearch.action.search;
 
-import org.apache.logging.log4j.LogManager;
-import org.opensearch.common.settings.ClusterSettings;
-import org.opensearch.common.settings.Settings;
 import org.opensearch.test.OpenSearchTestCase;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Phaser;
@@ -26,8 +22,7 @@ import static org.mockito.Mockito.when;
 
 public class SearchRequestStatsTests extends OpenSearchTestCase {
     public void testSearchRequestPhaseFailure() {
-        ClusterSettings clusterSettings = new ClusterSettings(Settings.EMPTY, ClusterSettings.BUILT_IN_CLUSTER_SETTINGS);
-        SearchRequestStats testRequestStats = new SearchRequestStats(clusterSettings);
+        SearchRequestStats testRequestStats = new SearchRequestStats();
         SearchPhaseContext ctx = mock(SearchPhaseContext.class);
         SearchPhase mockSearchPhase = mock(SearchPhase.class);
         when(ctx.getCurrentPhase()).thenReturn(mockSearchPhase);
@@ -42,8 +37,7 @@ public class SearchRequestStatsTests extends OpenSearchTestCase {
     }
 
     public void testSearchRequestStats() {
-        ClusterSettings clusterSettings = new ClusterSettings(Settings.EMPTY, ClusterSettings.BUILT_IN_CLUSTER_SETTINGS);
-        SearchRequestStats testRequestStats = new SearchRequestStats(clusterSettings);
+        SearchRequestStats testRequestStats = new SearchRequestStats();
 
         SearchPhaseContext ctx = mock(SearchPhaseContext.class);
         SearchPhase mockSearchPhase = mock(SearchPhase.class);
@@ -56,13 +50,7 @@ public class SearchRequestStatsTests extends OpenSearchTestCase {
             long startTime = System.nanoTime() - TimeUnit.MILLISECONDS.toNanos(tookTimeInMillis);
             when(mockSearchPhase.getStartTimeInNanos()).thenReturn(startTime);
             assertEquals(1, testRequestStats.getPhaseCurrent(searchPhaseName));
-            testRequestStats.onPhaseEnd(
-                ctx,
-                new SearchRequestContext(
-                    new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                    new SearchRequest()
-                )
-            );
+            testRequestStats.onPhaseEnd(ctx);
             assertEquals(0, testRequestStats.getPhaseCurrent(searchPhaseName));
             assertEquals(1, testRequestStats.getPhaseTotal(searchPhaseName));
             assertThat(testRequestStats.getPhaseMetric(searchPhaseName), greaterThanOrEqualTo(tookTimeInMillis));
@@ -70,8 +58,7 @@ public class SearchRequestStatsTests extends OpenSearchTestCase {
     }
 
     public void testSearchRequestStatsOnPhaseStartConcurrently() throws InterruptedException {
-        ClusterSettings clusterSettings = new ClusterSettings(Settings.EMPTY, ClusterSettings.BUILT_IN_CLUSTER_SETTINGS);
-        SearchRequestStats testRequestStats = new SearchRequestStats(clusterSettings);
+        SearchRequestStats testRequestStats = new SearchRequestStats();
         int numTasks = randomIntBetween(5, 50);
         Thread[] threads = new Thread[numTasks * SearchPhaseName.values().length];
         Phaser phaser = new Phaser(numTasks * SearchPhaseName.values().length + 1);
@@ -98,8 +85,7 @@ public class SearchRequestStatsTests extends OpenSearchTestCase {
     }
 
     public void testSearchRequestStatsOnPhaseEndConcurrently() throws InterruptedException {
-        ClusterSettings clusterSettings = new ClusterSettings(Settings.EMPTY, ClusterSettings.BUILT_IN_CLUSTER_SETTINGS);
-        SearchRequestStats testRequestStats = new SearchRequestStats(clusterSettings);
+        SearchRequestStats testRequestStats = new SearchRequestStats();
         int numTasks = randomIntBetween(5, 50);
         Thread[] threads = new Thread[numTasks * SearchPhaseName.values().length];
         Phaser phaser = new Phaser(numTasks * SearchPhaseName.values().length + 1);
@@ -116,13 +102,7 @@ public class SearchRequestStatsTests extends OpenSearchTestCase {
             for (int i = 0; i < numTasks; i++) {
                 threads[i] = new Thread(() -> {
                     phaser.arriveAndAwaitAdvance();
-                    testRequestStats.onPhaseEnd(
-                        ctx,
-                        new SearchRequestContext(
-                            new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                            new SearchRequest()
-                        )
-                    );
+                    testRequestStats.onPhaseEnd(ctx);
                     countDownLatch.countDown();
                 });
                 threads[i].start();
@@ -141,8 +121,7 @@ public class SearchRequestStatsTests extends OpenSearchTestCase {
     }
 
     public void testSearchRequestStatsOnPhaseFailureConcurrently() throws InterruptedException {
-        ClusterSettings clusterSettings = new ClusterSettings(Settings.EMPTY, ClusterSettings.BUILT_IN_CLUSTER_SETTINGS);
-        SearchRequestStats testRequestStats = new SearchRequestStats(clusterSettings);
+        SearchRequestStats testRequestStats = new SearchRequestStats();
         int numTasks = randomIntBetween(5, 50);
         Thread[] threads = new Thread[numTasks * SearchPhaseName.values().length];
         Phaser phaser = new Phaser(numTasks * SearchPhaseName.values().length + 1);

@@ -1017,11 +1017,6 @@ public class AbstractCoordinatorTestCase extends OpenSearchTestCase {
             }
 
             @Override
-            public PersistedStateStats getStats() {
-                return null;
-            }
-
-            @Override
             public void close() {
                 assertTrue(openPersistedStates.remove(this));
                 try {

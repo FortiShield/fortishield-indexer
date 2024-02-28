@@ -35,11 +35,6 @@ class DefaultMetricsRegistry implements MetricsRegistry {
     }
 
     @Override
-    public Histogram createHistogram(String name, String description, String unit) {
-        return metricsTelemetry.createHistogram(name, description, unit);
-    }
-
-    @Override
     public void close() throws IOException {
         metricsTelemetry.close();
     }

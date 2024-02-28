@@ -33,16 +33,14 @@ package org.opensearch.cluster.routing;
 
 import org.opensearch.cluster.ClusterState;
 import org.opensearch.common.Priority;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.action.ActionListener;
 
 /**
  * Asynchronously performs a cluster reroute, updating any shard states and rebalancing the cluster if appropriate.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
 @FunctionalInterface
-@PublicApi(since = "1.0.0")
 public interface RerouteService {
 
     /**

@@ -8,7 +8,6 @@
 
 package org.opensearch.index.store.remote.filecache;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -21,9 +20,8 @@ import java.io.IOException;
 /**
  * Statistics on file cache
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.7.0")
 public class FileCacheStats implements Writeable, ToXContentFragment {
 
     private final long timestamp;

@@ -292,7 +292,7 @@ public class InternalEngine extends Engine {
                     new CompositeTranslogEventListener(Arrays.asList(internalTranslogEventListener, translogEventListener), shardId),
                     this::ensureOpen,
                     engineConfig.getTranslogFactory(),
-                    engineConfig.getStartedPrimarySupplier()
+                    engineConfig.getPrimaryModeSupplier()
                 );
                 this.translogManager = translogManagerRef;
                 this.softDeletesPolicy = newSoftDeletesPolicy();
@@ -402,7 +402,7 @@ public class InternalEngine extends Engine {
      * The main purpose for this is that if we have external refreshes happening we don't issue extra
      * refreshes to clear version map memory etc. this can cause excessive segment creation if heavy indexing
      * is happening and the refresh interval is low (ie. 1 sec)
-     * <p>
+     *
      * This also prevents segment starvation where an internal reader holds on to old segments literally forever
      * since no indexing is happening and refreshes are only happening to the external reader manager, while with
      * this specialized implementation an external refresh will immediately be reflected on the internal reader
@@ -1503,9 +1503,7 @@ public class InternalEngine extends Engine {
         final long totalDocs = indexWriter.getPendingNumDocs() + inFlightDocCount.addAndGet(addingDocs);
         if (totalDocs > maxDocs) {
             releaseInFlightDocs(addingDocs);
-            return new IllegalArgumentException(
-                "Number of documents in shard " + shardId + " exceeds the limit of [" + maxDocs + "] documents per shard"
-            );
+            return new IllegalArgumentException("Number of documents in the index can't exceed [" + maxDocs + "]");
         } else {
             return null;
         }
@@ -2032,8 +2030,22 @@ public class InternalEngine extends Engine {
     }
 
     @Override
-    public void rollTranslogGeneration() throws EngineException, IOException {
-        translogManager().rollTranslogGeneration();
+    public void rollTranslogGeneration() throws EngineException {
+        try (ReleasableLock ignored = readLock.acquire()) {
+            ensureOpen();
+            translogManager().getTranslog().rollGeneration();
+            translogManager().getTranslog().trimUnreferencedReaders();
+        } catch (AlreadyClosedException e) {
+            failOnTragicEvent(e);
+            throw e;
+        } catch (Exception e) {
+            try {
+                failEngine("translog trimming failed", e);
+            } catch (Exception inner) {
+                e.addSuppressed(inner);
+            }
+            throw new EngineException(shardId, "failed to roll translog", e);
+        }
     }
 
     @Override

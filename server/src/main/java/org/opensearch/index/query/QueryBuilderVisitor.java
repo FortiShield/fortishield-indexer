@@ -9,14 +9,10 @@
 package org.opensearch.index.query;
 
 import org.apache.lucene.search.BooleanClause;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * QueryBuilderVisitor is an interface to define Visitor Object to be traversed in QueryBuilder tree.
- *
- * @opensearch.api
  */
-@PublicApi(since = "2.11.0")
 public interface QueryBuilderVisitor {
 
     /**

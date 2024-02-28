@@ -37,7 +37,6 @@ import com.fasterxml.jackson.core.exc.InputCoercionException;
 
 import org.apache.lucene.document.DoublePoint;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.FloatPoint;
 import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.document.LongPoint;
@@ -62,7 +61,6 @@ import org.opensearch.common.settings.Settings;
 import org.opensearch.core.xcontent.XContentParser;
 import org.opensearch.core.xcontent.XContentParser.Token;
 import org.opensearch.index.document.SortedUnsignedLongDocValuesRangeQuery;
-import org.opensearch.index.document.SortedUnsignedLongDocValuesSetQuery;
 import org.opensearch.index.fielddata.IndexFieldData;
 import org.opensearch.index.fielddata.IndexNumericFieldData.NumericType;
 import org.opensearch.index.fielddata.plain.SortedNumericIndexFieldData;
@@ -203,39 +201,18 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             }
 
             @Override
-            public Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable) {
+            public Query termQuery(String field, Object value) {
                 float v = parse(value, false);
-                if (isSearchable && hasDocValues) {
-                    Query query = HalfFloatPoint.newExactQuery(field, v);
-                    Query dvQuery = SortedNumericDocValuesField.newSlowExactQuery(field, HalfFloatPoint.halfFloatToSortableShort(v));
-                    return new IndexOrDocValuesQuery(query, dvQuery);
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowExactQuery(field, HalfFloatPoint.halfFloatToSortableShort(v));
-                }
                 return HalfFloatPoint.newExactQuery(field, v);
             }
 
             @Override
-            public Query termsQuery(String field, List<Object> values, boolean hasDocValues, boolean isSearchable) {
+            public Query termsQuery(String field, List<Object> values) {
                 float[] v = new float[values.size()];
-                long points[] = new long[v.length];
                 for (int i = 0; i < values.size(); ++i) {
                     v[i] = parse(values.get(i), false);
-                    if (hasDocValues) {
-                        points[i] = HalfFloatPoint.halfFloatToSortableShort(v[i]);
-                    }
-                }
-                if (isSearchable && hasDocValues) {
-                    Query query = HalfFloatPoint.newSetQuery(field, v);
-                    Query dvQuery = SortedNumericDocValuesField.newSlowSetQuery(field, points);
-                    return new IndexOrDocValuesQuery(query, dvQuery);
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowSetQuery(field, points);
                 }
                 return HalfFloatPoint.newSetQuery(field, v);
-
             }
 
             @Override
@@ -246,7 +223,6 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 boolean includeLower,
                 boolean includeUpper,
                 boolean hasDocValues,
-                boolean isSearchable,
                 QueryShardContext context
             ) {
                 float l = Float.NEGATIVE_INFINITY;
@@ -265,23 +241,16 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                     }
                     u = HalfFloatPoint.nextDown(u);
                 }
-                if (isSearchable && hasDocValues) {
-                    Query query = HalfFloatPoint.newRangeQuery(field, l, u);
+                Query query = HalfFloatPoint.newRangeQuery(field, l, u);
+                if (hasDocValues) {
                     Query dvQuery = SortedNumericDocValuesField.newSlowRangeQuery(
                         field,
                         HalfFloatPoint.halfFloatToSortableShort(l),
                         HalfFloatPoint.halfFloatToSortableShort(u)
                     );
-                    return new IndexOrDocValuesQuery(query, dvQuery);
+                    query = new IndexOrDocValuesQuery(query, dvQuery);
                 }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowRangeQuery(
-                        field,
-                        HalfFloatPoint.halfFloatToSortableShort(l),
-                        HalfFloatPoint.halfFloatToSortableShort(u)
-                    );
-                }
-                return HalfFloatPoint.newRangeQuery(field, l, u);
+                return query;
             }
 
             @Override
@@ -340,39 +309,18 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             }
 
             @Override
-            public Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable) {
+            public Query termQuery(String field, Object value) {
                 float v = parse(value, false);
-                if (isSearchable && hasDocValues) {
-                    Query query = FloatPoint.newExactQuery(field, v);
-                    Query dvQuery = SortedNumericDocValuesField.newSlowExactQuery(field, NumericUtils.floatToSortableInt(v));
-                    return new IndexOrDocValuesQuery(query, dvQuery);
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowExactQuery(field, NumericUtils.floatToSortableInt(v));
-                }
                 return FloatPoint.newExactQuery(field, v);
             }
 
             @Override
-            public Query termsQuery(String field, List<Object> values, boolean hasDocValues, boolean isSearchable) {
+            public Query termsQuery(String field, List<Object> values) {
                 float[] v = new float[values.size()];
-                long points[] = new long[v.length];
                 for (int i = 0; i < values.size(); ++i) {
                     v[i] = parse(values.get(i), false);
-                    if (hasDocValues) {
-                        points[i] = NumericUtils.floatToSortableInt(v[i]);
-                    }
                 }
-                if (isSearchable && hasDocValues) {
-                    return new IndexOrDocValuesQuery(
-                        FloatPoint.newSetQuery(field, v),
-                        SortedNumericDocValuesField.newSlowSetQuery(field, points)
-                    );
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowSetQuery(field, points);
-                }
-                return FloatField.newSetQuery(field, v);
+                return FloatPoint.newSetQuery(field, v);
             }
 
             @Override
@@ -383,7 +331,6 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 boolean includeLower,
                 boolean includeUpper,
                 boolean hasDocValues,
-                boolean isSearchable,
                 QueryShardContext context
             ) {
                 float l = Float.NEGATIVE_INFINITY;
@@ -400,23 +347,16 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                         u = FloatPoint.nextDown(u);
                     }
                 }
-                if (isSearchable && hasDocValues) {
-                    Query query = FloatPoint.newRangeQuery(field, l, u);
+                Query query = FloatPoint.newRangeQuery(field, l, u);
+                if (hasDocValues) {
                     Query dvQuery = SortedNumericDocValuesField.newSlowRangeQuery(
                         field,
                         NumericUtils.floatToSortableInt(l),
                         NumericUtils.floatToSortableInt(u)
                     );
-                    return new IndexOrDocValuesQuery(query, dvQuery);
+                    query = new IndexOrDocValuesQuery(query, dvQuery);
                 }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowRangeQuery(
-                        field,
-                        NumericUtils.floatToSortableInt(l),
-                        NumericUtils.floatToSortableInt(u)
-                    );
-                }
-                return FloatPoint.newRangeQuery(field, l, u);
+                return query;
             }
 
             @Override
@@ -466,37 +406,16 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             }
 
             @Override
-            public Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable) {
+            public Query termQuery(String field, Object value) {
                 double v = parse(value, false);
-                if (isSearchable && hasDocValues) {
-                    Query query = DoublePoint.newExactQuery(field, v);
-                    Query dvQuery = SortedNumericDocValuesField.newSlowExactQuery(field, NumericUtils.doubleToSortableLong(v));
-                    return new IndexOrDocValuesQuery(query, dvQuery);
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowExactQuery(field, NumericUtils.doubleToSortableLong(v));
-                }
                 return DoublePoint.newExactQuery(field, v);
             }
 
             @Override
-            public Query termsQuery(String field, List<Object> values, boolean hasDocValues, boolean isSearchable) {
+            public Query termsQuery(String field, List<Object> values) {
                 double[] v = new double[values.size()];
-                long points[] = new long[v.length];
                 for (int i = 0; i < values.size(); ++i) {
                     v[i] = parse(values.get(i), false);
-                    if (hasDocValues) {
-                        points[i] = NumericUtils.doubleToSortableLong(v[i]);
-                    }
-                }
-                if (isSearchable && hasDocValues) {
-                    return new IndexOrDocValuesQuery(
-                        DoublePoint.newSetQuery(field, v),
-                        SortedNumericDocValuesField.newSlowSetQuery(field, points)
-                    );
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowSetQuery(field, points);
                 }
                 return DoublePoint.newSetQuery(field, v);
             }
@@ -509,27 +428,19 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 boolean includeLower,
                 boolean includeUpper,
                 boolean hasDocValues,
-                boolean isSearchable,
                 QueryShardContext context
             ) {
                 return doubleRangeQuery(lowerTerm, upperTerm, includeLower, includeUpper, (l, u) -> {
-                    if (isSearchable && hasDocValues) {
-                        Query query = DoublePoint.newRangeQuery(field, l, u);
+                    Query query = DoublePoint.newRangeQuery(field, l, u);
+                    if (hasDocValues) {
                         Query dvQuery = SortedNumericDocValuesField.newSlowRangeQuery(
                             field,
                             NumericUtils.doubleToSortableLong(l),
                             NumericUtils.doubleToSortableLong(u)
                         );
-                        return new IndexOrDocValuesQuery(query, dvQuery);
+                        query = new IndexOrDocValuesQuery(query, dvQuery);
                     }
-                    if (hasDocValues) {
-                        return SortedNumericDocValuesField.newSlowRangeQuery(
-                            field,
-                            NumericUtils.doubleToSortableLong(l),
-                            NumericUtils.doubleToSortableLong(u)
-                        );
-                    }
-                    return DoublePoint.newRangeQuery(field, l, u);
+                    return query;
                 });
             }
 
@@ -593,13 +504,13 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             }
 
             @Override
-            public Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable) {
-                return INTEGER.termQuery(field, value, hasDocValues, isSearchable);
+            public Query termQuery(String field, Object value) {
+                return INTEGER.termQuery(field, value);
             }
 
             @Override
-            public Query termsQuery(String field, List<Object> values, boolean hasDocValues, boolean isSearchable) {
-                return INTEGER.termsQuery(field, values, hasDocValues, isSearchable);
+            public Query termsQuery(String field, List<Object> values) {
+                return INTEGER.termsQuery(field, values);
             }
 
             @Override
@@ -610,10 +521,9 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 boolean includeLower,
                 boolean includeUpper,
                 boolean hasDocValues,
-                boolean isSearchable,
                 QueryShardContext context
             ) {
-                return INTEGER.rangeQuery(field, lowerTerm, upperTerm, includeLower, includeUpper, hasDocValues, isSearchable, context);
+                return INTEGER.rangeQuery(field, lowerTerm, upperTerm, includeLower, includeUpper, hasDocValues, context);
             }
 
             @Override
@@ -661,13 +571,13 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             }
 
             @Override
-            public Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable) {
-                return INTEGER.termQuery(field, value, hasDocValues, isSearchable);
+            public Query termQuery(String field, Object value) {
+                return INTEGER.termQuery(field, value);
             }
 
             @Override
-            public Query termsQuery(String field, List<Object> values, boolean hasDocValues, boolean isSearchable) {
-                return INTEGER.termsQuery(field, values, hasDocValues, isSearchable);
+            public Query termsQuery(String field, List<Object> values) {
+                return INTEGER.termsQuery(field, values);
             }
 
             @Override
@@ -678,10 +588,9 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 boolean includeLower,
                 boolean includeUpper,
                 boolean hasDocValues,
-                boolean isSearchable,
                 QueryShardContext context
             ) {
-                return INTEGER.rangeQuery(field, lowerTerm, upperTerm, includeLower, includeUpper, hasDocValues, isSearchable, context);
+                return INTEGER.rangeQuery(field, lowerTerm, upperTerm, includeLower, includeUpper, hasDocValues, context);
             }
 
             @Override
@@ -729,24 +638,16 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             }
 
             @Override
-            public Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable) {
+            public Query termQuery(String field, Object value) {
                 if (hasDecimalPart(value)) {
                     return Queries.newMatchNoDocsQuery("Value [" + value + "] has a decimal part");
                 }
                 int v = parse(value, true);
-                if (isSearchable && hasDocValues) {
-                    Query query = IntPoint.newExactQuery(field, v);
-                    Query dvQuery = SortedNumericDocValuesField.newSlowExactQuery(field, v);
-                    return new IndexOrDocValuesQuery(query, dvQuery);
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowExactQuery(field, v);
-                }
                 return IntPoint.newExactQuery(field, v);
             }
 
             @Override
-            public Query termsQuery(String field, List<Object> values, boolean hasDocValues, boolean isSearchable) {
+            public Query termsQuery(String field, List<Object> values) {
                 int[] v = new int[values.size()];
                 int upTo = 0;
 
@@ -763,21 +664,6 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 if (upTo != v.length) {
                     v = Arrays.copyOf(v, upTo);
                 }
-                long points[] = new long[v.length];
-                if (hasDocValues) {
-                    for (int i = 0; i < v.length; i++) {
-                        points[i] = v[i];
-                    }
-                }
-                if (isSearchable && hasDocValues) {
-                    return new IndexOrDocValuesQuery(
-                        IntPoint.newSetQuery(field, v),
-                        SortedNumericDocValuesField.newSlowSetQuery(field, points)
-                    );
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowSetQuery(field, points);
-                }
                 return IntPoint.newSetQuery(field, v);
             }
 
@@ -789,7 +675,6 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 boolean includeLower,
                 boolean includeUpper,
                 boolean hasDocValues,
-                boolean isSearchable,
                 QueryShardContext context
             ) {
                 int l = Integer.MIN_VALUE;
@@ -819,23 +704,15 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                         --u;
                     }
                 }
-                if (isSearchable && hasDocValues) {
-                    Query query = IntPoint.newRangeQuery(field, l, u);
+                Query query = IntPoint.newRangeQuery(field, l, u);
+                if (hasDocValues) {
                     Query dvQuery = SortedNumericDocValuesField.newSlowRangeQuery(field, l, u);
                     query = new IndexOrDocValuesQuery(query, dvQuery);
                     if (context.indexSortedOnField(field)) {
                         query = new IndexSortSortedNumericDocValuesRangeQuery(field, l, u, query);
                     }
-                    return query;
                 }
-                if (hasDocValues) {
-                    Query query = SortedNumericDocValuesField.newSlowRangeQuery(field, l, u);
-                    if (context.indexSortedOnField(field)) {
-                        query = new IndexSortSortedNumericDocValuesRangeQuery(field, l, u, query);
-                    }
-                    return query;
-                }
-                return IntPoint.newRangeQuery(field, l, u);
+                return query;
             }
 
             @Override
@@ -875,28 +752,17 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             }
 
             @Override
-            public Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable) {
+            public Query termQuery(String field, Object value) {
                 if (hasDecimalPart(value)) {
                     return Queries.newMatchNoDocsQuery("Value [" + value + "] has a decimal part");
                 }
                 long v = parse(value, true);
-                if (isSearchable && hasDocValues) {
-                    Query query = LongPoint.newExactQuery(field, v);
-                    Query dvQuery = SortedNumericDocValuesField.newSlowExactQuery(field, v);
-                    return new IndexOrDocValuesQuery(query, dvQuery);
-
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowExactQuery(field, v);
-
-                }
                 return LongPoint.newExactQuery(field, v);
             }
 
             @Override
-            public Query termsQuery(String field, List<Object> values, boolean hasDocValues, boolean isSearchable) {
+            public Query termsQuery(String field, List<Object> values) {
                 long[] v = new long[values.size()];
-
                 int upTo = 0;
 
                 for (int i = 0; i < values.size(); i++) {
@@ -912,16 +778,6 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 if (upTo != v.length) {
                     v = Arrays.copyOf(v, upTo);
                 }
-                if (isSearchable && hasDocValues) {
-                    return new IndexOrDocValuesQuery(
-                        LongPoint.newSetQuery(field, v),
-                        SortedNumericDocValuesField.newSlowSetQuery(field, v)
-                    );
-                }
-                if (hasDocValues) {
-                    return SortedNumericDocValuesField.newSlowSetQuery(field, v);
-
-                }
                 return LongPoint.newSetQuery(field, v);
             }
 
@@ -933,28 +789,18 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 boolean includeLower,
                 boolean includeUpper,
                 boolean hasDocValues,
-                boolean isSearchable,
                 QueryShardContext context
             ) {
                 return longRangeQuery(lowerTerm, upperTerm, includeLower, includeUpper, (l, u) -> {
-                    if (isSearchable && hasDocValues) {
-                        Query query = LongPoint.newRangeQuery(field, l, u);
+                    Query query = LongPoint.newRangeQuery(field, l, u);
+                    if (hasDocValues) {
                         Query dvQuery = SortedNumericDocValuesField.newSlowRangeQuery(field, l, u);
                         query = new IndexOrDocValuesQuery(query, dvQuery);
                         if (context.indexSortedOnField(field)) {
                             query = new IndexSortSortedNumericDocValuesRangeQuery(field, l, u, query);
                         }
-                        return query;
                     }
-                    if (hasDocValues) {
-                        Query query = SortedNumericDocValuesField.newSlowRangeQuery(field, l, u);
-                        if (context.indexSortedOnField(field)) {
-                            query = new IndexSortSortedNumericDocValuesRangeQuery(field, l, u, query);
-                        }
-                        return query;
-                    }
-                    return LongPoint.newRangeQuery(field, l, u);
-
+                    return query;
                 });
             }
 
@@ -995,24 +841,16 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             }
 
             @Override
-            public Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable) {
+            public Query termQuery(String field, Object value) {
                 if (hasDecimalPart(value)) {
                     return Queries.newMatchNoDocsQuery("Value [" + value + "] has a decimal part");
                 }
                 BigInteger v = parse(value, true);
-                if (isSearchable && hasDocValues) {
-                    Query query = BigIntegerPoint.newExactQuery(field, v);
-                    Query dvQuery = SortedUnsignedLongDocValuesSetQuery.newSlowExactQuery(field, v);
-                    return new IndexOrDocValuesQuery(query, dvQuery);
-                }
-                if (hasDocValues) {
-                    return SortedUnsignedLongDocValuesSetQuery.newSlowExactQuery(field, v);
-                }
                 return BigIntegerPoint.newExactQuery(field, v);
             }
 
             @Override
-            public Query termsQuery(String field, List<Object> values, boolean hasDocvalues, boolean isSearchable) {
+            public Query termsQuery(String field, List<Object> values) {
                 BigInteger[] v = new BigInteger[values.size()];
                 int upTo = 0;
 
@@ -1030,14 +868,6 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                     v = Arrays.copyOf(v, upTo);
                 }
 
-                if (isSearchable && hasDocvalues) {
-                    Query query = BigIntegerPoint.newSetQuery(field, v);
-                    Query dvQuery = SortedUnsignedLongDocValuesSetQuery.newSlowSetQuery(field, v);
-                    return new IndexOrDocValuesQuery(query, dvQuery);
-                }
-                if (hasDocvalues) {
-                    return SortedUnsignedLongDocValuesSetQuery.newSlowSetQuery(field, v);
-                }
                 return BigIntegerPoint.newSetQuery(field, v);
             }
 
@@ -1049,19 +879,15 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
                 boolean includeLower,
                 boolean includeUpper,
                 boolean hasDocValues,
-                boolean isSearchable,
                 QueryShardContext context
             ) {
                 return unsignedLongRangeQuery(lowerTerm, upperTerm, includeLower, includeUpper, (l, u) -> {
-                    if (isSearchable && hasDocValues) {
-                        Query query = BigIntegerPoint.newRangeQuery(field, l, u);
-                        Query dvQuery = SortedUnsignedLongDocValuesRangeQuery.newSlowRangeQuery(field, l, u);
-                        return new IndexOrDocValuesQuery(query, dvQuery);
-                    }
+                    Query query = BigIntegerPoint.newRangeQuery(field, l, u);
                     if (hasDocValues) {
-                        return SortedUnsignedLongDocValuesRangeQuery.newSlowRangeQuery(field, l, u);
+                        Query dvQuery = SortedUnsignedLongDocValuesRangeQuery.newSlowRangeQuery(field, l, u);
+                        query = new IndexOrDocValuesQuery(query, dvQuery);
                     }
-                    return BigIntegerPoint.newRangeQuery(field, l, u);
+                    return query;
                 });
             }
 
@@ -1115,9 +941,9 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             return parser;
         }
 
-        public abstract Query termQuery(String field, Object value, boolean hasDocValues, boolean isSearchable);
+        public abstract Query termQuery(String field, Object value);
 
-        public abstract Query termsQuery(String field, List<Object> values, boolean hasDocValues, boolean isSearchable);
+        public abstract Query termsQuery(String field, List<Object> values);
 
         public abstract Query rangeQuery(
             String field,
@@ -1126,7 +952,6 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
             boolean includeLower,
             boolean includeUpper,
             boolean hasDocValues,
-            boolean isSearchable,
             QueryShardContext context
         );
 
@@ -1401,8 +1226,8 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
 
         @Override
         public Query termQuery(Object value, QueryShardContext context) {
-            failIfNotIndexedAndNoDocValues();
-            Query query = type.termQuery(name(), value, hasDocValues(), isSearchable());
+            failIfNotIndexed();
+            Query query = type.termQuery(name(), value);
             if (boost() != 1f) {
                 query = new BoostQuery(query, boost());
             }
@@ -1411,8 +1236,8 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
 
         @Override
         public Query termsQuery(List values, QueryShardContext context) {
-            failIfNotIndexedAndNoDocValues();
-            Query query = type.termsQuery(name(), values, hasDocValues(), isSearchable());
+            failIfNotIndexed();
+            Query query = type.termsQuery(name(), values);
             if (boost() != 1f) {
                 query = new BoostQuery(query, boost());
             }
@@ -1421,17 +1246,8 @@ public class NumberFieldMapper extends ParametrizedFieldMapper {
 
         @Override
         public Query rangeQuery(Object lowerTerm, Object upperTerm, boolean includeLower, boolean includeUpper, QueryShardContext context) {
-            failIfNotIndexedAndNoDocValues();
-            Query query = type.rangeQuery(
-                name(),
-                lowerTerm,
-                upperTerm,
-                includeLower,
-                includeUpper,
-                hasDocValues(),
-                isSearchable(),
-                context
-            );
+            failIfNotIndexed();
+            Query query = type.rangeQuery(name(), lowerTerm, upperTerm, includeLower, includeUpper, hasDocValues(), context);
             if (boost() != 1f) {
                 query = new BoostQuery(query, boost());
             }

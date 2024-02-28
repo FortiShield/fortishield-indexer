@@ -51,7 +51,6 @@ public class OTelSpanExporterFactory {
         return spanExporter;
     }
 
-    @SuppressWarnings("removal")
     private static SpanExporter instantiateSpanExporter(Class<SpanExporter> spanExporterProviderClass) {
         try {
             // Check we ourselves are not being called by unprivileged code.

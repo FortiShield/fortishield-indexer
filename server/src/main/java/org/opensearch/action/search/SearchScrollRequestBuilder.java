@@ -34,16 +34,14 @@ package org.opensearch.action.search;
 
 import org.opensearch.action.ActionRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.search.Scroll;
 
 /**
  * A search scroll action request builder.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SearchScrollRequestBuilder extends ActionRequestBuilder<SearchScrollRequest, SearchResponse> {
 
     public SearchScrollRequestBuilder(OpenSearchClient client, SearchScrollAction action) {

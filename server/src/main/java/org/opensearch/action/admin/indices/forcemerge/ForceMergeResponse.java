@@ -33,7 +33,6 @@
 package org.opensearch.action.admin.indices.forcemerge;
 
 import org.opensearch.action.support.broadcast.BroadcastResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.action.support.DefaultShardOperationFailedException;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.xcontent.ConstructingObjectParser;
@@ -48,9 +47,8 @@ import static java.lang.Math.min;
 /**
  * A response for force merge action.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ForceMergeResponse extends BroadcastResponse {
 
     private static final ConstructingObjectParser<ForceMergeResponse, Void> PARSER = new ConstructingObjectParser<>(

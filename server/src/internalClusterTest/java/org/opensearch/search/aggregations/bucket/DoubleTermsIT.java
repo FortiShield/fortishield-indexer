@@ -88,8 +88,8 @@ import static org.hamcrest.core.IsNull.notNullValue;
 @OpenSearchIntegTestCase.SuiteScopeTestCase
 public class DoubleTermsIT extends AbstractTermsTestCase {
 
-    public DoubleTermsIT(Settings staticSettings) {
-        super(staticSettings);
+    public DoubleTermsIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @Override

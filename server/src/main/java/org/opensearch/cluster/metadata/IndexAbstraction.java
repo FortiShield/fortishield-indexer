@@ -33,7 +33,6 @@ package org.opensearch.cluster.metadata;
 
 import org.opensearch.common.Nullable;
 import org.opensearch.common.SetOnce;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.collect.Tuple;
 import org.opensearch.core.common.Strings;
 
@@ -53,9 +52,8 @@ import static org.opensearch.cluster.metadata.IndexMetadata.INDEX_HIDDEN_SETTING
  * An index abstraction has a unique name and encapsulates all the  {@link IndexMetadata} instances it is pointing to.
  * Also depending on type it may refer to a single or many concrete indices and may or may not have a write index.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface IndexAbstraction {
 
     /**
@@ -104,10 +102,7 @@ public interface IndexAbstraction {
 
     /**
      * An index abstraction type.
-     *
-     * @opensearch.api
      */
-    @PublicApi(since = "1.0.0")
     enum Type {
 
         /**
@@ -340,9 +335,8 @@ public interface IndexAbstraction {
     /**
      * A data stream.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     class DataStream implements IndexAbstraction {
 
         private final org.opensearch.cluster.metadata.DataStream dataStream;

@@ -18,6 +18,7 @@ import org.opensearch.core.xcontent.NamedXContentRegistry;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.core.xcontent.XContentLocation;
 import org.opensearch.core.xcontent.XContentParser;
+import org.opensearch.index.mapper.ParseContext;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -39,6 +40,7 @@ public class JsonToStringXContentParser extends AbstractXContentParser {
     private ArrayList<String> keyList = new ArrayList<>();
 
     private XContentBuilder builder = XContentBuilder.builder(JsonXContent.jsonXContent);
+    private ParseContext parseContext;
 
     private NamedXContentRegistry xContentRegistry;
 
@@ -52,13 +54,14 @@ public class JsonToStringXContentParser extends AbstractXContentParser {
     public JsonToStringXContentParser(
         NamedXContentRegistry xContentRegistry,
         DeprecationHandler deprecationHandler,
-        XContentParser parser,
+        ParseContext parseContext,
         String fieldTypeName
     ) throws IOException {
         super(xContentRegistry, deprecationHandler);
+        this.parseContext = parseContext;
         this.deprecationHandler = deprecationHandler;
         this.xContentRegistry = xContentRegistry;
-        this.parser = parser;
+        this.parser = parseContext.parser();
         this.fieldTypeName = fieldTypeName;
     }
 
@@ -83,22 +86,8 @@ public class JsonToStringXContentParser extends AbstractXContentParser {
             StringBuilder parsedFields = new StringBuilder();
 
             if (this.parser.currentToken() == Token.FIELD_NAME) {
-                path.append(DOT_SYMBOL).append(currentFieldName);
-                int dotIndex = currentFieldName.indexOf(DOT_SYMBOL);
-                String fieldNameSuffix = currentFieldName;
-                // The field name may be of the form foo.bar.baz
-                // If that's the case, each "part" is a key.
-                while (dotIndex >= 0) {
-                    String fieldNamePrefix = fieldNameSuffix.substring(0, dotIndex);
-                    if (!fieldNamePrefix.isEmpty()) {
-                        this.keyList.add(fieldNamePrefix);
-                    }
-                    fieldNameSuffix = fieldNameSuffix.substring(dotIndex + 1);
-                    dotIndex = fieldNameSuffix.indexOf(DOT_SYMBOL);
-                }
-                if (!fieldNameSuffix.isEmpty()) {
-                    this.keyList.add(fieldNameSuffix);
-                }
+                path.append(DOT_SYMBOL + currentFieldName);
+                this.keyList.add(currentFieldName);
             } else if (this.parser.currentToken() == Token.START_ARRAY) {
                 parseToken(path, currentFieldName);
                 break;
@@ -108,18 +97,18 @@ public class JsonToStringXContentParser extends AbstractXContentParser {
                 parseToken(path, currentFieldName);
                 int dotIndex = path.lastIndexOf(DOT_SYMBOL);
                 if (dotIndex != -1) {
-                    path.setLength(path.length() - currentFieldName.length() - 1);
+                    path.delete(dotIndex, path.length());
                 }
             } else {
                 if (!path.toString().contains(currentFieldName)) {
-                    path.append(DOT_SYMBOL).append(currentFieldName);
+                    path.append(DOT_SYMBOL + currentFieldName);
                 }
                 parseValue(parsedFields);
                 this.valueList.add(parsedFields.toString());
                 this.valueAndPathList.add(path + EQUAL_SYMBOL + parsedFields);
                 int dotIndex = path.lastIndexOf(DOT_SYMBOL);
                 if (dotIndex != -1) {
-                    path.setLength(path.length() - currentFieldName.length() - 1);
+                    path.delete(dotIndex, path.length());
                 }
             }
 

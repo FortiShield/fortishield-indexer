@@ -282,8 +282,7 @@ public class TransportBulkActionTookTests extends OpenSearchTestCase {
                 new IndexingPressureService(Settings.EMPTY, clusterService),
                 null,
                 new SystemIndices(emptyMap()),
-                relativeTimeProvider,
-                NoopTracer.INSTANCE
+                relativeTimeProvider
             );
         }
 

@@ -65,7 +65,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -108,7 +107,7 @@ public class RestController implements HttpServerTransport.Dispatcher {
         }
     }
 
-    private final PathTrie<RestMethodHandlers> handlers = new PathTrie<>(RestUtils.REST_DECODER);
+    private final PathTrie<MethodHandlers> handlers = new PathTrie<>(RestUtils.REST_DECODER);
 
     private final UnaryOperator<RestHandler> handlerWrapper;
 
@@ -143,16 +142,6 @@ public class RestController implements HttpServerTransport.Dispatcher {
             "/favicon.ico",
             (request, channel, clnt) -> channel.sendResponse(new BytesRestResponse(RestStatus.OK, "image/x-icon", FAVICON_RESPONSE))
         );
-    }
-
-    /**
-     * Returns an iterator over registered REST method handlers.
-     * @return {@link Iterator} of {@link MethodHandlers}
-     */
-    public Iterator<MethodHandlers> getAllHandlers() {
-        List<MethodHandlers> methodHandlers = new ArrayList<>();
-        handlers.retrieveAll().forEachRemaining(methodHandlers::add);
-        return methodHandlers.iterator();
     }
 
     /**
@@ -232,7 +221,7 @@ public class RestController implements HttpServerTransport.Dispatcher {
     private void registerHandlerNoWrap(RestRequest.Method method, String path, RestHandler maybeWrappedHandler) {
         handlers.insertOrUpdate(
             path,
-            new RestMethodHandlers(path, maybeWrappedHandler, method),
+            new MethodHandlers(path, maybeWrappedHandler, method),
             (mHandlers, newMHandler) -> mHandlers.addMethods(maybeWrappedHandler, method)
         );
     }
@@ -403,10 +392,10 @@ public class RestController implements HttpServerTransport.Dispatcher {
             // Resolves the HTTP method and fails if the method is invalid
             requestMethod = request.method();
             // Loop through all possible handlers, attempting to dispatch the request
-            Iterator<RestMethodHandlers> allHandlers = getAllRestMethodHandlers(request.params(), rawPath);
+            Iterator<MethodHandlers> allHandlers = getAllHandlers(request.params(), rawPath);
             while (allHandlers.hasNext()) {
                 final RestHandler handler;
-                final RestMethodHandlers handlers = allHandlers.next();
+                final MethodHandlers handlers = allHandlers.next();
                 if (handlers == null) {
                     handler = null;
                 } else {
@@ -434,7 +423,7 @@ public class RestController implements HttpServerTransport.Dispatcher {
         handleBadRequest(uri, requestMethod, channel);
     }
 
-    Iterator<RestMethodHandlers> getAllRestMethodHandlers(@Nullable Map<String, String> requestParamsRef, String rawPath) {
+    Iterator<MethodHandlers> getAllHandlers(@Nullable Map<String, String> requestParamsRef, String rawPath) {
         final Supplier<Map<String, String>> paramsSupplier;
         if (requestParamsRef == null) {
             paramsSupplier = () -> null;
@@ -535,7 +524,7 @@ public class RestController implements HttpServerTransport.Dispatcher {
     /**
      * Attempts to extract auth token and login.
      *
-     * @return false if there was an error and the request should not continue being dispatched
+     * @returns false if there was an error and the request should not continue being dispatched
      * */
     private boolean handleAuthenticateUser(final RestRequest request, final RestChannel channel) {
         try {
@@ -572,7 +561,7 @@ public class RestController implements HttpServerTransport.Dispatcher {
      */
     private Set<RestRequest.Method> getValidHandlerMethodSet(String rawPath) {
         Set<RestRequest.Method> validMethods = new HashSet<>();
-        Iterator<RestMethodHandlers> allHandlers = getAllRestMethodHandlers(null, rawPath);
+        Iterator<MethodHandlers> allHandlers = getAllHandlers(null, rawPath);
         while (allHandlers.hasNext()) {
             final MethodHandlers methodHandlers = allHandlers.next();
             if (methodHandlers != null) {

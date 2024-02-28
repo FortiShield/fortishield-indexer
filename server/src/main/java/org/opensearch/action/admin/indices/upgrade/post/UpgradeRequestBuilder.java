@@ -34,15 +34,13 @@ package org.opensearch.action.admin.indices.upgrade.post;
 
 import org.opensearch.action.support.broadcast.BroadcastOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * A request to upgrade one or more indices. In order to optimize on all the indices, pass an empty array or
  * {@code null} for the indices.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class UpgradeRequestBuilder extends BroadcastOperationRequestBuilder<UpgradeRequest, UpgradeResponse, UpgradeRequestBuilder> {
 
     public UpgradeRequestBuilder(OpenSearchClient client, UpgradeAction action) {

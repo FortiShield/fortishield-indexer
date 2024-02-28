@@ -32,7 +32,6 @@
 
 package org.opensearch.action.search;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.lucene.search.TotalHits;
 import org.opensearch.Version;
 import org.opensearch.action.LatchedActionListener;
@@ -484,11 +483,7 @@ public class TransportSearchActionTests extends OpenSearchTestCase {
                 remoteClusterService,
                 threadPool,
                 listener,
-                (r, l) -> setOnce.set(Tuple.tuple(r, l)),
-                new SearchRequestContext(
-                    new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                    searchRequest
-                )
+                (r, l) -> setOnce.set(Tuple.tuple(r, l))
             );
             if (localIndices == null) {
                 assertNull(setOnce.get());
@@ -546,11 +541,7 @@ public class TransportSearchActionTests extends OpenSearchTestCase {
                     remoteClusterService,
                     threadPool,
                     listener,
-                    (r, l) -> setOnce.set(Tuple.tuple(r, l)),
-                    new SearchRequestContext(
-                        new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                        searchRequest
-                    )
+                    (r, l) -> setOnce.set(Tuple.tuple(r, l))
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -587,11 +578,7 @@ public class TransportSearchActionTests extends OpenSearchTestCase {
                     remoteClusterService,
                     threadPool,
                     listener,
-                    (r, l) -> setOnce.set(Tuple.tuple(r, l)),
-                    new SearchRequestContext(
-                        new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                        searchRequest
-                    )
+                    (r, l) -> setOnce.set(Tuple.tuple(r, l))
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -649,11 +636,7 @@ public class TransportSearchActionTests extends OpenSearchTestCase {
                     remoteClusterService,
                     threadPool,
                     listener,
-                    (r, l) -> setOnce.set(Tuple.tuple(r, l)),
-                    new SearchRequestContext(
-                        new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                        searchRequest
-                    )
+                    (r, l) -> setOnce.set(Tuple.tuple(r, l))
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -693,11 +676,7 @@ public class TransportSearchActionTests extends OpenSearchTestCase {
                     remoteClusterService,
                     threadPool,
                     listener,
-                    (r, l) -> setOnce.set(Tuple.tuple(r, l)),
-                    new SearchRequestContext(
-                        new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                        searchRequest
-                    )
+                    (r, l) -> setOnce.set(Tuple.tuple(r, l))
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -748,11 +727,7 @@ public class TransportSearchActionTests extends OpenSearchTestCase {
                     remoteClusterService,
                     threadPool,
                     listener,
-                    (r, l) -> setOnce.set(Tuple.tuple(r, l)),
-                    new SearchRequestContext(
-                        new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                        searchRequest
-                    )
+                    (r, l) -> setOnce.set(Tuple.tuple(r, l))
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());

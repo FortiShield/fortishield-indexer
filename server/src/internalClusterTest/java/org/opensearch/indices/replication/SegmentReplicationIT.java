@@ -22,9 +22,9 @@ import org.apache.lucene.index.SegmentInfos;
 import org.apache.lucene.index.StandardDirectoryReader;
 import org.apache.lucene.tests.util.TestUtil;
 import org.apache.lucene.util.BytesRef;
-import org.opensearch.action.admin.cluster.stats.ClusterStatsResponse;
 import org.opensearch.action.admin.indices.alias.Alias;
 import org.opensearch.action.admin.indices.flush.FlushRequest;
+import org.opensearch.action.admin.indices.recovery.RecoveryResponse;
 import org.opensearch.action.admin.indices.stats.IndicesStatsRequest;
 import org.opensearch.action.admin.indices.stats.IndicesStatsResponse;
 import org.opensearch.action.get.GetResponse;
@@ -59,11 +59,11 @@ import org.opensearch.common.lease.Releasable;
 import org.opensearch.common.lucene.index.OpenSearchDirectoryReader;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.unit.TimeValue;
+import org.opensearch.core.common.bytes.BytesArray;
 import org.opensearch.core.common.io.stream.NamedWriteableRegistry;
 import org.opensearch.core.index.shard.ShardId;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.index.IndexModule;
-import org.opensearch.index.ReplicationStats;
 import org.opensearch.index.SegmentReplicationPerGroupStats;
 import org.opensearch.index.SegmentReplicationPressureService;
 import org.opensearch.index.SegmentReplicationShardStats;
@@ -73,6 +73,7 @@ import org.opensearch.index.engine.EngineConfig;
 import org.opensearch.index.engine.NRTReplicationReaderManager;
 import org.opensearch.index.shard.IndexShard;
 import org.opensearch.indices.recovery.FileChunkRequest;
+import org.opensearch.indices.recovery.RecoveryState;
 import org.opensearch.indices.replication.checkpoint.ReplicationCheckpoint;
 import org.opensearch.indices.replication.common.ReplicationType;
 import org.opensearch.node.NodeClosedException;
@@ -83,8 +84,8 @@ import org.opensearch.search.sort.SortOrder;
 import org.opensearch.test.BackgroundIndexer;
 import org.opensearch.test.InternalTestCluster;
 import org.opensearch.test.OpenSearchIntegTestCase;
-import org.opensearch.test.junit.annotations.TestLogging;
 import org.opensearch.test.transport.MockTransportService;
+import org.opensearch.transport.TransportRequest;
 import org.opensearch.transport.TransportService;
 import org.junit.Before;
 
@@ -97,7 +98,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -239,7 +240,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         createIndex(INDEX_NAME, settings);
         ensureGreen(INDEX_NAME);
 
-        final int initialDocCount = scaledRandomIntBetween(0, 10);
+        final int initialDocCount = scaledRandomIntBetween(0, 200);
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
                 INDEX_NAME,
@@ -256,7 +257,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
             refresh(INDEX_NAME);
             waitForSearchableDocs(initialDocCount, nodeA, nodeB);
 
-            final int additionalDocCount = scaledRandomIntBetween(0, 10);
+            final int additionalDocCount = scaledRandomIntBetween(0, 200);
             final int expectedHitCount = initialDocCount + additionalDocCount;
             indexer.start(additionalDocCount);
             waitForDocs(expectedHitCount, indexer);
@@ -275,7 +276,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         createIndex(INDEX_NAME);
         ensureGreen(INDEX_NAME);
 
-        final int initialDocCount = scaledRandomIntBetween(1, 10);
+        final int initialDocCount = scaledRandomIntBetween(100, 200);
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
                 INDEX_NAME,
@@ -310,7 +311,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         ensureGreen(INDEX_NAME);
         final List<ActionFuture<IndexResponse>> pendingIndexResponses = new ArrayList<>();
         final List<ActionFuture<SearchResponse>> pendingSearchResponse = new ArrayList<>();
-        final int searchCount = randomIntBetween(1, 2);
+        final int searchCount = randomIntBetween(10, 20);
         final WriteRequest.RefreshPolicy refreshPolicy = randomFrom(WriteRequest.RefreshPolicy.values());
 
         for (int i = 0; i < searchCount; i++) {
@@ -355,7 +356,6 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         waitForSearchableDocs(INDEX_NAME, 2 * searchCount, List.of(primary, replica));
     }
 
-    @TestLogging(reason = "Getting trace logs from replication package", value = "org.opensearch.indices.replication:TRACE")
     public void testMultipleShards() throws Exception {
         Settings indexSettings = Settings.builder()
             .put(super.indexSettings())
@@ -369,7 +369,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         createIndex(INDEX_NAME, indexSettings);
         ensureGreen(INDEX_NAME);
 
-        final int initialDocCount = scaledRandomIntBetween(1, 10);
+        final int initialDocCount = scaledRandomIntBetween(1, 200);
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
                 INDEX_NAME,
@@ -386,7 +386,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
             refresh(INDEX_NAME);
             waitForSearchableDocs(initialDocCount, nodeA, nodeB);
 
-            final int additionalDocCount = scaledRandomIntBetween(0, 10);
+            final int additionalDocCount = scaledRandomIntBetween(0, 200);
             final int expectedHitCount = initialDocCount + additionalDocCount;
             indexer.start(additionalDocCount);
             waitForDocs(expectedHitCount, indexer);
@@ -405,8 +405,8 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         createIndex(INDEX_NAME);
         ensureGreen(INDEX_NAME);
 
-        final int initialDocCount = scaledRandomIntBetween(0, 10);
-        final int additionalDocCount = scaledRandomIntBetween(0, 10);
+        final int initialDocCount = scaledRandomIntBetween(0, 200);
+        final int additionalDocCount = scaledRandomIntBetween(0, 200);
         final int expectedHitCount = initialDocCount + additionalDocCount;
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
@@ -511,7 +511,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
                 connection.sendRequest(requestId, action, request, options);
             }
         );
-        final int docCount = scaledRandomIntBetween(1, 10);
+        final int docCount = scaledRandomIntBetween(10, 200);
         for (int i = 0; i < docCount; i++) {
             client().prepareIndex(INDEX_NAME).setId(Integer.toString(i)).setSource("field", "value" + i).execute().get();
         }
@@ -572,7 +572,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
             }
         );
 
-        final int docCount = scaledRandomIntBetween(0, 10);
+        final int docCount = scaledRandomIntBetween(0, 200);
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
                 INDEX_NAME,
@@ -632,14 +632,13 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         verifyStoreContent();
     }
 
-    @TestLogging(reason = "Getting trace logs from replication package", value = "org.opensearch.indices.replication:TRACE")
     public void testDeleteOperations() throws Exception {
         final String nodeA = internalCluster().startDataOnlyNode();
         final String nodeB = internalCluster().startDataOnlyNode();
 
         createIndex(INDEX_NAME);
         ensureGreen(INDEX_NAME);
-        final int initialDocCount = scaledRandomIntBetween(1, 5);
+        final int initialDocCount = scaledRandomIntBetween(1, 20);
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
                 INDEX_NAME,
@@ -656,7 +655,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
             refresh(INDEX_NAME);
             waitForSearchableDocs(initialDocCount, nodeA, nodeB);
 
-            final int additionalDocCount = scaledRandomIntBetween(0, 2);
+            final int additionalDocCount = scaledRandomIntBetween(0, 20);
             final int expectedHitCount = initialDocCount + additionalDocCount;
             indexer.start(additionalDocCount);
             waitForDocs(expectedHitCount, indexer);
@@ -685,14 +684,14 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         createIndex(INDEX_NAME);
         final String replica = internalCluster().startDataOnlyNode();
         ensureGreen(INDEX_NAME);
-        final int initialDocCount = scaledRandomIntBetween(1, 10);
+        final int initialDocCount = scaledRandomIntBetween(10, 200);
         for (int i = 0; i < initialDocCount; i++) {
             client().prepareIndex(INDEX_NAME).setId(String.valueOf(i)).setSource("foo", "bar").get();
         }
         refresh(INDEX_NAME);
         waitForSearchableDocs(initialDocCount, primary, replica);
 
-        final int deletedDocCount = randomIntBetween(1, initialDocCount);
+        final int deletedDocCount = randomIntBetween(10, initialDocCount);
         for (int i = 0; i < deletedDocCount; i++) {
             client(primary).prepareDelete(INDEX_NAME, String.valueOf(i)).setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
         }
@@ -713,7 +712,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         );
 
         // add some docs to the xlog and drop primary.
-        final int additionalDocs = randomIntBetween(1, 5);
+        final int additionalDocs = randomIntBetween(1, 50);
         for (int i = initialDocCount; i < initialDocCount + additionalDocs; i++) {
             client().prepareIndex(INDEX_NAME).setId(String.valueOf(i)).setSource("foo", "bar").get();
         }
@@ -744,7 +743,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         final String replica = internalCluster().startDataOnlyNode();
         ensureGreen(INDEX_NAME);
 
-        final int initialDocCount = scaledRandomIntBetween(1, 5);
+        final int initialDocCount = scaledRandomIntBetween(0, 200);
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
                 INDEX_NAME,
@@ -761,7 +760,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
             refresh(INDEX_NAME);
             waitForSearchableDocs(initialDocCount, asList(primary, replica));
 
-            final int additionalDocCount = scaledRandomIntBetween(0, 5);
+            final int additionalDocCount = scaledRandomIntBetween(0, 200);
             final int expectedHitCount = initialDocCount + additionalDocCount;
             indexer.start(additionalDocCount);
             waitForDocs(expectedHitCount, indexer);
@@ -796,7 +795,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         final List<String> dataNodes = internalCluster().startDataOnlyNodes(6);
         ensureGreen(INDEX_NAME);
 
-        int initialDocCount = scaledRandomIntBetween(5, 10);
+        int initialDocCount = scaledRandomIntBetween(100, 200);
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
                 INDEX_NAME,
@@ -830,7 +829,6 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         }
     }
 
-    @TestLogging(reason = "Getting trace logs from replication package", value = "org.opensearch.indices.replication:TRACE")
     public void testReplicaHasDiffFilesThanPrimary() throws Exception {
         final String primaryNode = internalCluster().startDataOnlyNode();
         createIndex(INDEX_NAME, Settings.builder().put(indexSettings()).put(IndexMetadata.SETTING_NUMBER_OF_REPLICAS, 1).build());
@@ -842,7 +840,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         IndexWriterConfig iwc = newIndexWriterConfig().setOpenMode(IndexWriterConfig.OpenMode.APPEND);
 
         // create a doc to index
-        int numDocs = 2 + random().nextInt(10);
+        int numDocs = 2 + random().nextInt(100);
 
         List<Document> docs = new ArrayList<>();
         for (int i = 0; i < numDocs; i++) {
@@ -871,7 +869,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         replicaShard.finalizeReplication(segmentInfos);
         ensureYellow(INDEX_NAME);
 
-        final int docCount = scaledRandomIntBetween(10, 20);
+        final int docCount = scaledRandomIntBetween(10, 200);
         for (int i = 0; i < docCount; i++) {
             client().prepareIndex(INDEX_NAME).setId(Integer.toString(i)).setSource("field", "value" + i).execute().get();
             // Refresh, this should trigger round of segment replication
@@ -891,7 +889,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         final String replicaNode = internalCluster().startDataOnlyNode();
         ensureGreen(INDEX_NAME);
 
-        int initialDocCount = scaledRandomIntBetween(10, 20);
+        int initialDocCount = scaledRandomIntBetween(100, 200);
         try (
             BackgroundIndexer indexer = new BackgroundIndexer(
                 INDEX_NAME,
@@ -997,8 +995,8 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         final String replica = internalCluster().startDataOnlyNode();
         ensureGreen(INDEX_NAME);
 
-        // index 10 docs
-        for (int i = 0; i < 10; i++) {
+        // index 100 docs
+        for (int i = 0; i < 100; i++) {
             client().prepareIndex(INDEX_NAME)
                 .setId(String.valueOf(i))
                 .setSource(jsonBuilder().startObject().field("field", i).endObject())
@@ -1034,7 +1032,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         // force call flush
         flush(INDEX_NAME);
 
-        for (int i = 3; i < 5; i++) {
+        for (int i = 3; i < 50; i++) {
             client().prepareDelete(INDEX_NAME, String.valueOf(i)).setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE).get();
             refresh(INDEX_NAME);
             if (randomBoolean()) {
@@ -1070,14 +1068,9 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
 
         client(replica).prepareClearScroll().addScrollId(searchResponse.getScrollId()).get();
 
-        assertBusy(
-            () -> assertFalse(
-                "Files should be cleaned up post scroll clear request",
-                List.of(replicaShard.store().directory().listAll()).containsAll(snapshottedSegments)
-            )
-        );
-        assertEquals(10, scrollHits);
-
+        currentFiles = List.of(replicaShard.store().directory().listAll());
+        assertFalse("Files should be cleaned up post scroll clear request", currentFiles.containsAll(snapshottedSegments));
+        assertEquals(100, scrollHits);
     }
 
     /**
@@ -1222,8 +1215,19 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         ensureYellowAndNoInitializingShards(INDEX_NAME);
         final String replica = internalCluster().startDataOnlyNode();
         ensureGreen(INDEX_NAME);
+        client().prepareIndex(INDEX_NAME)
+            .setId("1")
+            .setSource("foo", randomInt())
+            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+            .get();
+        refresh(INDEX_NAME);
 
-        for (int i = 0; i < 10; i++) {
+        client().prepareIndex(INDEX_NAME)
+            .setId("2")
+            .setSource("foo", randomInt())
+            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+            .get();
+        for (int i = 3; i < 100; i++) {
             client().prepareIndex(INDEX_NAME)
                 .setId(String.valueOf(i))
                 .setSource("foo", randomInt())
@@ -1273,7 +1277,7 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         }
 
         flush(INDEX_NAME);
-        for (int i = 11; i < 20; i++) {
+        for (int i = 101; i < 200; i++) {
             client().prepareIndex(INDEX_NAME)
                 .setId(String.valueOf(i))
                 .setSource("foo", randomInt())
@@ -1325,12 +1329,9 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
         // delete the PIT
         DeletePitRequest deletePITRequest = new DeletePitRequest(pitResponse.getId());
         client().execute(DeletePitAction.INSTANCE, deletePITRequest).actionGet();
-        assertBusy(
-            () -> assertFalse(
-                "Files should be cleaned up",
-                List.of(replicaShard.store().directory().listAll()).containsAll(snapshottedSegments)
-            )
-        );
+
+        currentFiles = List.of(replicaShard.store().directory().listAll());
+        assertFalse("Files should be cleaned up", currentFiles.containsAll(snapshottedSegments));
     }
 
     /**
@@ -1781,57 +1782,134 @@ public class SegmentReplicationIT extends SegmentReplicationBaseIT {
 
     }
 
-    public void testReplicaAlreadyAtCheckpoint() throws Exception {
-        final List<String> nodes = new ArrayList<>();
-        final String primaryNode = internalCluster().startDataOnlyNode();
-        nodes.add(primaryNode);
-        final Settings settings = Settings.builder().put(indexSettings()).put(IndexMetadata.SETTING_NUMBER_OF_REPLICAS, 0).build();
-        createIndex(INDEX_NAME, settings);
-        ensureGreen(INDEX_NAME);
-        // start a replica node, initially will be empty with no shard assignment.
-        final String replicaNode = internalCluster().startDataOnlyNode();
-        nodes.add(replicaNode);
-        final String replicaNode2 = internalCluster().startDataOnlyNode();
-        assertAcked(
-            client().admin()
-                .indices()
-                .prepareUpdateSettings(INDEX_NAME)
-                .setSettings(Settings.builder().put(IndexMetadata.SETTING_NUMBER_OF_REPLICAS, 2))
+    public void testSendCorruptBytesToReplica() throws Exception {
+        // this test stubs transport calls specific to node-node replication.
+        assumeFalse(
+            "Skipping the test as its not compatible with segment replication with remote store.",
+            segmentReplicationWithRemoteEnabled()
         );
+        final String primaryNode = internalCluster().startDataOnlyNode();
+        createIndex(
+            INDEX_NAME,
+            Settings.builder()
+                .put(indexSettings())
+                .put(IndexMetadata.SETTING_NUMBER_OF_SHARDS, 1)
+                .put(IndexMetadata.SETTING_NUMBER_OF_REPLICAS, 1)
+                .put("index.refresh_interval", -1)
+                .build()
+        );
+        ensureYellow(INDEX_NAME);
+        final String replicaNode = internalCluster().startDataOnlyNode();
         ensureGreen(INDEX_NAME);
 
-        // index a doc.
-        client().prepareIndex(INDEX_NAME).setId("1").setSource("foo", randomInt()).get();
+        MockTransportService primaryTransportService = ((MockTransportService) internalCluster().getInstance(
+            TransportService.class,
+            primaryNode
+        ));
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicBoolean failed = new AtomicBoolean(false);
+        primaryTransportService.addSendBehavior(
+            internalCluster().getInstance(TransportService.class, replicaNode),
+            (connection, requestId, action, request, options) -> {
+                if (action.equals(SegmentReplicationTargetService.Actions.FILE_CHUNK) && failed.getAndSet(true) == false) {
+                    FileChunkRequest req = (FileChunkRequest) request;
+                    logger.info("SENDING CORRUPT file chunk [{}] lastChunk: {}", req, req.lastChunk());
+                    TransportRequest corrupt = new FileChunkRequest(
+                        req.recoveryId(),
+                        ((FileChunkRequest) request).requestSeqNo(),
+                        ((FileChunkRequest) request).shardId(),
+                        ((FileChunkRequest) request).metadata(),
+                        ((FileChunkRequest) request).position(),
+                        new BytesArray("test"),
+                        false,
+                        0,
+                        0L
+                    );
+                    connection.sendRequest(requestId, action, corrupt, options);
+                    latch.countDown();
+                } else {
+                    connection.sendRequest(requestId, action, request, options);
+                }
+            }
+        );
+        for (int i = 0; i < 100; i++) {
+            client().prepareIndex(INDEX_NAME)
+                .setId(String.valueOf(i))
+                .setSource(jsonBuilder().startObject().field("field", i).endObject())
+                .get();
+        }
+        final long originalRecoveryTime = getRecoveryStopTime(replicaNode);
+        assertNotEquals(originalRecoveryTime, 0);
         refresh(INDEX_NAME);
+        latch.await();
+        assertTrue(failed.get());
+        waitForNewPeerRecovery(replicaNode, originalRecoveryTime);
+        // reset checkIndex to ensure our original shard doesn't throw
+        resetCheckIndexStatus();
+        waitForSearchableDocs(100, primaryNode, replicaNode);
+    }
 
-        internalCluster().stopRandomNode(InternalTestCluster.nameFilter(primaryNode));
-        ensureYellowAndNoInitializingShards(INDEX_NAME);
-        IndexShard replica_1 = getIndexShard(replicaNode, INDEX_NAME);
-        IndexShard replica_2 = getIndexShard(replicaNode2, INDEX_NAME);
-        // wait until a replica is promoted & finishes engine flip, we don't care which one
-        AtomicReference<IndexShard> primary = new AtomicReference<>();
+    public void testWipeSegmentBetweenSyncs() throws Exception {
+        internalCluster().startClusterManagerOnlyNode();
+        final String primaryNode = internalCluster().startDataOnlyNode();
+        createIndex(
+            INDEX_NAME,
+            Settings.builder()
+                .put(indexSettings())
+                .put(IndexMetadata.SETTING_NUMBER_OF_SHARDS, 1)
+                .put(IndexMetadata.SETTING_NUMBER_OF_REPLICAS, 1)
+                .put("index.refresh_interval", -1)
+                .build()
+        );
+        ensureYellow(INDEX_NAME);
+        final String replicaNode = internalCluster().startDataOnlyNode();
+        ensureGreen(INDEX_NAME);
+
+        for (int i = 0; i < 10; i++) {
+            client().prepareIndex(INDEX_NAME)
+                .setId(String.valueOf(i))
+                .setSource(jsonBuilder().startObject().field("field", i).endObject())
+                .get();
+        }
+        refresh(INDEX_NAME);
+        ensureGreen(INDEX_NAME);
+        final long originalRecoveryTime = getRecoveryStopTime(replicaNode);
+
+        final IndexShard indexShard = getIndexShard(replicaNode, INDEX_NAME);
+        waitForSearchableDocs(INDEX_NAME, 10, List.of(replicaNode));
+        indexShard.store().directory().deleteFile("_0.si");
+
+        for (int i = 11; i < 21; i++) {
+            client().prepareIndex(INDEX_NAME)
+                .setId(String.valueOf(i))
+                .setSource(jsonBuilder().startObject().field("field", i).endObject())
+                .get();
+        }
+        refresh(INDEX_NAME);
+        waitForNewPeerRecovery(replicaNode, originalRecoveryTime);
+        resetCheckIndexStatus();
+        waitForSearchableDocs(20, primaryNode, replicaNode);
+    }
+
+    private void waitForNewPeerRecovery(String replicaNode, long originalRecoveryTime) throws Exception {
         assertBusy(() -> {
-            assertTrue("replica should be promoted as a primary", replica_1.routingEntry().primary() || replica_2.routingEntry().primary());
-            primary.set(replica_1.routingEntry().primary() ? replica_1 : replica_2);
-        });
+            // assert we have a peer recovery after the original
+            final long time = getRecoveryStopTime(replicaNode);
+            assertNotEquals(time, 0);
+            assertNotEquals(originalRecoveryTime, time);
 
-        FlushRequest request = new FlushRequest(INDEX_NAME);
-        request.force(true);
-        primary.get().flush(request);
+        }, 1, TimeUnit.MINUTES);
+    }
 
-        assertBusy(() -> {
-            assertEquals(
-                replica_1.getLatestReplicationCheckpoint().getSegmentInfosVersion(),
-                replica_2.getLatestReplicationCheckpoint().getSegmentInfosVersion()
-            );
-        });
-
-        assertBusy(() -> {
-            ClusterStatsResponse clusterStatsResponse = client().admin().cluster().prepareClusterStats().get();
-            ReplicationStats replicationStats = clusterStatsResponse.getIndicesStats().getSegments().getReplicationStats();
-            assertEquals(0L, replicationStats.maxBytesBehind);
-            assertEquals(0L, replicationStats.maxReplicationLag);
-            assertEquals(0L, replicationStats.totalBytesBehind);
-        });
+    private long getRecoveryStopTime(String nodeName) {
+        final RecoveryResponse recoveryResponse = client().admin().indices().prepareRecoveries(INDEX_NAME).get();
+        final List<RecoveryState> recoveryStates = recoveryResponse.shardRecoveryStates().get(INDEX_NAME);
+        logger.info("Recovery states {}", recoveryResponse);
+        for (RecoveryState recoveryState : recoveryStates) {
+            if (recoveryState.getTargetNode().getName().equals(nodeName)) {
+                return recoveryState.getTimer().stopTime();
+            }
+        }
+        return 0L;
     }
 }

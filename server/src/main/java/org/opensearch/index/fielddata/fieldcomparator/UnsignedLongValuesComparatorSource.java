@@ -14,7 +14,6 @@ import org.apache.lucene.index.SortedNumericDocValues;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.FieldComparator;
 import org.apache.lucene.search.LeafFieldComparator;
-import org.apache.lucene.search.Pruning;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.util.BitSet;
 import org.opensearch.common.Nullable;
@@ -89,11 +88,11 @@ public class UnsignedLongValuesComparatorSource extends IndexFieldData.XFieldCom
     }
 
     @Override
-    public FieldComparator<?> newComparator(String fieldname, int numHits, Pruning pruning, boolean reversed) {
+    public FieldComparator<?> newComparator(String fieldname, int numHits, boolean enableSkipping, boolean reversed) {
         assert indexFieldData == null || fieldname.equals(indexFieldData.getFieldName());
 
         final BigInteger ulMissingValue = (BigInteger) missingObject(missingValue, reversed);
-        return new UnsignedLongComparator(numHits, fieldname, ulMissingValue, reversed, filterPruning(pruning)) {
+        return new UnsignedLongComparator(numHits, fieldname, null, reversed, enableSkipping && this.enableSkipping) {
             @Override
             public LeafFieldComparator getLeafComparator(LeafReaderContext context) throws IOException {
                 return new UnsignedLongLeafComparator(context) {

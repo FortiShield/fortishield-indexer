@@ -301,7 +301,7 @@ public class RestClient implements Closeable {
      * they will be retried). In case of failures all of the alive nodes (or
      * dead nodes that deserve a retry) are retried until one responds or none
      * of them does, in which case an {@link IOException} will be thrown.
-     * <p>
+     *
      * This method works by performing an asynchronous call and waiting
      * for the result. If the asynchronous call throws an exception we wrap
      * it and rethrow it so that the stack trace attached to the exception
@@ -1021,15 +1021,9 @@ public class RestClient implements Closeable {
                 if (chunkedEnabled.get()) {
                     return -1L;
                 } else {
-                    long size = 0;
-                    final byte[] buf = new byte[8192];
-                    int nread = 0;
-
+                    long size;
                     try (InputStream is = getContent()) {
-                        // read to EOF which may read more or less than buffer size
-                        while ((nread = is.read(buf)) > 0) {
-                            size += nread;
-                        }
+                        size = is.readAllBytes().length;
                     } catch (IOException ex) {
                         size = -1L;
                     }

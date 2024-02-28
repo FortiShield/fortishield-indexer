@@ -35,7 +35,6 @@ package org.opensearch.common.logging;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * A logger that logs deprecation notices. Logger should be initialized with a parent logger which name will be used
@@ -51,9 +50,8 @@ import org.opensearch.common.annotation.PublicApi;
  * key is combined with the <code>X-Opaque-Id</code> request header value, if supplied, which allows for per-client
  * message limiting.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class DeprecationLogger {
 
     /**
@@ -110,9 +108,8 @@ public class DeprecationLogger {
     /**
      * The builder for the deprecation logger
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public class DeprecationLoggerBuilder {
 
         public DeprecationLoggerBuilder withDeprecation(String key, String msg, Object[] params) {

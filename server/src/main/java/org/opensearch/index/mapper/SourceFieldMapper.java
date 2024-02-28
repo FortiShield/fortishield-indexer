@@ -39,7 +39,6 @@ import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.BytesRef;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.collect.Tuple;
 import org.opensearch.common.io.stream.BytesStreamOutput;
 import org.opensearch.common.xcontent.XContentHelper;
@@ -64,9 +63,8 @@ import java.util.function.Function;
 /**
  * Internal field mapper for storing source (and recovery source)
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SourceFieldMapper extends MetadataFieldMapper {
 
     public static final String NAME = "_source";

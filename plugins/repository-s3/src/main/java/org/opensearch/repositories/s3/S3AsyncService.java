@@ -103,7 +103,6 @@ class S3AsyncService implements Closeable {
      */
     public AmazonAsyncS3Reference client(
         RepositoryMetadata repositoryMetadata,
-        AsyncExecutorContainer urgentExecutorBuilder,
         AsyncExecutorContainer priorityExecutorBuilder,
         AsyncExecutorContainer normalExecutorBuilder
     ) {
@@ -120,7 +119,7 @@ class S3AsyncService implements Closeable {
                 return existing;
             }
             final AmazonAsyncS3Reference clientReference = new AmazonAsyncS3Reference(
-                buildClient(clientSettings, urgentExecutorBuilder, priorityExecutorBuilder, normalExecutorBuilder)
+                buildClient(clientSettings, priorityExecutorBuilder, normalExecutorBuilder)
             );
             clientReference.incRef();
             clientsCache = MapBuilder.newMapBuilder(clientsCache).put(clientSettings, clientReference).immutableMap();
@@ -166,7 +165,6 @@ class S3AsyncService implements Closeable {
     // proxy for testing
     synchronized AmazonAsyncS3WithCredentials buildClient(
         final S3ClientSettings clientSettings,
-        AsyncExecutorContainer urgentExecutorBuilder,
         AsyncExecutorContainer priorityExecutorBuilder,
         AsyncExecutorContainer normalExecutorBuilder
     ) {
@@ -197,17 +195,6 @@ class S3AsyncService implements Closeable {
             builder.forcePathStyle(true);
         }
 
-        builder.httpClient(buildHttpClient(clientSettings, urgentExecutorBuilder.getAsyncTransferEventLoopGroup()));
-        builder.asyncConfiguration(
-            ClientAsyncConfiguration.builder()
-                .advancedOption(
-                    SdkAdvancedAsyncClientOption.FUTURE_COMPLETION_EXECUTOR,
-                    urgentExecutorBuilder.getFutureCompletionExecutor()
-                )
-                .build()
-        );
-        final S3AsyncClient urgentClient = SocketAccess.doPrivileged(builder::build);
-
         builder.httpClient(buildHttpClient(clientSettings, priorityExecutorBuilder.getAsyncTransferEventLoopGroup()));
         builder.asyncConfiguration(
             ClientAsyncConfiguration.builder()
@@ -230,7 +217,7 @@ class S3AsyncService implements Closeable {
         );
         final S3AsyncClient client = SocketAccess.doPrivileged(builder::build);
 
-        return AmazonAsyncS3WithCredentials.create(client, priorityClient, urgentClient, credentials);
+        return AmazonAsyncS3WithCredentials.create(client, priorityClient, credentials);
     }
 
     static ClientOverrideConfiguration buildOverrideConfiguration(final S3ClientSettings clientSettings) {
@@ -374,7 +361,7 @@ class S3AsyncService implements Closeable {
         return new IrsaCredentials(webIdentityTokenFile, roleArn, roleSessionName);
     }
 
-    public synchronized void releaseCachedClients() {
+    private synchronized void releaseCachedClients() {
         // the clients will shutdown when they will not be used anymore
         for (final AmazonAsyncS3Reference clientReference : clientsCache.values()) {
             clientReference.decRef();

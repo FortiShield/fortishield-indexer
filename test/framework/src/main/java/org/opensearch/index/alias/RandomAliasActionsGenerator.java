@@ -102,11 +102,6 @@ public final class RandomAliasActionsGenerator {
                 action.isHidden(randomBoolean());
             }
         }
-        if (action.actionType() == AliasActions.Type.REMOVE) {
-            if (randomBoolean()) {
-                action.mustExist(randomBoolean());
-            }
-        }
         return action;
     }
 

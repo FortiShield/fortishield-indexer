@@ -8,6 +8,7 @@
 
 package org.opensearch.telemetry.tracing.listener;
 
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.action.ActionListener;
 import org.opensearch.telemetry.tracing.Span;
 import org.opensearch.telemetry.tracing.SpanScope;
@@ -46,7 +47,7 @@ public class TraceableActionListener<Response> implements ActionListener<Respons
      * @return action listener
      */
     public static <Response> ActionListener<Response> create(ActionListener<Response> delegate, Span span, Tracer tracer) {
-        if (tracer.isRecording() == true) {
+        if (FeatureFlags.isEnabled(FeatureFlags.TELEMETRY) == true) {
             return new TraceableActionListener<Response>(delegate, span, tracer);
         } else {
             return delegate;

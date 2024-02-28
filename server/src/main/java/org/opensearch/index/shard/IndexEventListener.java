@@ -33,7 +33,6 @@ package org.opensearch.index.shard;
 
 import org.opensearch.cluster.routing.ShardRouting;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.core.index.Index;
 import org.opensearch.core.index.shard.ShardId;
@@ -52,9 +51,8 @@ import org.opensearch.indices.cluster.IndicesClusterStateService.AllocatedIndice
  * modify local state without sufficient synchronization.
  * </p>
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface IndexEventListener {
 
     /**
@@ -157,7 +155,7 @@ public interface IndexEventListener {
 
     /**
      * Called after the index shard has been deleted from disk.
-     * <p>
+     *
      * Note: this method is only called if the deletion of the shard did finish without an exception
      *
      * @param shardId The shard id

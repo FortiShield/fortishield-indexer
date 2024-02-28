@@ -34,7 +34,6 @@ package org.opensearch.cluster;
 
 import org.opensearch.common.Nullable;
 import org.opensearch.common.Priority;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 
 import java.util.List;
@@ -42,9 +41,8 @@ import java.util.List;
 /**
  * A task that can update the cluster state.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class ClusterStateUpdateTask
     implements
         ClusterStateTaskConfig,

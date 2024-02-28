@@ -35,7 +35,6 @@ package org.opensearch.index;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lucene.index.OpenSearchDirectoryReader;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.index.fielddata.IndexFieldData;
@@ -112,9 +111,8 @@ public final class IndexWarmer {
     /**
      * A handle on the execution of  warm-up action.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public interface TerminationHandle {
 
         TerminationHandle NO_WAIT = () -> {};
@@ -126,9 +124,8 @@ public final class IndexWarmer {
     /**
      * Listener for the index warmer
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public interface Listener {
         /** Queue tasks to warm-up the given segments and return handles that allow to wait for termination of the
          *  execution of those tasks. */

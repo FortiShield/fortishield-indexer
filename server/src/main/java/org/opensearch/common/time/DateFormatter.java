@@ -32,7 +32,6 @@
 
 package org.opensearch.common.time;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.joda.time.DateTime;
 
@@ -50,9 +49,8 @@ import java.util.stream.Collectors;
 /**
  * Base Date formatter
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface DateFormatter {
 
     /**
@@ -129,14 +127,6 @@ public interface DateFormatter {
     String pattern();
 
     /**
-     * A name based format for this formatter. Can be one of the registered formatters like <code>epoch_millis</code> or
-     * a configured format like <code>HH:mm:ss</code>
-     *
-     * @return The name of this formatter
-     */
-    String printPattern();
-
-    /**
      * Returns the configured locale of the date formatter
      *
      * @return The locale of this formatter
@@ -157,7 +147,7 @@ public interface DateFormatter {
      */
     DateMathParser toDateMathParser();
 
-    static DateFormatter forPattern(String input, String printPattern, Boolean canCacheFormatter) {
+    static DateFormatter forPattern(String input) {
 
         if (Strings.hasLength(input) == false) {
             throw new IllegalArgumentException("No date pattern provided");
@@ -168,28 +158,7 @@ public interface DateFormatter {
         List<String> patterns = splitCombinedPatterns(format);
         List<DateFormatter> formatters = patterns.stream().map(DateFormatters::forPattern).collect(Collectors.toList());
 
-        DateFormatter printFormatter = formatters.get(0);
-        if (Strings.hasLength(printPattern)) {
-            String printFormat = strip8Prefix(printPattern);
-            try {
-                printFormatter = DateFormatters.forPattern(printFormat);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid print format: " + e.getMessage(), e);
-            }
-        }
-        return JavaDateFormatter.combined(input, formatters, printFormatter, canCacheFormatter);
-    }
-
-    static DateFormatter forPattern(String input) {
-        return forPattern(input, null, false);
-    }
-
-    static DateFormatter forPattern(String input, String printPattern) {
-        return forPattern(input, printPattern, false);
-    }
-
-    static DateFormatter forPattern(String input, Boolean canCacheFormatter) {
-        return forPattern(input, null, canCacheFormatter);
+        return JavaDateFormatter.combined(input, formatters);
     }
 
     static String strip8Prefix(String input) {

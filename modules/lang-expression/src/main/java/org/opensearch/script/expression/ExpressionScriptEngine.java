@@ -73,7 +73,7 @@ import java.util.function.Function;
 
 /**
  * Provides the infrastructure for Lucene expressions as a scripting language for OpenSearch.
- * <p>
+ *
  * Only contexts returning numeric types or {@link Object} are supported.
  */
 public class ExpressionScriptEngine implements ScriptEngine {
@@ -170,7 +170,6 @@ public class ExpressionScriptEngine implements ScriptEngine {
         return NAME;
     }
 
-    @SuppressWarnings("removal")
     @Override
     public <T> T compile(String scriptName, String scriptSource, ScriptContext<T> context, Map<String, String> params) {
         // classloader created here
@@ -317,14 +316,14 @@ public class ExpressionScriptEngine implements ScriptEngine {
         // instead of complicating SimpleBindings (which should stay simple)
         SimpleBindings bindings = new SimpleBindings();
         boolean needsScores = false;
-        PerThreadReplaceableConstDoubleValueSource specialValue = null;
+        ReplaceableConstDoubleValueSource specialValue = null;
         for (String variable : expr.variables) {
             try {
                 if (variable.equals("_score")) {
                     bindings.add("_score", DoubleValuesSource.SCORES);
                     needsScores = true;
                 } else if (variable.equals("_value")) {
-                    specialValue = new PerThreadReplaceableConstDoubleValueSource();
+                    specialValue = new ReplaceableConstDoubleValueSource();
                     bindings.add("_value", specialValue);
                     // noop: _value is special for aggregations, and is handled in ExpressionScriptBindings
                     // TODO: if some uses it in a scoring expression, they will get a nasty failure when evaluating...need a
@@ -389,7 +388,7 @@ public class ExpressionScriptEngine implements ScriptEngine {
         // NOTE: if we need to do anything complicated with bindings in the future, we can just extend Bindings,
         // instead of complicating SimpleBindings (which should stay simple)
         SimpleBindings bindings = new SimpleBindings();
-        PerThreadReplaceableConstDoubleValueSource specialValue = null;
+        ReplaceableConstDoubleValueSource specialValue = null;
         boolean needsScores = false;
         for (String variable : expr.variables) {
             try {
@@ -397,7 +396,7 @@ public class ExpressionScriptEngine implements ScriptEngine {
                     bindings.add("_score", DoubleValuesSource.SCORES);
                     needsScores = true;
                 } else if (variable.equals("_value")) {
-                    specialValue = new PerThreadReplaceableConstDoubleValueSource();
+                    specialValue = new ReplaceableConstDoubleValueSource();
                     bindings.add("_value", specialValue);
                     // noop: _value is special for aggregations, and is handled in ExpressionScriptBindings
                     // TODO: if some uses it in a scoring expression, they will get a nasty failure when evaluating...need a

@@ -35,14 +35,12 @@ package org.opensearch.action.admin.cluster.storedscripts;
 import org.opensearch.action.support.master.AcknowledgedRequestBuilder;
 import org.opensearch.action.support.master.AcknowledgedResponse;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * Transport request builder for deleting stored scripts
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class DeleteStoredScriptRequestBuilder extends AcknowledgedRequestBuilder<
     DeleteStoredScriptRequest,
     AcknowledgedResponse,

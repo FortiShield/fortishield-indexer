@@ -33,7 +33,7 @@ apply plugin: 'application'
 
 base {
   group = 'org.opensearch.client'
-  archivesName = 'client-benchmarks'
+  archivesBaseName = 'client-benchmarks'
 }
 
 // Not published so no need to assemble

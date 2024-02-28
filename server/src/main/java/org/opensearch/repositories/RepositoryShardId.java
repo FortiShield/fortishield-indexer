@@ -32,7 +32,6 @@
 
 package org.opensearch.repositories;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -43,9 +42,8 @@ import java.util.Objects;
 /**
  * Represents a shard snapshot in a repository.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class RepositoryShardId implements Writeable {
 
     private final IndexId index;

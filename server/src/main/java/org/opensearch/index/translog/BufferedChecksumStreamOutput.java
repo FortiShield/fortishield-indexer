@@ -33,7 +33,6 @@
 package org.opensearch.index.translog;
 
 import org.apache.lucene.store.BufferedChecksum;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamOutput;
 
 import java.io.IOException;
@@ -44,9 +43,8 @@ import java.util.zip.Checksum;
  * Similar to Lucene's BufferedChecksumIndexOutput, however this wraps a
  * {@link StreamOutput} so anything written will update the checksum
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class BufferedChecksumStreamOutput extends StreamOutput {
     private final StreamOutput out;
     private final Checksum digest;

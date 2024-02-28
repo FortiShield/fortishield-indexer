@@ -47,7 +47,6 @@ import org.opensearch.core.xcontent.ToXContentFragment;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.discovery.DiscoveryStats;
 import org.opensearch.http.HttpStats;
-import org.opensearch.index.SegmentReplicationRejectionStats;
 import org.opensearch.index.stats.IndexingPressureStats;
 import org.opensearch.index.stats.ShardIndexingPressureStats;
 import org.opensearch.index.store.remote.filecache.FileCacheStats;
@@ -58,9 +57,6 @@ import org.opensearch.monitor.jvm.JvmStats;
 import org.opensearch.monitor.os.OsStats;
 import org.opensearch.monitor.process.ProcessStats;
 import org.opensearch.node.AdaptiveSelectionStats;
-import org.opensearch.node.NodesResourceUsageStats;
-import org.opensearch.ratelimitting.admissioncontrol.stats.AdmissionControlStats;
-import org.opensearch.repositories.RepositoriesStats;
 import org.opensearch.script.ScriptCacheStats;
 import org.opensearch.script.ScriptStats;
 import org.opensearch.search.backpressure.stats.SearchBackpressureStats;
@@ -133,9 +129,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
     private SearchBackpressureStats searchBackpressureStats;
 
     @Nullable
-    private SegmentReplicationRejectionStats segmentReplicationRejectionStats;
-
-    @Nullable
     private ClusterManagerThrottlingStats clusterManagerThrottlingStats;
 
     @Nullable
@@ -149,15 +142,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
 
     @Nullable
     private SearchPipelineStats searchPipelineStats;
-
-    @Nullable
-    private NodesResourceUsageStats resourceUsageStats;
-
-    @Nullable
-    private RepositoriesStats repositoriesStats;
-
-    @Nullable
-    private AdmissionControlStats admissionControlStats;
 
     public NodeStats(StreamInput in) throws IOException {
         super(in);
@@ -227,27 +211,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
         } else {
             searchPipelineStats = null;
         }
-        if (in.getVersion().onOrAfter(Version.V_2_12_0)) {
-            resourceUsageStats = in.readOptionalWriteable(NodesResourceUsageStats::new);
-        } else {
-            resourceUsageStats = null;
-        }
-        if (in.getVersion().onOrAfter(Version.V_2_12_0)) {
-            segmentReplicationRejectionStats = in.readOptionalWriteable(SegmentReplicationRejectionStats::new);
-        } else {
-            segmentReplicationRejectionStats = null;
-        }
-        if (in.getVersion().onOrAfter(Version.V_2_12_0)) {
-            repositoriesStats = in.readOptionalWriteable(RepositoriesStats::new);
-        } else {
-            repositoriesStats = null;
-        }
-        // TODO: change to V_2_12_0 on main after backport to 2.x
-        if (in.getVersion().onOrAfter(Version.V_2_12_0)) {
-            admissionControlStats = in.readOptionalWriteable(AdmissionControlStats::new);
-        } else {
-            admissionControlStats = null;
-        }
     }
 
     public NodeStats(
@@ -266,7 +229,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
         @Nullable DiscoveryStats discoveryStats,
         @Nullable IngestStats ingestStats,
         @Nullable AdaptiveSelectionStats adaptiveSelectionStats,
-        @Nullable NodesResourceUsageStats resourceUsageStats,
         @Nullable ScriptCacheStats scriptCacheStats,
         @Nullable IndexingPressureStats indexingPressureStats,
         @Nullable ShardIndexingPressureStats shardIndexingPressureStats,
@@ -275,10 +237,7 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
         @Nullable WeightedRoutingStats weightedRoutingStats,
         @Nullable FileCacheStats fileCacheStats,
         @Nullable TaskCancellationStats taskCancellationStats,
-        @Nullable SearchPipelineStats searchPipelineStats,
-        @Nullable SegmentReplicationRejectionStats segmentReplicationRejectionStats,
-        @Nullable RepositoriesStats repositoriesStats,
-        @Nullable AdmissionControlStats admissionControlStats
+        @Nullable SearchPipelineStats searchPipelineStats
     ) {
         super(node);
         this.timestamp = timestamp;
@@ -295,7 +254,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
         this.discoveryStats = discoveryStats;
         this.ingestStats = ingestStats;
         this.adaptiveSelectionStats = adaptiveSelectionStats;
-        this.resourceUsageStats = resourceUsageStats;
         this.scriptCacheStats = scriptCacheStats;
         this.indexingPressureStats = indexingPressureStats;
         this.shardIndexingPressureStats = shardIndexingPressureStats;
@@ -305,9 +263,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
         this.fileCacheStats = fileCacheStats;
         this.taskCancellationStats = taskCancellationStats;
         this.searchPipelineStats = searchPipelineStats;
-        this.segmentReplicationRejectionStats = segmentReplicationRejectionStats;
-        this.repositoriesStats = repositoriesStats;
-        this.admissionControlStats = admissionControlStats;
     }
 
     public long getTimestamp() {
@@ -403,11 +358,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
     }
 
     @Nullable
-    public NodesResourceUsageStats getResourceUsageStats() {
-        return resourceUsageStats;
-    }
-
-    @Nullable
     public ScriptCacheStats getScriptCacheStats() {
         return scriptCacheStats;
     }
@@ -448,21 +398,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
     @Nullable
     public SearchPipelineStats getSearchPipelineStats() {
         return searchPipelineStats;
-    }
-
-    @Nullable
-    public SegmentReplicationRejectionStats getSegmentReplicationRejectionStats() {
-        return segmentReplicationRejectionStats;
-    }
-
-    @Nullable
-    public RepositoriesStats getRepositoriesStats() {
-        return repositoriesStats;
-    }
-
-    @Nullable
-    public AdmissionControlStats getAdmissionControlStats() {
-        return admissionControlStats;
     }
 
     @Override
@@ -513,19 +448,6 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
         }
         if (out.getVersion().onOrAfter(Version.V_2_9_0)) {
             out.writeOptionalWriteable(searchPipelineStats);
-        }
-        if (out.getVersion().onOrAfter(Version.V_2_12_0)) {
-            out.writeOptionalWriteable(resourceUsageStats);
-        }
-        if (out.getVersion().onOrAfter(Version.V_2_12_0)) {
-            out.writeOptionalWriteable(segmentReplicationRejectionStats);
-        }
-        if (out.getVersion().onOrAfter(Version.V_2_12_0)) {
-            out.writeOptionalWriteable(repositoriesStats);
-        }
-
-        if (out.getVersion().onOrAfter(Version.V_2_12_0)) {
-            out.writeOptionalWriteable(admissionControlStats);
         }
     }
 
@@ -617,18 +539,7 @@ public class NodeStats extends BaseNodeResponse implements ToXContentFragment {
         if (getSearchPipelineStats() != null) {
             getSearchPipelineStats().toXContent(builder, params);
         }
-        if (getResourceUsageStats() != null) {
-            getResourceUsageStats().toXContent(builder, params);
-        }
-        if (getSegmentReplicationRejectionStats() != null) {
-            getSegmentReplicationRejectionStats().toXContent(builder, params);
-        }
-        if (getRepositoriesStats() != null) {
-            getRepositoriesStats().toXContent(builder, params);
-        }
-        if (getAdmissionControlStats() != null) {
-            getAdmissionControlStats().toXContent(builder, params);
-        }
+
         return builder;
     }
 }

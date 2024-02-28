@@ -33,7 +33,6 @@
 package org.opensearch.search.internal;
 
 import org.opensearch.LegacyESVersion;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -44,9 +43,8 @@ import java.util.Objects;
 /**
  * Used to support Point in Time Searching
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class ShardSearchContextId implements Writeable {
     private final String sessionId;
     private final long id;

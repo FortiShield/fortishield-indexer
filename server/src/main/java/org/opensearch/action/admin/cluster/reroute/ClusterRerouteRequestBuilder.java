@@ -35,14 +35,12 @@ package org.opensearch.action.admin.cluster.reroute;
 import org.opensearch.action.support.master.AcknowledgedRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
 import org.opensearch.cluster.routing.allocation.command.AllocationCommand;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * Builder for a cluster reroute request
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ClusterRerouteRequestBuilder extends AcknowledgedRequestBuilder<
     ClusterRerouteRequest,
     ClusterRerouteResponse,

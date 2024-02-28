@@ -36,7 +36,6 @@ import org.apache.lucene.document.FieldType;
 import org.opensearch.Version;
 import org.opensearch.common.Explicit;
 import org.opensearch.common.TriFunction;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.logging.DeprecationLogger;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.support.XContentMapValues;
@@ -64,17 +63,16 @@ import java.util.function.Supplier;
 
 /**
  * Defines how a particular field should be indexed and searched
- * <p>
+ *
  * Configuration {@link Parameter}s for the mapper are defined on a {@link Builder} subclass,
  * and returned by its {@link Builder#getParameters()} method.  Merging, serialization
  * and parsing of the mapper are all mediated through this set of parameters.
- * <p>
+ *
  * Subclasses should implement a {@link Builder} that is returned from the
  * {@link #getMergeBuilder()} method, initialised with the existing builder.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class ParametrizedFieldMapper extends FieldMapper {
 
     private static final DeprecationLogger deprecationLogger = DeprecationLogger.getLogger(ParametrizedFieldMapper.class);
@@ -88,7 +86,7 @@ public abstract class ParametrizedFieldMapper extends FieldMapper {
 
     /**
      * Returns a {@link Builder} to be used for merging and serialization
-     * <p>
+     *
      * Implement as follows:
      * {@code return new MyBuilder(simpleName()).init(this); }
      */
@@ -153,20 +151,14 @@ public abstract class ParametrizedFieldMapper extends FieldMapper {
 
     /**
      * Serializes a parameter
-     *
-     * @opensearch.api
      */
-    @PublicApi(since = "1.0.0")
     protected interface Serializer<T> {
         void serialize(XContentBuilder builder, String name, T value) throws IOException;
     }
 
     /**
      * Check on whether or not a parameter should be serialized
-     *
-     * @opensearch.api
      */
-    @PublicApi(since = "1.0.0")
     protected interface SerializerCheck<T> {
         /**
          * Check on whether or not a parameter should be serialized
@@ -182,9 +174,8 @@ public abstract class ParametrizedFieldMapper extends FieldMapper {
      * A configurable parameter for a field mapper
      * @param <T> the type of the value the parameter holds
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static final class Parameter<T> implements Supplier<T> {
 
         public final String name;
@@ -265,7 +256,7 @@ public abstract class ParametrizedFieldMapper extends FieldMapper {
 
         /**
          * Adds a deprecated parameter name.
-         * <p>
+         *
          * If this parameter name is encountered during parsing, a deprecation warning will
          * be emitted.  The parameter will be serialized with its main name.
          */
@@ -586,9 +577,8 @@ public abstract class ParametrizedFieldMapper extends FieldMapper {
     /**
      * A Builder for a ParametrizedFieldMapper
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public abstract static class Builder extends Mapper.Builder<Builder> {
 
         protected final MultiFields.Builder multiFieldsBuilder = new MultiFields.Builder();

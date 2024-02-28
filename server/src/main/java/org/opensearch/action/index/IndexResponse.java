@@ -33,7 +33,6 @@
 package org.opensearch.action.index;
 
 import org.opensearch.action.DocWriteResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.index.shard.ShardId;
@@ -51,9 +50,8 @@ import static org.opensearch.core.xcontent.XContentParserUtils.ensureExpectedTok
  * @see IndexRequest
  * @see org.opensearch.client.Client#index(IndexRequest)
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class IndexResponse extends DocWriteResponse {
 
     public IndexResponse(ShardId shardId, StreamInput in) throws IOException {
@@ -118,9 +116,8 @@ public class IndexResponse extends DocWriteResponse {
      * temporarily store the parsed values, then the {@link Builder#build()} method is called to
      * instantiate the {@link IndexResponse}.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Builder extends DocWriteResponse.Builder {
         @Override
         public IndexResponse build() {

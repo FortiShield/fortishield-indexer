@@ -7286,11 +7286,7 @@ public class InternalEngineTests extends EngineTestCase {
             engine.ensureOpen();
             while (running.get()
                 && assertAndGetInternalTranslogManager(engine.translogManager()).getTranslog().currentFileGeneration() < 500) {
-                try {
-                    engine.translogManager().rollTranslogGeneration(); // make adding operations to translog slower
-                } catch (IOException e) {
-                    fail("io exception not expected");
-                }
+                engine.translogManager().rollTranslogGeneration(); // make adding operations to translog slower
             }
         });
         rollTranslog.start();
@@ -7867,9 +7863,7 @@ public class InternalEngineTests extends EngineTestCase {
                     assertNotNull(result.getFailure());
                     assertThat(
                         result.getFailure().getMessage(),
-                        containsString(
-                            "Number of documents in shard " + shardId + " exceeds the limit of [" + maxDocs + "] documents per shard"
-                        )
+                        containsString("Number of documents in the index can't exceed [" + maxDocs + "]")
                     );
                     assertThat(result.getSeqNo(), equalTo(UNASSIGNED_SEQ_NO));
                     assertThat(engine.getLocalCheckpointTracker().getMaxSeqNo(), equalTo(maxSeqNo));

@@ -276,12 +276,10 @@ public class S3BlobStoreContainerTests extends OpenSearchTestCase {
         final String bucketName = randomAlphaOfLengthBetween(1, 10);
 
         final BlobPath blobPath = new BlobPath();
-        int bulkDeleteSize = 5;
 
         final S3BlobStore blobStore = mock(S3BlobStore.class);
         when(blobStore.bucket()).thenReturn(bucketName);
         when(blobStore.getStatsMetricPublisher()).thenReturn(new StatsMetricPublisher());
-        when(blobStore.getBulkDeletesSize()).thenReturn(bulkDeleteSize);
 
         final S3Client client = mock(S3Client.class);
         doAnswer(invocation -> new AmazonS3Reference(client)).when(blobStore).clientReference();
@@ -299,11 +297,8 @@ public class S3BlobStoreContainerTests extends OpenSearchTestCase {
         when(client.listObjectsV2Paginator(any(ListObjectsV2Request.class))).thenReturn(listObjectsV2Iterable);
 
         final List<String> keysDeleted = new ArrayList<>();
-        AtomicInteger deleteCount = new AtomicInteger();
         doAnswer(invocation -> {
             DeleteObjectsRequest deleteObjectsRequest = invocation.getArgument(0);
-            deleteCount.getAndIncrement();
-            logger.info("Object sizes are{}", deleteObjectsRequest.delete().objects().size());
             keysDeleted.addAll(deleteObjectsRequest.delete().objects().stream().map(ObjectIdentifier::key).collect(Collectors.toList()));
             return DeleteObjectsResponse.builder().build();
         }).when(client).deleteObjects(any(DeleteObjectsRequest.class));
@@ -316,8 +311,6 @@ public class S3BlobStoreContainerTests extends OpenSearchTestCase {
         // keysDeleted will have blobPath also
         assertEquals(listObjectsV2ResponseIterator.getKeysListed().size(), keysDeleted.size() - 1);
         assertTrue(keysDeleted.contains(blobPath.buildAsString()));
-        // keysDeleted will have blobPath also
-        assertEquals((int) Math.ceil(((double) keysDeleted.size() + 1) / bulkDeleteSize), deleteCount.get());
         keysDeleted.remove(blobPath.buildAsString());
         assertEquals(new HashSet<>(listObjectsV2ResponseIterator.getKeysListed()), new HashSet<>(keysDeleted));
     }
@@ -916,15 +909,6 @@ public class S3BlobStoreContainerTests extends OpenSearchTestCase {
         testListBlobsByPrefixInLexicographicOrder(2, 1, BlobContainer.BlobNameSortOrder.LEXICOGRAPHIC);
     }
 
-    /**
-     * Test the boundary value at page size to ensure
-     * unnecessary calls are not made to S3 by fetching the next page.
-     * @throws IOException
-     */
-    public void testListBlobsByPrefixInLexicographicOrderWithLimitEqualToPageSize() throws IOException {
-        testListBlobsByPrefixInLexicographicOrder(5, 1, BlobContainer.BlobNameSortOrder.LEXICOGRAPHIC);
-    }
-
     public void testListBlobsByPrefixInLexicographicOrderWithLimitGreaterThanPageSize() throws IOException {
         testListBlobsByPrefixInLexicographicOrder(8, 2, BlobContainer.BlobNameSortOrder.LEXICOGRAPHIC);
     }
@@ -944,7 +928,7 @@ public class S3BlobStoreContainerTests extends OpenSearchTestCase {
 
         final S3AsyncClient s3AsyncClient = mock(S3AsyncClient.class);
         final AmazonAsyncS3Reference amazonAsyncS3Reference = new AmazonAsyncS3Reference(
-            AmazonAsyncS3WithCredentials.create(s3AsyncClient, s3AsyncClient, s3AsyncClient, null)
+            AmazonAsyncS3WithCredentials.create(s3AsyncClient, s3AsyncClient, null)
         );
 
         final S3BlobStore blobStore = mock(S3BlobStore.class);
@@ -1002,7 +986,7 @@ public class S3BlobStoreContainerTests extends OpenSearchTestCase {
 
         final S3AsyncClient s3AsyncClient = mock(S3AsyncClient.class);
         final AmazonAsyncS3Reference amazonAsyncS3Reference = new AmazonAsyncS3Reference(
-            AmazonAsyncS3WithCredentials.create(s3AsyncClient, s3AsyncClient, s3AsyncClient, null)
+            AmazonAsyncS3WithCredentials.create(s3AsyncClient, s3AsyncClient, null)
         );
         final S3BlobStore blobStore = mock(S3BlobStore.class);
         final BlobPath blobPath = new BlobPath();
@@ -1057,7 +1041,7 @@ public class S3BlobStoreContainerTests extends OpenSearchTestCase {
 
         final S3AsyncClient s3AsyncClient = mock(S3AsyncClient.class);
         final AmazonAsyncS3Reference amazonAsyncS3Reference = new AmazonAsyncS3Reference(
-            AmazonAsyncS3WithCredentials.create(s3AsyncClient, s3AsyncClient, s3AsyncClient, null)
+            AmazonAsyncS3WithCredentials.create(s3AsyncClient, s3AsyncClient, null)
         );
 
         final S3BlobStore blobStore = mock(S3BlobStore.class);
@@ -1100,7 +1084,7 @@ public class S3BlobStoreContainerTests extends OpenSearchTestCase {
 
         final S3AsyncClient s3AsyncClient = mock(S3AsyncClient.class);
         final AmazonAsyncS3Reference amazonAsyncS3Reference = new AmazonAsyncS3Reference(
-            AmazonAsyncS3WithCredentials.create(s3AsyncClient, s3AsyncClient, s3AsyncClient, null)
+            AmazonAsyncS3WithCredentials.create(s3AsyncClient, s3AsyncClient, null)
         );
 
         final S3BlobStore blobStore = mock(S3BlobStore.class);

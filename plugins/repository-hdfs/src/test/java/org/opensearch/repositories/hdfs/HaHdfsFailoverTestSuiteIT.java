@@ -62,7 +62,6 @@ import java.util.List;
 /**
  * Integration test that runs against an HA-Enabled HDFS instance
  */
-@SuppressWarnings("removal")
 public class HaHdfsFailoverTestSuiteIT extends OpenSearchRestTestCase {
 
     public void testHAFailoverWithRepository() throws Exception {

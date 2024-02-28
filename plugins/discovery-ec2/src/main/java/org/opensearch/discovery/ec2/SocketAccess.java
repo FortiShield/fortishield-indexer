@@ -46,7 +46,6 @@ import java.security.PrivilegedExceptionAction;
  * {@link SocketPermission} 'connect' to establish connections. This class wraps the operations requiring access in
  * {@link AccessController#doPrivileged(PrivilegedAction)} blocks.
  */
-@SuppressWarnings("removal")
 final class SocketAccess {
 
     private SocketAccess() {}

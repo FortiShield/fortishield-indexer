@@ -32,7 +32,6 @@
 
 package org.opensearch.index.seqno;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -45,9 +44,8 @@ import java.util.Objects;
 /**
  * Sequence number statistics
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SeqNoStats implements ToXContentFragment, Writeable {
 
     private static final String SEQ_NO = "seq_no";

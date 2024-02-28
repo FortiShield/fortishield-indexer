@@ -96,7 +96,7 @@ public class RangeFieldMapper extends ParametrizedFieldMapper {
      */
     public static class Defaults {
         public static final Explicit<Boolean> COERCE = new Explicit<>(true, false);
-        public static final DateFormatter DATE_FORMATTER = DateFieldMapper.getDefaultDateTimeFormatter();
+        public static final DateFormatter DATE_FORMATTER = DateFieldMapper.DEFAULT_DATE_TIME_FORMATTER;
     }
 
     // this is private since it has a different default

@@ -32,7 +32,6 @@
 package org.opensearch.action.admin.indices.template.get;
 
 import org.opensearch.cluster.metadata.IndexTemplateMetadata;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.action.ActionResponse;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -50,9 +49,8 @@ import static java.util.Collections.singletonMap;
 /**
  * Response for retrieving one or more Index templates
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class GetIndexTemplatesResponse extends ActionResponse implements ToXContentObject {
 
     private final List<IndexTemplateMetadata> indexTemplates;

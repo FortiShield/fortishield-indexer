@@ -70,7 +70,6 @@ import org.opensearch.index.IndexingPressureService;
 import org.opensearch.indices.SystemIndices;
 import org.opensearch.ingest.IngestService;
 import org.opensearch.tasks.Task;
-import org.opensearch.telemetry.tracing.noop.NoopTracer;
 import org.opensearch.test.OpenSearchTestCase;
 import org.opensearch.test.VersionUtils;
 import org.opensearch.threadpool.ThreadPool;
@@ -173,8 +172,7 @@ public class TransportBulkActionIngestTests extends OpenSearchTestCase {
                     new ClusterService(SETTINGS, new ClusterSettings(SETTINGS, ClusterSettings.BUILT_IN_CLUSTER_SETTINGS), null)
                 ),
                 null,
-                new SystemIndices(emptyMap()),
-                NoopTracer.INSTANCE
+                new SystemIndices(emptyMap())
             );
         }
 

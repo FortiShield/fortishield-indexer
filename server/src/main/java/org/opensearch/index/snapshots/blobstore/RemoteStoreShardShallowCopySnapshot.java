@@ -9,7 +9,6 @@
 package org.opensearch.index.snapshots.blobstore;
 
 import org.opensearch.OpenSearchParseException;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.xcontent.ToXContentFragment;
 import org.opensearch.core.xcontent.XContentBuilder;
@@ -23,9 +22,8 @@ import java.util.List;
 /**
  * Remote Store based Shard snapshot metadata
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.9.0")
 public class RemoteStoreShardShallowCopySnapshot implements ToXContentFragment, IndexShardSnapshot {
 
     private final String snapshot;
@@ -324,10 +322,10 @@ public class RemoteStoreShardShallowCopySnapshot implements ToXContentFragment, 
         return snapshot;
     }
 
-    /*
-      Returns list of files in the shard
-
-      @return list of files
+    /**
+     * Returns list of files in the shard
+     *
+     * @return list of files
      */
 
     /**

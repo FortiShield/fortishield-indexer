@@ -279,8 +279,6 @@ class S3Service implements Closeable {
         }
 
         clientBuilder.socketTimeout(Duration.ofMillis(clientSettings.readTimeoutMillis));
-        clientBuilder.maxConnections(clientSettings.maxSyncConnections);
-        clientBuilder.connectionAcquisitionTimeout(Duration.ofMillis(clientSettings.connectionAcquisitionTimeoutMillis));
 
         return clientBuilder;
     }
@@ -440,7 +438,7 @@ class S3Service implements Closeable {
         return new IrsaCredentials(webIdentityTokenFile, roleArn, roleSessionName);
     }
 
-    public synchronized void releaseCachedClients() {
+    private synchronized void releaseCachedClients() {
         // the clients will shutdown when they will not be used anymore
         for (final AmazonS3Reference clientReference : clientsCache.values()) {
             clientReference.decRef();

@@ -9,7 +9,6 @@
 package org.opensearch.action.admin.cluster.shards.routing.weighted.put;
 
 import org.opensearch.action.support.master.AcknowledgedResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 
 import java.io.IOException;
@@ -17,9 +16,8 @@ import java.io.IOException;
 /**
  * Response from updating weights for weighted round-robin search routing policy.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public class ClusterPutWeightedRoutingResponse extends AcknowledgedResponse {
     public ClusterPutWeightedRoutingResponse(boolean acknowledged) {
         super(acknowledged);

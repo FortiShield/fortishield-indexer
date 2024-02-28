@@ -34,13 +34,10 @@ import org.opensearch.common.blobstore.stream.write.WritePriority;
 import org.opensearch.common.io.InputStreamContainer;
 import org.opensearch.common.util.ByteUtils;
 import org.opensearch.core.common.unit.ByteSizeUnit;
-import org.opensearch.core.common.unit.ByteSizeValue;
 import org.opensearch.repositories.s3.SocketAccess;
-import org.opensearch.repositories.s3.StatsMetricPublisher;
 import org.opensearch.repositories.s3.io.CheckedContainer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
@@ -61,7 +58,6 @@ public final class AsyncTransferManager {
     private static final Logger log = LogManager.getLogger(AsyncTransferManager.class);
     private final ExecutorService executorService;
     private final ExecutorService priorityExecutorService;
-    private final ExecutorService urgentExecutorService;
     private final long minimumPartSize;
 
     /**
@@ -76,16 +72,10 @@ public final class AsyncTransferManager {
      * @param executorService         The stream reader {@link ExecutorService} for normal priority uploads
      * @param priorityExecutorService The stream read {@link ExecutorService} for high priority uploads
      */
-    public AsyncTransferManager(
-        long minimumPartSize,
-        ExecutorService executorService,
-        ExecutorService priorityExecutorService,
-        ExecutorService urgentExecutorService
-    ) {
+    public AsyncTransferManager(long minimumPartSize, ExecutorService executorService, ExecutorService priorityExecutorService) {
         this.executorService = executorService;
         this.priorityExecutorService = priorityExecutorService;
         this.minimumPartSize = minimumPartSize;
-        this.urgentExecutorService = urgentExecutorService;
     }
 
     /**
@@ -96,21 +86,16 @@ public final class AsyncTransferManager {
      * @param streamContext The {@link StreamContext} to supply streams during upload
      * @return A {@link CompletableFuture} to listen for upload completion
      */
-    public CompletableFuture<Void> uploadObject(
-        S3AsyncClient s3AsyncClient,
-        UploadRequest uploadRequest,
-        StreamContext streamContext,
-        StatsMetricPublisher statsMetricPublisher
-    ) {
+    public CompletableFuture<Void> uploadObject(S3AsyncClient s3AsyncClient, UploadRequest uploadRequest, StreamContext streamContext) {
 
         CompletableFuture<Void> returnFuture = new CompletableFuture<>();
         try {
             if (streamContext.getNumberOfParts() == 1) {
                 log.debug(() -> "Starting the upload as a single upload part request");
-                uploadInOneChunk(s3AsyncClient, uploadRequest, streamContext.provideStream(0), returnFuture, statsMetricPublisher);
+                uploadInOneChunk(s3AsyncClient, uploadRequest, streamContext.provideStream(0), returnFuture);
             } else {
                 log.debug(() -> "Starting the upload as multipart upload request");
-                uploadInParts(s3AsyncClient, uploadRequest, streamContext, returnFuture, statsMetricPublisher);
+                uploadInParts(s3AsyncClient, uploadRequest, streamContext, returnFuture);
             }
         } catch (Throwable throwable) {
             returnFuture.completeExceptionally(throwable);
@@ -123,14 +108,12 @@ public final class AsyncTransferManager {
         S3AsyncClient s3AsyncClient,
         UploadRequest uploadRequest,
         StreamContext streamContext,
-        CompletableFuture<Void> returnFuture,
-        StatsMetricPublisher statsMetricPublisher
+        CompletableFuture<Void> returnFuture
     ) {
 
         CreateMultipartUploadRequest.Builder createMultipartUploadRequestBuilder = CreateMultipartUploadRequest.builder()
             .bucket(uploadRequest.getBucket())
-            .key(uploadRequest.getKey())
-            .overrideConfiguration(o -> o.addMetricPublisher(statsMetricPublisher.multipartUploadMetricCollector));
+            .key(uploadRequest.getKey());
         if (uploadRequest.doRemoteDataIntegrityCheck()) {
             createMultipartUploadRequestBuilder.checksumAlgorithm(ChecksumAlgorithm.CRC32);
         }
@@ -146,14 +129,7 @@ public final class AsyncTransferManager {
                 handleException(returnFuture, () -> "Failed to initiate multipart upload", throwable);
             } else {
                 log.debug(() -> "Initiated new multipart upload, uploadId: " + createMultipartUploadResponse.uploadId());
-                doUploadInParts(
-                    s3AsyncClient,
-                    uploadRequest,
-                    streamContext,
-                    returnFuture,
-                    createMultipartUploadResponse.uploadId(),
-                    statsMetricPublisher
-                );
+                doUploadInParts(s3AsyncClient, uploadRequest, streamContext, returnFuture, createMultipartUploadResponse.uploadId());
             }
         });
     }
@@ -163,8 +139,7 @@ public final class AsyncTransferManager {
         UploadRequest uploadRequest,
         StreamContext streamContext,
         CompletableFuture<Void> returnFuture,
-        String uploadId,
-        StatsMetricPublisher statsMetricPublisher
+        String uploadId
     ) {
 
         // The list of completed parts must be sorted
@@ -177,14 +152,11 @@ public final class AsyncTransferManager {
                 s3AsyncClient,
                 executorService,
                 priorityExecutorService,
-                urgentExecutorService,
                 uploadRequest,
                 streamContext,
                 uploadId,
                 completedParts,
-                inputStreamContainers,
-                statsMetricPublisher,
-                uploadRequest.isUploadRetryEnabled()
+                inputStreamContainers
             );
         } catch (Exception ex) {
             try {
@@ -208,7 +180,7 @@ public final class AsyncTransferManager {
             }
             return null;
         })
-            .thenCompose(ignore -> completeMultipartUpload(s3AsyncClient, uploadRequest, uploadId, completedParts, statsMetricPublisher))
+            .thenCompose(ignore -> completeMultipartUpload(s3AsyncClient, uploadRequest, uploadId, completedParts))
             .handle(handleExceptionOrResponse(s3AsyncClient, uploadRequest, returnFuture, uploadId))
             .exceptionally(throwable -> {
                 handleException(returnFuture, () -> "Unexpected exception occurred", throwable);
@@ -255,8 +227,7 @@ public final class AsyncTransferManager {
         S3AsyncClient s3AsyncClient,
         UploadRequest uploadRequest,
         String uploadId,
-        AtomicReferenceArray<CompletedPart> completedParts,
-        StatsMetricPublisher statsMetricPublisher
+        AtomicReferenceArray<CompletedPart> completedParts
     ) {
 
         log.debug(() -> new ParameterizedMessage("Sending completeMultipartUploadRequest, uploadId: {}", uploadId));
@@ -265,7 +236,6 @@ public final class AsyncTransferManager {
             .bucket(uploadRequest.getBucket())
             .key(uploadRequest.getKey())
             .uploadId(uploadId)
-            .overrideConfiguration(o -> o.addMetricPublisher(statsMetricPublisher.multipartUploadMetricCollector))
             .multipartUpload(CompletedMultipartUpload.builder().parts(parts).build())
             .build();
 
@@ -303,12 +273,9 @@ public final class AsyncTransferManager {
     /**
      * Calculates the optimal part size of each part request if the upload operation is carried out as multipart upload.
      */
-    public long calculateOptimalPartSize(long contentLengthOfSource, WritePriority writePriority, boolean uploadRetryEnabled) {
+    public long calculateOptimalPartSize(long contentLengthOfSource) {
         if (contentLengthOfSource < ByteSizeUnit.MB.toBytes(5)) {
             return contentLengthOfSource;
-        }
-        if (uploadRetryEnabled && (writePriority == WritePriority.HIGH || writePriority == WritePriority.URGENT)) {
-            return new ByteSizeValue(5, ByteSizeUnit.MB).getBytes();
         }
         double optimalPartSize = contentLengthOfSource / (double) MAX_UPLOAD_PARTS;
         optimalPartSize = Math.ceil(optimalPartSize);
@@ -319,46 +286,28 @@ public final class AsyncTransferManager {
         S3AsyncClient s3AsyncClient,
         UploadRequest uploadRequest,
         InputStreamContainer inputStreamContainer,
-        CompletableFuture<Void> returnFuture,
-        StatsMetricPublisher statsMetricPublisher
+        CompletableFuture<Void> returnFuture
     ) {
         PutObjectRequest.Builder putObjectRequestBuilder = PutObjectRequest.builder()
             .bucket(uploadRequest.getBucket())
             .key(uploadRequest.getKey())
-            .contentLength(uploadRequest.getContentLength())
-            .overrideConfiguration(o -> o.addMetricPublisher(statsMetricPublisher.putObjectMetricPublisher));
+            .contentLength(uploadRequest.getContentLength());
         if (uploadRequest.doRemoteDataIntegrityCheck()) {
             putObjectRequestBuilder.checksumAlgorithm(ChecksumAlgorithm.CRC32);
             putObjectRequestBuilder.checksumCRC32(base64StringFromLong(uploadRequest.getExpectedChecksum()));
         }
-        ExecutorService streamReadExecutor;
-        if (uploadRequest.getWritePriority() == WritePriority.URGENT) {
-            streamReadExecutor = urgentExecutorService;
-        } else if (uploadRequest.getWritePriority() == WritePriority.HIGH) {
-            streamReadExecutor = priorityExecutorService;
-        } else {
-            streamReadExecutor = executorService;
-        }
-
-        InputStream inputStream = AsyncPartsHandler.maybeRetryInputStream(
-            inputStreamContainer.getInputStream(),
-            uploadRequest.getWritePriority(),
-            uploadRequest.isUploadRetryEnabled(),
-            uploadRequest.getContentLength()
-        );
+        ExecutorService streamReadExecutor = uploadRequest.getWritePriority() == WritePriority.HIGH
+            ? priorityExecutorService
+            : executorService;
         CompletableFuture<Void> putObjectFuture = SocketAccess.doPrivileged(
             () -> s3AsyncClient.putObject(
                 putObjectRequestBuilder.build(),
-                AsyncRequestBody.fromInputStream(inputStream, inputStreamContainer.getContentLength(), streamReadExecutor)
+                AsyncRequestBody.fromInputStream(
+                    inputStreamContainer.getInputStream(),
+                    inputStreamContainer.getContentLength(),
+                    streamReadExecutor
+                )
             ).handle((resp, throwable) -> {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    log.error(
-                        () -> new ParameterizedMessage("Failed to close stream while uploading single file {}.", uploadRequest.getKey()),
-                        e
-                    );
-                }
                 if (throwable != null) {
                     Throwable unwrappedThrowable = ExceptionsHelper.unwrap(throwable, S3Exception.class);
                     if (unwrappedThrowable != null) {

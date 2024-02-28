@@ -59,12 +59,6 @@ import org.opensearch.index.translog.Translog;
 import org.opensearch.index.translog.Translog.Location;
 import org.opensearch.indices.IndicesService;
 import org.opensearch.indices.SystemIndices;
-import org.opensearch.ratelimitting.admissioncontrol.enums.AdmissionControlActionType;
-import org.opensearch.telemetry.tracing.Span;
-import org.opensearch.telemetry.tracing.SpanBuilder;
-import org.opensearch.telemetry.tracing.SpanScope;
-import org.opensearch.telemetry.tracing.Tracer;
-import org.opensearch.telemetry.tracing.listener.TraceableActionListener;
 import org.opensearch.threadpool.ThreadPool;
 import org.opensearch.transport.TransportService;
 
@@ -88,7 +82,6 @@ public abstract class TransportWriteAction<
     protected final SystemIndices systemIndices;
 
     private final Function<IndexShard, String> executorFunction;
-    private final Tracer tracer;
 
     protected TransportWriteAction(
         Settings settings,
@@ -104,9 +97,7 @@ public abstract class TransportWriteAction<
         Function<IndexShard, String> executorFunction,
         boolean forceExecutionOnPrimary,
         IndexingPressureService indexingPressureService,
-        SystemIndices systemIndices,
-        Tracer tracer,
-        AdmissionControlActionType admissionControlActionType
+        SystemIndices systemIndices
     ) {
         // We pass ThreadPool.Names.SAME to the super class as we control the dispatching to the
         // ThreadPool.Names.WRITE/ThreadPool.Names.SYSTEM_WRITE thread pools in this class.
@@ -123,50 +114,11 @@ public abstract class TransportWriteAction<
             replicaRequest,
             ThreadPool.Names.SAME,
             true,
-            forceExecutionOnPrimary,
-            admissionControlActionType
+            forceExecutionOnPrimary
         );
         this.executorFunction = executorFunction;
         this.indexingPressureService = indexingPressureService;
         this.systemIndices = systemIndices;
-        this.tracer = tracer;
-    }
-
-    protected TransportWriteAction(
-        Settings settings,
-        String actionName,
-        TransportService transportService,
-        ClusterService clusterService,
-        IndicesService indicesService,
-        ThreadPool threadPool,
-        ShardStateAction shardStateAction,
-        ActionFilters actionFilters,
-        Writeable.Reader<Request> request,
-        Writeable.Reader<ReplicaRequest> replicaRequest,
-        Function<IndexShard, String> executorFunction,
-        boolean forceExecutionOnPrimary,
-        IndexingPressureService indexingPressureService,
-        SystemIndices systemIndices,
-        Tracer tracer
-    ) {
-        this(
-            settings,
-            actionName,
-            transportService,
-            clusterService,
-            indicesService,
-            threadPool,
-            shardStateAction,
-            actionFilters,
-            request,
-            replicaRequest,
-            executorFunction,
-            forceExecutionOnPrimary,
-            indexingPressureService,
-            systemIndices,
-            tracer,
-            null
-        );
     }
 
     protected String executor(IndexShard shard) {
@@ -268,12 +220,7 @@ public abstract class TransportWriteAction<
         threadPool.executor(executor).execute(new ActionRunnable<PrimaryResult<ReplicaRequest, Response>>(listener) {
             @Override
             protected void doRun() {
-                Span span = tracer.startSpan(
-                    SpanBuilder.from("dispatchedShardOperationOnPrimary", clusterService.localNode().getId(), request)
-                );
-                try (SpanScope spanScope = tracer.withSpanInScope(span)) {
-                    dispatchedShardOperationOnPrimary(request, primary, TraceableActionListener.create(listener, span, tracer));
-                }
+                dispatchedShardOperationOnPrimary(request, primary, listener);
             }
 
             @Override
@@ -301,12 +248,7 @@ public abstract class TransportWriteAction<
         threadPool.executor(executorFunction.apply(replica)).execute(new ActionRunnable<ReplicaResult>(listener) {
             @Override
             protected void doRun() {
-                Span span = tracer.startSpan(
-                    SpanBuilder.from("dispatchedShardOperationOnReplica", clusterService.localNode().getId(), request)
-                );
-                try (SpanScope spanScope = tracer.withSpanInScope(span)) {
-                    dispatchedShardOperationOnReplica(request, replica, TraceableActionListener.create(listener, span, tracer));
-                }
+                dispatchedShardOperationOnReplica(request, replica, listener);
             }
 
             @Override
@@ -324,7 +266,7 @@ public abstract class TransportWriteAction<
 
     /**
      * Result of taking the action on the primary.
-     * <p>
+     *
      * NOTE: public for testing
      *
      * @opensearch.internal
@@ -554,7 +496,7 @@ public abstract class TransportWriteAction<
      * A proxy for <b>write</b> operations that need to be performed on the
      * replicas, where a failure to execute the operation should fail
      * the replica shard and/or mark the replica as stale.
-     * <p>
+     *
      * This extends {@code TransportReplicationAction.ReplicasProxy} to do the
      * failing and stale-ing.
      *

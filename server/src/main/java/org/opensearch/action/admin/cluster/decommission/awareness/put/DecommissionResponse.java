@@ -9,7 +9,6 @@
 package org.opensearch.action.admin.cluster.decommission.awareness.put;
 
 import org.opensearch.action.support.master.AcknowledgedResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.xcontent.ToXContentObject;
@@ -19,9 +18,8 @@ import java.io.IOException;
 /**
  * Response for decommission request
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public class DecommissionResponse extends AcknowledgedResponse implements ToXContentObject {
 
     public DecommissionResponse(StreamInput in) throws IOException {

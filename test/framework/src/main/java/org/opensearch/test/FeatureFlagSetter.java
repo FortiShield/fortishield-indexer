@@ -46,7 +46,6 @@ public class FeatureFlagSetter {
     private static final Logger LOGGER = LogManager.getLogger(FeatureFlagSetter.class);
     private final Set<String> flags = ConcurrentCollections.newConcurrentSet();
 
-    @SuppressWarnings("removal")
     @SuppressForbidden(reason = "Enables setting of feature flags")
     private void setFlag(String flag) {
         flags.add(flag);
@@ -54,7 +53,6 @@ public class FeatureFlagSetter {
         LOGGER.info("set feature_flag={}", flag);
     }
 
-    @SuppressWarnings("removal")
     @SuppressForbidden(reason = "Clears the set feature flags")
     private void clearAll() {
         for (String flag : flags) {

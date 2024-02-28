@@ -39,7 +39,6 @@ import org.opensearch.LegacyESVersion;
 import org.opensearch.Version;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.cluster.metadata.MappingMetadata;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.compress.CompressedXContent;
 import org.opensearch.common.logging.DeprecationLogger;
 import org.opensearch.common.regex.Regex;
@@ -47,7 +46,6 @@ import org.opensearch.common.settings.Setting;
 import org.opensearch.common.settings.Setting.Property;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.LoggingDeprecationHandler;
-import org.opensearch.common.xcontent.XContentContraints;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.common.xcontent.XContentHelper;
 import org.opensearch.core.Assertions;
@@ -92,9 +90,8 @@ import static java.util.Collections.unmodifiableMap;
 /**
  * The core field mapping service
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class MapperService extends AbstractIndexComponent implements Closeable {
 
     /**
@@ -102,7 +99,6 @@ public class MapperService extends AbstractIndexComponent implements Closeable {
      *
      * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public enum MergeReason {
         /**
          * Pre-flight check before sending a mapping update to the cluster-manager
@@ -151,45 +147,13 @@ public class MapperService extends AbstractIndexComponent implements Closeable {
         "index.mapping.depth.limit",
         20L,
         1,
-        Integer.MAX_VALUE,
-        limit -> {
-            // Make sure XContent constraints are not exceeded (otherwise content processing will fail)
-            if (limit > XContentContraints.DEFAULT_MAX_DEPTH) {
-                throw new IllegalArgumentException(
-                    "The provided value "
-                        + limit
-                        + " of the index setting 'index.mapping.depth.limit' exceeds per-JVM configured limit of "
-                        + XContentContraints.DEFAULT_MAX_DEPTH
-                        + ". Please change the setting value or increase per-JVM limit "
-                        + "using '"
-                        + XContentContraints.DEFAULT_MAX_DEPTH_PROPERTY
-                        + "' system property."
-                );
-            }
-        },
         Property.Dynamic,
         Property.IndexScope
     );
     public static final Setting<Long> INDEX_MAPPING_FIELD_NAME_LENGTH_LIMIT_SETTING = Setting.longSetting(
         "index.mapping.field_name_length.limit",
-        Integer.MAX_VALUE,
+        Long.MAX_VALUE,
         1L,
-        Integer.MAX_VALUE,
-        limit -> {
-            // Make sure XContent constraints are not exceeded (otherwise content processing will fail)
-            if (limit > XContentContraints.DEFAULT_MAX_NAME_LEN) {
-                throw new IllegalArgumentException(
-                    "The provided value "
-                        + limit
-                        + " of the index setting 'index.mapping.field_name_length.limit' exceeds per-JVM configured limit of "
-                        + XContentContraints.DEFAULT_MAX_NAME_LEN
-                        + ". Please change the setting value or increase per-JVM limit "
-                        + "using '"
-                        + XContentContraints.DEFAULT_MAX_NAME_LEN_PROPERTY
-                        + "' system property."
-                );
-            }
-        },
         Property.Dynamic,
         Property.IndexScope
     );

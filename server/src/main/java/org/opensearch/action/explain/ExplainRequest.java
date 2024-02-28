@@ -36,7 +36,6 @@ import org.opensearch.Version;
 import org.opensearch.action.ActionRequestValidationException;
 import org.opensearch.action.ValidateActions;
 import org.opensearch.action.support.single.shard.SingleShardRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -55,9 +54,8 @@ import static org.opensearch.action.ValidateActions.addValidationError;
 /**
  * Explain request encapsulating the explain query and document identifier to get an explanation for.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ExplainRequest extends SingleShardRequest<ExplainRequest> implements ToXContentObject {
 
     private static final ParseField QUERY_FIELD = new ParseField("query");

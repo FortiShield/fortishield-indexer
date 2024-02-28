@@ -175,8 +175,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import reactor.core.scheduler.Schedulers;
-
 import static java.util.Collections.emptyMap;
 import static org.opensearch.core.common.util.CollectionUtils.arrayAsArrayList;
 import static org.hamcrest.Matchers.empty;
@@ -227,7 +225,6 @@ public abstract class OpenSearchTestCase extends LuceneTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        Schedulers.shutdownNow();
         FeatureFlagSetter.clear();
         super.tearDown();
     }

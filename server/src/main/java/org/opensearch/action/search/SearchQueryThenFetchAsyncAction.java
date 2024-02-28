@@ -82,7 +82,7 @@ class SearchQueryThenFetchAsyncAction extends AbstractSearchAsyncAction<SearchPh
         ClusterState clusterState,
         SearchTask task,
         SearchResponse.Clusters clusters,
-        SearchRequestContext searchRequestContext
+        SearchRequestOperationsListener searchRequestOperationsListener
     ) {
         super(
             SearchPhaseName.QUERY.getName(),
@@ -102,7 +102,7 @@ class SearchQueryThenFetchAsyncAction extends AbstractSearchAsyncAction<SearchPh
             resultConsumer,
             request.getMaxConcurrentShardRequests(),
             clusters,
-            searchRequestContext
+            searchRequestOperationsListener
         );
         this.topDocsSize = SearchPhaseController.getTopDocsSize(request);
         this.trackTotalHitsUpTo = request.resolveTrackTotalHitsUpTo();

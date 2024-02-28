@@ -43,7 +43,6 @@ import org.apache.lucene.search.Scorable;
 import org.apache.lucene.util.BytesRef;
 import org.opensearch.common.Rounding;
 import org.opensearch.common.Rounding.Prepared;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lucene.ScorerAware;
 import org.opensearch.core.common.util.CollectionUtils;
 import org.opensearch.index.fielddata.AbstractSortingNumericDocValues;
@@ -76,9 +75,8 @@ import java.util.function.LongUnaryOperator;
 /**
  * Base class for a ValuesSource; the primitive data for an agg
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class ValuesSource {
 
     /**
@@ -575,11 +573,6 @@ public abstract class ValuesSource {
                         return true;
                     }
                     return false;
-                }
-
-                @Override
-                public int advance(int target) throws IOException {
-                    return doubleValues.advance(target);
                 }
             }
         }

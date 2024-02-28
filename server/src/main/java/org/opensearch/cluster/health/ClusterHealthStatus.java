@@ -32,7 +32,6 @@
 
 package org.opensearch.cluster.health;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -42,9 +41,8 @@ import java.io.IOException;
 /**
  * Cluster health status
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public enum ClusterHealthStatus implements Writeable {
     GREEN((byte) 0),
     YELLOW((byte) 1),

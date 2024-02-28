@@ -37,7 +37,6 @@ import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.util.CloseableThreadLocal;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.util.concurrent.ConcurrentCollections;
 
 import java.io.IOException;
@@ -111,9 +110,8 @@ public final class VersionsAndSeqNoResolver {
     /**
      * Wraps an {@link LeafReaderContext}, a doc ID <b>relative to the context doc base</b> and a version.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class DocIdAndVersion {
         public final int docId;
         public final long version;

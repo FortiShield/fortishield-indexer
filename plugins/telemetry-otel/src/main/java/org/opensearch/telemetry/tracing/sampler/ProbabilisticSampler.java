@@ -8,7 +8,6 @@
 
 package org.opensearch.telemetry.tracing.sampler;
 
-import org.opensearch.common.settings.Settings;
 import org.opensearch.telemetry.TelemetrySettings;
 
 import java.util.List;
@@ -19,18 +18,14 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.trace.data.LinkData;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
-import io.opentelemetry.sdk.trace.samplers.SamplingDecision;
 import io.opentelemetry.sdk.trace.samplers.SamplingResult;
 
 /**
- * ProbabilisticSampler implements a probability sampling strategy based on configured sampling ratio.
+ * ProbabilisticSampler implements a head-based sampling strategy based on provided settings.
  */
 public class ProbabilisticSampler implements Sampler {
     private Sampler defaultSampler;
     private final TelemetrySettings telemetrySettings;
-    private final Settings settings;
-    private final Sampler fallbackSampler;
-
     private double samplingRatio;
 
     /**
@@ -38,24 +33,21 @@ public class ProbabilisticSampler implements Sampler {
      *
      * @param telemetrySettings Telemetry settings.
      */
-    private ProbabilisticSampler(TelemetrySettings telemetrySettings, Settings settings, Sampler fallbackSampler) {
+    public ProbabilisticSampler(TelemetrySettings telemetrySettings) {
         this.telemetrySettings = Objects.requireNonNull(telemetrySettings);
-        this.settings = Objects.requireNonNull(settings);
         this.samplingRatio = telemetrySettings.getSamplingProbability();
         this.defaultSampler = Sampler.traceIdRatioBased(samplingRatio);
-        this.fallbackSampler = fallbackSampler;
     }
 
-    /**
-     * Create probabilistic sampler.
-     *
-     * @param telemetrySettings the telemetry settings
-     * @param settings          the settings
-     * @param fallbackSampler   the fallback sampler
-     * @return the probabilistic sampler
-     */
-    public static Sampler create(TelemetrySettings telemetrySettings, Settings settings, Sampler fallbackSampler) {
-        return new ProbabilisticSampler(telemetrySettings, settings, fallbackSampler);
+    Sampler getSampler() {
+        double newSamplingRatio = telemetrySettings.getSamplingProbability();
+        if (isSamplingRatioChanged(newSamplingRatio)) {
+            synchronized (this) {
+                this.samplingRatio = newSamplingRatio;
+                defaultSampler = Sampler.traceIdRatioBased(samplingRatio);
+            }
+        }
+        return defaultSampler;
     }
 
     private boolean isSamplingRatioChanged(double newSamplingRatio) {
@@ -75,19 +67,7 @@ public class ProbabilisticSampler implements Sampler {
         Attributes attributes,
         List<LinkData> parentLinks
     ) {
-        double newSamplingRatio = telemetrySettings.getSamplingProbability();
-        if (isSamplingRatioChanged(newSamplingRatio)) {
-            synchronized (this) {
-                this.samplingRatio = newSamplingRatio;
-                defaultSampler = Sampler.traceIdRatioBased(samplingRatio);
-            }
-        }
-        final SamplingResult result = defaultSampler.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks);
-        if (result.getDecision() != SamplingDecision.DROP && fallbackSampler != null) {
-            return fallbackSampler.shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks);
-        } else {
-            return result;
-        }
+        return getSampler().shouldSample(parentContext, traceId, name, spanKind, attributes, parentLinks);
     }
 
     @Override

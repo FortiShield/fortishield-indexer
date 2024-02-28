@@ -33,7 +33,6 @@
 package org.opensearch.action.admin.indices.validate.query;
 
 import org.opensearch.action.support.broadcast.BroadcastResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.action.support.DefaultShardOperationFailedException;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -53,9 +52,8 @@ import static org.opensearch.core.xcontent.ConstructingObjectParser.optionalCons
 /**
  * The response of the validate action.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ValidateQueryResponse extends BroadcastResponse {
 
     public static final String VALID_FIELD = "valid";

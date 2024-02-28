@@ -11,7 +11,6 @@ package org.opensearch.search.pipeline;
 import org.opensearch.Version;
 import org.opensearch.cluster.AbstractDiffable;
 import org.opensearch.cluster.Diff;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.xcontent.XContentHelper;
 import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.core.ParseField;
@@ -32,12 +31,9 @@ import java.util.Objects;
 
 /**
  * TODO: Copied verbatim from {@link org.opensearch.ingest.PipelineConfiguration}.
- * <p>
- * See if we can refactor into a common class. I suspect not, just because this one will hold
  *
- * @opensearch.api
+ * See if we can refactor into a common class. I suspect not, just because this one will hold
  */
-@PublicApi(since = "2.7.0")
 public class PipelineConfiguration extends AbstractDiffable<PipelineConfiguration> implements ToXContentObject {
     private static final ObjectParser<Builder, Void> PARSER = new ObjectParser<>(
         "pipeline_config",

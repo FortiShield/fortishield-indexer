@@ -1,5 +1,4 @@
 * text eol=lf
-*.jar binary
 *.bat binary
 *.zip binary
 *.exe binary

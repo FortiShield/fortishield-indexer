@@ -34,7 +34,6 @@ package org.opensearch.action.termvectors;
 
 import org.opensearch.action.ActionRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.index.VersionType;
 
@@ -47,9 +46,8 @@ import java.util.Map;
  * Note, the {@code index}, {@code type} and {@code id} are
  * required.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class TermVectorsRequestBuilder extends ActionRequestBuilder<TermVectorsRequest, TermVectorsResponse> {
 
     public TermVectorsRequestBuilder(OpenSearchClient client, TermVectorsAction action) {

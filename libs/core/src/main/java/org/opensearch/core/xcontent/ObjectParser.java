@@ -32,7 +32,6 @@
 package org.opensearch.core.xcontent;
 
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 
 import java.io.IOException;
@@ -84,9 +83,8 @@ import static org.opensearch.core.xcontent.XContentParser.Token.VALUE_STRING;
  * It's highly recommended to use the high level declare methods like {@link #declareString(BiConsumer, ParseField)} instead of
  * {@link #declareField} which can be used to implement exceptional parsing operations not covered by the high level methods.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class ObjectParser<Value, Context> extends AbstractObjectParser<Value, Context>
     implements
         BiFunction<XContentParser, Context, Value>,

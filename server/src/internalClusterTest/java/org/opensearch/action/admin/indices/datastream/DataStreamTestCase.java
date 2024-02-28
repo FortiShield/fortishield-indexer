@@ -37,7 +37,6 @@ public class DataStreamTestCase extends OpenSearchIntegTestCase {
         CreateDataStreamAction.Request request = new CreateDataStreamAction.Request(name);
         AcknowledgedResponse response = client().admin().indices().createDataStream(request).get();
         assertThat(response.isAcknowledged(), is(true));
-        performRemoteStoreTestAction();
         return response;
     }
 
@@ -68,7 +67,6 @@ public class DataStreamTestCase extends OpenSearchIntegTestCase {
         RolloverResponse response = client().admin().indices().rolloverIndex(request).get();
         assertThat(response.isAcknowledged(), is(true));
         assertThat(response.isRolledOver(), is(true));
-        performRemoteStoreTestAction();
         return response;
     }
 
@@ -111,4 +109,5 @@ public class DataStreamTestCase extends OpenSearchIntegTestCase {
         assertThat(response.isAcknowledged(), is(true));
         return response;
     }
+
 }

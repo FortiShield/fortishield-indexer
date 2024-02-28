@@ -34,7 +34,6 @@ package org.opensearch.monitor.os;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -49,9 +48,8 @@ import java.util.Objects;
 /**
  * Holds stats for the Operating System
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class OsStats implements Writeable, ToXContentFragment {
 
     private final long timestamp;
@@ -145,9 +143,8 @@ public class OsStats implements Writeable, ToXContentFragment {
     /**
      * CPU Information.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Cpu implements Writeable, ToXContentFragment {
 
         private final short percent;
@@ -211,9 +208,8 @@ public class OsStats implements Writeable, ToXContentFragment {
     /**
      * Swap information.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Swap implements Writeable, ToXContentFragment {
 
         private static final Logger logger = LogManager.getLogger(Swap.class);
@@ -280,9 +276,8 @@ public class OsStats implements Writeable, ToXContentFragment {
     /**
      * OS Memory information.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Mem implements Writeable, ToXContentFragment {
 
         private static final Logger logger = LogManager.getLogger(Mem.class);
@@ -358,9 +353,8 @@ public class OsStats implements Writeable, ToXContentFragment {
     /**
      * Encapsulates basic cgroup statistics.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Cgroup implements Writeable, ToXContentFragment {
 
         private final String cpuAcctControlGroup;
@@ -552,9 +546,8 @@ public class OsStats implements Writeable, ToXContentFragment {
         /**
          * Encapsulates CPU time statistics.
          *
-         * @opensearch.api
+         * @opensearch.internal
          */
-        @PublicApi(since = "1.0.0")
         public static class CpuStat implements Writeable, ToXContentFragment {
 
             private final long numberOfElapsedPeriods;

@@ -31,7 +31,6 @@
 
 package org.opensearch.index;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lucene.uid.Versions;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -43,9 +42,8 @@ import java.util.Locale;
 /**
  * Types of index versions
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public enum VersionType implements Writeable {
     INTERNAL((byte) 0) {
         @Override
@@ -246,7 +244,7 @@ public enum VersionType implements Writeable {
 
     /**
      * Returns a human readable explanation for a version conflict on write.
-     * <p>
+     *
      * Note that this method is only called if {@link #isVersionConflictForWrites(long, long, boolean)} returns true;
      *
      * @param currentVersion  the current version for the document
@@ -267,7 +265,7 @@ public enum VersionType implements Writeable {
 
     /**
      * Returns a human readable explanation for a version conflict on read.
-     * <p>
+     *
      * Note that this method is only called if {@link #isVersionConflictForReads(long, long)} returns true;
      *
      * @param currentVersion  the current version for the document

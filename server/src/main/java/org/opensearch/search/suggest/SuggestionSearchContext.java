@@ -33,7 +33,6 @@ package org.opensearch.search.suggest;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.util.BytesRef;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.index.query.QueryShardContext;
 
 import java.util.LinkedHashMap;
@@ -42,9 +41,8 @@ import java.util.Map;
 /**
  * Context used for suggestion based search
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SuggestionSearchContext {
 
     private final Map<String, SuggestionContext> suggestions = new LinkedHashMap<>(4);
@@ -60,9 +58,8 @@ public class SuggestionSearchContext {
     /**
      * The suggestion context
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public abstract static class SuggestionContext {
 
         private BytesRef text;

@@ -35,7 +35,6 @@ package org.opensearch.search.dfs;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.CollectionStatistics;
 import org.apache.lucene.search.TermStatistics;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -48,9 +47,8 @@ import java.util.Map;
 /**
  * Compute global distributed frequency across the index
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class AggregatedDfs implements Writeable {
 
     private Map<Term, TermStatistics> termStatistics;

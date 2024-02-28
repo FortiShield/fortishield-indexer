@@ -8,7 +8,6 @@
 
 package org.opensearch.index.store.remote.utils.cache.stats;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.index.store.remote.utils.cache.RefCountedCache;
 
 import java.util.Objects;
@@ -16,9 +15,8 @@ import java.util.Objects;
 /**
  * Statistics about the performance of a {@link RefCountedCache}.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.7.0")
 public final class CacheStats {
     private final long hitCount;
     private final long missCount;

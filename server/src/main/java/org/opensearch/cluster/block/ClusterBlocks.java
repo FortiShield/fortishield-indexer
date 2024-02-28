@@ -37,7 +37,6 @@ import org.opensearch.cluster.Diff;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.cluster.metadata.MetadataIndexStateService;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.util.set.Sets;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -60,9 +59,8 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Represents current cluster level blocks to block dirty operations done against the cluster.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ClusterBlocks extends AbstractDiffable<ClusterBlocks> {
     public static final ClusterBlocks EMPTY_CLUSTER_BLOCK = new ClusterBlocks(emptySet(), Map.of());
 
@@ -357,9 +355,8 @@ public class ClusterBlocks extends AbstractDiffable<ClusterBlocks> {
     /**
      * Builder for cluster blocks.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Builder {
 
         private final Set<ClusterBlock> global = new HashSet<>();

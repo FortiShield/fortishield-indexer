@@ -32,16 +32,14 @@
 package org.opensearch.cluster;
 
 import org.opensearch.cluster.service.ClusterManagerService;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.util.List;
 
 /**
  * Interface to implement a cluster state change listener
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface ClusterStateTaskListener {
 
     /**

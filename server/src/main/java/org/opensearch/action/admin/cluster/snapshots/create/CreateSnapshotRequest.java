@@ -38,7 +38,6 @@ import org.opensearch.action.ActionRequestValidationException;
 import org.opensearch.action.IndicesRequest;
 import org.opensearch.action.support.IndicesOptions;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.core.common.Strings;
@@ -78,9 +77,8 @@ import static org.opensearch.snapshots.SnapshotInfo.METADATA_FIELD_INTRODUCED;
  * <li>must not contain invalid file name characters {@link Strings#INVALID_FILENAME_CHARS} </li>
  * </ul>
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class CreateSnapshotRequest extends ClusterManagerNodeRequest<CreateSnapshotRequest>
     implements
         IndicesRequest.Replaceable,
@@ -268,7 +266,7 @@ public class CreateSnapshotRequest extends ClusterManagerNodeRequest<CreateSnaps
     /**
      * Returns a list of indices that should be included into the snapshot
      *
-     * @return array of index names
+     * @return list of indices
      */
     @Override
     public String[] indices() {
@@ -323,7 +321,7 @@ public class CreateSnapshotRequest extends ClusterManagerNodeRequest<CreateSnaps
 
     /**
      * If set to true the operation should wait for the snapshot completion before returning.
-     * <p>
+     *
      * By default, the operation will return as soon as snapshot is initialized. It can be changed by setting this
      * flag to true.
      *

@@ -36,7 +36,6 @@ import org.opensearch.action.admin.cluster.crypto.CryptoSettings;
 import org.opensearch.action.support.master.AcknowledgedRequestBuilder;
 import org.opensearch.action.support.master.AcknowledgedResponse;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.XContentType;
 
@@ -45,9 +44,8 @@ import java.util.Map;
 /**
  * Register repository request builder
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class PutRepositoryRequestBuilder extends AcknowledgedRequestBuilder<
     PutRepositoryRequest,
     AcknowledgedResponse,

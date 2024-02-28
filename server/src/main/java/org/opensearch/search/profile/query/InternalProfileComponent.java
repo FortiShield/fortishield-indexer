@@ -8,16 +8,13 @@
 
 package org.opensearch.search.profile.query;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import java.util.Collection;
 
 /**
  * Container for an agg profiling component
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.9.0")
 public interface InternalProfileComponent {
     /**
      * @return profile component name

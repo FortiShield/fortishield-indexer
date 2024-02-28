@@ -33,7 +33,6 @@ package org.opensearch.index.query;
 
 import org.opensearch.LegacyESVersion;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.ParsingException;
 import org.opensearch.core.common.Strings;
@@ -68,10 +67,7 @@ import static org.opensearch.core.xcontent.XContentParser.Token.END_OBJECT;
 
 /**
  * Query builder for inner hits
- *
- * @opensearch.api
  */
-@PublicApi(since = "1.0.0")
 public final class InnerHitBuilder implements Writeable, ToXContentObject {
 
     public static final ParseField NAME_FIELD = new ParseField("name");

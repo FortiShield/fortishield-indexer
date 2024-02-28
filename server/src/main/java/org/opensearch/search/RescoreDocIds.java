@@ -32,7 +32,6 @@
 
 package org.opensearch.search;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -47,9 +46,8 @@ import java.util.Set;
  * (i.e., documents that will be rescored by query rescorers) need to be serialized/ deserialized between search phases.
  * A {@link RescoreDocIds} encapsulates the top K results for each rescorer by its ordinal index.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class RescoreDocIds implements Writeable {
     public static final RescoreDocIds EMPTY = new RescoreDocIds(Collections.emptyMap());
 

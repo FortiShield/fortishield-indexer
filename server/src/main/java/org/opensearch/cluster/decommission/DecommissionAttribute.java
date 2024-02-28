@@ -8,7 +8,6 @@
 
 package org.opensearch.cluster.decommission;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -19,9 +18,8 @@ import java.util.Objects;
 /**
  * {@link DecommissionAttribute} encapsulates information about decommissioned node attribute like attribute name, attribute value.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public final class DecommissionAttribute implements Writeable {
     private final String attributeName;
     private final String attributeValue;

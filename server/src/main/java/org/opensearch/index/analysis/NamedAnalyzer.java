@@ -34,7 +34,6 @@ package org.opensearch.index.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.DelegatingAnalyzerWrapper;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.index.mapper.MapperException;
 
 import java.util.ArrayList;
@@ -45,9 +44,8 @@ import java.util.Objects;
  * Named analyzer is an analyzer wrapper around an actual analyzer ({@link #analyzer} that is associated
  * with a name ({@link #name()}.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class NamedAnalyzer extends DelegatingAnalyzerWrapper {
 
     private final String name;

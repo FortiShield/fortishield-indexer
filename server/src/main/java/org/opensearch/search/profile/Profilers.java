@@ -32,13 +32,9 @@
 
 package org.opensearch.search.profile;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.search.internal.ContextIndexSearcher;
 import org.opensearch.search.profile.aggregation.AggregationProfiler;
 import org.opensearch.search.profile.aggregation.ConcurrentAggregationProfiler;
-import org.opensearch.search.profile.query.ConcurrentQueryProfileTree;
-import org.opensearch.search.profile.query.ConcurrentQueryProfiler;
-import org.opensearch.search.profile.query.InternalQueryProfileTree;
 import org.opensearch.search.profile.query.QueryProfiler;
 
 import java.util.ArrayList;
@@ -48,9 +44,8 @@ import java.util.List;
 /**
  * Wrapper around all the profilers that makes management easier.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class Profilers {
 
     private final ContextIndexSearcher searcher;
@@ -69,9 +64,7 @@ public final class Profilers {
 
     /** Switch to a new profile. */
     public QueryProfiler addQueryProfiler() {
-        QueryProfiler profiler = isConcurrentSegmentSearchEnabled
-            ? new ConcurrentQueryProfiler(new ConcurrentQueryProfileTree())
-            : new QueryProfiler(new InternalQueryProfileTree());
+        QueryProfiler profiler = new QueryProfiler(isConcurrentSegmentSearchEnabled);
         searcher.setProfiler(profiler);
         queryProfilers.add(profiler);
         return profiler;

@@ -154,10 +154,10 @@ public class InternalComposite extends InternalMultiBucketAggregation<InternalCo
 
     @Override
     public InternalComposite create(List<InternalBucket> newBuckets) {
-        /*
-          This is used by pipeline aggregations to filter/remove buckets so we
-          keep the <code>afterKey</code> of the original aggregation in order
-          to be able to retrieve the next page even if all buckets have been filtered.
+        /**
+         * This is used by pipeline aggregations to filter/remove buckets so we
+         * keep the <code>afterKey</code> of the original aggregation in order
+         * to be able to retrieve the next page even if all buckets have been filtered.
          */
         return new InternalComposite(
             name,
@@ -351,7 +351,7 @@ public class InternalComposite extends InternalMultiBucketAggregation<InternalCo
             KeyComparable<InternalBucket> {
 
         private final CompositeKey key;
-        private long docCount;
+        private final long docCount;
         private final InternalAggregations aggregations;
         private final transient int[] reverseMuls;
         private final transient MissingOrder[] missingOrders;
@@ -448,10 +448,6 @@ public class InternalComposite extends InternalMultiBucketAggregation<InternalCo
             return docCount;
         }
 
-        public void setDocCount(long docCount) {
-            this.docCount = docCount;
-        }
-
         @Override
         public Aggregations getAggregations() {
             return aggregations;
@@ -489,8 +485,8 @@ public class InternalComposite extends InternalMultiBucketAggregation<InternalCo
 
         @Override
         public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-            /*
-              See {@link CompositeAggregation#bucketToXContent}
+            /**
+             * See {@link CompositeAggregation#bucketToXContent}
              */
             throw new UnsupportedOperationException("not implemented");
         }

@@ -21,7 +21,6 @@ import java.util.Objects;
 class DefaultSpanScope implements SpanScope {
     private final Span span;
     private final SpanScope previousSpanScope;
-    private final Span beforeSpan;
     private static final ThreadLocal<SpanScope> spanScopeThreadLocal = new ThreadLocal<>();
     private final TracerContextStorage<String, Span> tracerContextStorage;
 
@@ -30,14 +29,8 @@ class DefaultSpanScope implements SpanScope {
      * @param span span
      * @param previousSpanScope before attached span scope.
      */
-    private DefaultSpanScope(
-        Span span,
-        final Span beforeSpan,
-        SpanScope previousSpanScope,
-        TracerContextStorage<String, Span> tracerContextStorage
-    ) {
+    private DefaultSpanScope(Span span, SpanScope previousSpanScope, TracerContextStorage<String, Span> tracerContextStorage) {
         this.span = Objects.requireNonNull(span);
-        this.beforeSpan = beforeSpan;
         this.previousSpanScope = previousSpanScope;
         this.tracerContextStorage = tracerContextStorage;
     }
@@ -50,27 +43,26 @@ class DefaultSpanScope implements SpanScope {
      */
     public static SpanScope create(Span span, TracerContextStorage<String, Span> tracerContextStorage) {
         final SpanScope beforeSpanScope = spanScopeThreadLocal.get();
-        final Span beforeSpan = tracerContextStorage.get(TracerContextStorage.CURRENT_SPAN);
-        SpanScope newSpanScope = new DefaultSpanScope(span, beforeSpan, beforeSpanScope, tracerContextStorage);
+        SpanScope newSpanScope = new DefaultSpanScope(span, beforeSpanScope, tracerContextStorage);
+        spanScopeThreadLocal.set(newSpanScope);
         return newSpanScope;
     }
 
     @Override
     public void close() {
         detach();
+        spanScopeThreadLocal.set(previousSpanScope);
     }
 
     @Override
     public SpanScope attach() {
-        spanScopeThreadLocal.set(this);
         tracerContextStorage.put(TracerContextStorage.CURRENT_SPAN, this.span);
         return this;
     }
 
     private void detach() {
-        spanScopeThreadLocal.set(previousSpanScope);
-        if (beforeSpan != null) {
-            tracerContextStorage.put(TracerContextStorage.CURRENT_SPAN, beforeSpan);
+        if (previousSpanScope != null) {
+            tracerContextStorage.put(TracerContextStorage.CURRENT_SPAN, previousSpanScope.getSpan());
         } else {
             tracerContextStorage.put(TracerContextStorage.CURRENT_SPAN, null);
         }

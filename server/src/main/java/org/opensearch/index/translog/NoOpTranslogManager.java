@@ -8,7 +8,6 @@
 
 package org.opensearch.index.translog;
 
-import org.opensearch.common.lease.Releasable;
 import org.opensearch.common.util.concurrent.ReleasableLock;
 import org.opensearch.core.index.shard.ShardId;
 
@@ -117,13 +116,7 @@ public class NoOpTranslogManager implements TranslogManager {
         return new Translog.Location(0, 0, 0);
     }
 
-    @Override
     public void onDelete() {}
-
-    @Override
-    public Releasable drainSync() {
-        return () -> {};
-    }
 
     @Override
     public Translog.TranslogGeneration getTranslogGeneration() {

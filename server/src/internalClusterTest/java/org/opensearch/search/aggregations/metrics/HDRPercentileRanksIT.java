@@ -72,8 +72,8 @@ import static org.hamcrest.Matchers.sameInstance;
 
 public class HDRPercentileRanksIT extends AbstractNumericTestCase {
 
-    public HDRPercentileRanksIT(Settings staticSettings) {
-        super(staticSettings);
+    public HDRPercentileRanksIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @Override

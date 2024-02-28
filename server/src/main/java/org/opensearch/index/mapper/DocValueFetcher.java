@@ -33,7 +33,6 @@
 package org.opensearch.index.mapper;
 
 import org.apache.lucene.index.LeafReaderContext;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.index.fielddata.IndexFieldData;
 import org.opensearch.search.DocValueFormat;
 import org.opensearch.search.lookup.SourceLookup;
@@ -78,9 +77,8 @@ public final class DocValueFetcher implements ValueFetcher {
     /**
      * Leaf interface
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public interface Leaf {
         /**
          * Advance the doc values reader to the provided doc.

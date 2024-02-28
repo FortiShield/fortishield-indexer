@@ -10,7 +10,6 @@ package org.opensearch.core.tasks.resourcetracker;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -23,9 +22,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * It captures the resource usage information like memory, CPU about a particular execution of thread
  * for a specific stats type.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.1.0")
 public class ResourceUsageInfo {
     private static final Logger logger = LogManager.getLogger(ResourceUsageInfo.class);
     private final EnumMap<ResourceStats, ResourceStatsInfo> statsInfo = new EnumMap<>(ResourceStats.class);

@@ -33,7 +33,6 @@
 package org.opensearch.action.admin.indices.open;
 
 import org.opensearch.action.support.master.ShardsAcknowledgedResponse;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.xcontent.ConstructingObjectParser;
@@ -44,9 +43,8 @@ import java.io.IOException;
 /**
  * A response for a open index action.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class OpenIndexResponse extends ShardsAcknowledgedResponse {
 
     private static final ConstructingObjectParser<OpenIndexResponse, Void> PARSER = new ConstructingObjectParser<>(

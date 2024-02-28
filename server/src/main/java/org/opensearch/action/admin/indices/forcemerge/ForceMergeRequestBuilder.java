@@ -34,7 +34,6 @@ package org.opensearch.action.admin.indices.forcemerge;
 
 import org.opensearch.action.support.broadcast.BroadcastOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * A request to force merge one or more indices. In order to force merge all
@@ -43,9 +42,8 @@ import org.opensearch.common.annotation.PublicApi;
  * merge down to. By default, will cause the force merge process to merge down
  * to half the configured number of segments.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ForceMergeRequestBuilder extends BroadcastOperationRequestBuilder<
     ForceMergeRequest,
     ForceMergeResponse,

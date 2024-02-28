@@ -32,15 +32,13 @@
 
 package org.opensearch.common.util;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.util.BigArray;
 
 /**
  * Abstraction of an array of double values.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface FloatArray extends BigArray {
 
     /**

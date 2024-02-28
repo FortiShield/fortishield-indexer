@@ -8,7 +8,6 @@
 
 package org.opensearch.action.search;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.xcontent.StatusToXContentObject;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.action.ActionResponse;
@@ -29,10 +28,7 @@ import static org.opensearch.core.xcontent.ConstructingObjectParser.constructorA
 
 /**
  * Response class for delete pits flow which clears the point in time search contexts
- *
- * @opensearch.api
  */
-@PublicApi(since = "2.3.0")
 public class DeletePitResponse extends ActionResponse implements StatusToXContentObject {
 
     private final List<DeletePitInfo> deletePitResults;

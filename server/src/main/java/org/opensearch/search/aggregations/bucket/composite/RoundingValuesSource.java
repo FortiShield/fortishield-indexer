@@ -47,19 +47,17 @@ import java.io.IOException;
  *
  * @opensearch.internal
  */
-public class RoundingValuesSource extends ValuesSource.Numeric {
+class RoundingValuesSource extends ValuesSource.Numeric {
     private final ValuesSource.Numeric vs;
-    private final Rounding.Prepared preparedRounding;
-    private final Rounding rounding;
+    private final Rounding.Prepared rounding;
 
     /**
-     * @param vs               The original values source
-     * @param preparedRounding How to round the values
-     * @param rounding         The rounding strategy
+     *
+     * @param vs The original values source
+     * @param rounding How to round the values
      */
-    RoundingValuesSource(Numeric vs, Rounding.Prepared preparedRounding, Rounding rounding) {
+    RoundingValuesSource(Numeric vs, Rounding.Prepared rounding) {
         this.vs = vs;
-        this.preparedRounding = preparedRounding;
         this.rounding = rounding;
     }
 
@@ -73,16 +71,8 @@ public class RoundingValuesSource extends ValuesSource.Numeric {
         return false;
     }
 
-    public Rounding.Prepared getPreparedRounding() {
-        return preparedRounding;
-    }
-
-    public Rounding getRounding() {
-        return rounding;
-    }
-
     public long round(long value) {
-        return preparedRounding.round(value);
+        return rounding.round(value);
     }
 
     @Override

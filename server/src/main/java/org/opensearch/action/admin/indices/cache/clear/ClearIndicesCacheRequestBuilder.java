@@ -34,14 +34,12 @@ package org.opensearch.action.admin.indices.cache.clear;
 
 import org.opensearch.action.support.broadcast.BroadcastOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * Transport request builder for clearing cache
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ClearIndicesCacheRequestBuilder extends BroadcastOperationRequestBuilder<
     ClearIndicesCacheRequest,
     ClearIndicesCacheResponse,

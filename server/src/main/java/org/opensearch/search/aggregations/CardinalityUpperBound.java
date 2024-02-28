@@ -32,7 +32,6 @@
 
 package org.opensearch.search.aggregations;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.search.aggregations.bucket.BucketsAggregator;
 import org.opensearch.search.aggregations.bucket.filter.FilterAggregator;
 import org.opensearch.search.aggregations.bucket.range.RangeAggregator;
@@ -43,9 +42,8 @@ import java.util.function.IntFunction;
  * Upper bound of how many {@code owningBucketOrds} that an {@link Aggregator}
  * will have to collect into.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class CardinalityUpperBound {
     /**
      * {@link Aggregator}s with this cardinality won't collect any data at

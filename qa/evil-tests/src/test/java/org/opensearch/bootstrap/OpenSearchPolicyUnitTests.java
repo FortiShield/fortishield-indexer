@@ -50,7 +50,6 @@ import java.util.Collections;
  * Unit tests for OpenSearchPolicy: these cannot run with security manager,
  * we don't allow messing with the policy
  */
-@SuppressWarnings("removal")
 public class OpenSearchPolicyUnitTests extends OpenSearchTestCase {
     /**
      * Test policy with null codesource.

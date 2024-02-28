@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
@@ -589,9 +588,7 @@ public class NRTReplicationEngineTests extends EngineTestCase {
         indexOperations(nrtEngine, operations);
         // wipe the nrt directory initially so we can sync with primary.
         cleanAndCopySegmentsFromPrimary(nrtEngine);
-        final Optional<String> toDelete = Set.of(nrtEngineStore.directory().listAll()).stream().filter(f -> f.endsWith(".si")).findAny();
-        assertTrue(toDelete.isPresent());
-        nrtEngineStore.directory().deleteFile(toDelete.get());
+        nrtEngineStore.directory().deleteFile("_0.si");
         assertEquals(2, nrtEngineStore.refCount());
         nrtEngine.close();
         assertEquals(1, nrtEngineStore.refCount());
@@ -614,18 +611,11 @@ public class NRTReplicationEngineTests extends EngineTestCase {
         indexOperations(nrtEngine, operations);
         // wipe the nrt directory initially so we can sync with primary.
         cleanAndCopySegmentsFromPrimary(nrtEngine);
-        final Optional<String> toDelete = Set.of(nrtEngineStore.directory().listAll()).stream().filter(f -> f.endsWith(".si")).findAny();
-        assertTrue(toDelete.isPresent());
-        nrtEngineStore.directory().deleteFile(toDelete.get());
+        nrtEngineStore.directory().deleteFile("_0.si");
         assertThrows(FlushFailedEngineException.class, nrtEngine::flush);
-        nrtEngine.close();
-        if (nrtEngineStore.isMarkedCorrupted()) {
-            assertThrows(RuntimeException.class, nrtEngineStore::close);
-        } else {
-            // With certain mock directories a NoSuchFileException is thrown which is not treated as a
-            // corruption Exception. In these cases we don't expect any issue on store close.
-            nrtEngineStore.close();
-        }
+        assertTrue(nrtEngineStore.isMarkedCorrupted());
+        // store will throw when eventually closed, not handled here.
+        assertThrows(RuntimeException.class, nrtEngineStore::close);
     }
 
     private void copySegments(Collection<String> latestPrimaryFiles, Engine nrtEngine) throws IOException {

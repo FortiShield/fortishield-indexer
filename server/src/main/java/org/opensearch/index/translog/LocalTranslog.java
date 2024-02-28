@@ -8,7 +8,6 @@
 
 package org.opensearch.index.translog;
 
-import org.opensearch.common.lease.Releasable;
 import org.opensearch.common.util.concurrent.ReleasableLock;
 import org.opensearch.common.util.io.IOUtils;
 
@@ -139,11 +138,6 @@ public class LocalTranslog extends Translog {
                 earliestLastModifiedAge()
             );
         }
-    }
-
-    @Override
-    Releasable drainSync() {
-        return () -> {}; // noop
     }
 
     @Override

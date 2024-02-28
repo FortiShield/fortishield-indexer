@@ -34,7 +34,6 @@ package org.opensearch.action.admin.indices.dangling.import_index;
 
 import org.opensearch.action.ActionRequestValidationException;
 import org.opensearch.action.support.master.AcknowledgedRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 
@@ -47,9 +46,8 @@ import java.util.Objects;
  * by its UUID. The {@link #acceptDataLoss} flag must also be
  * explicitly set to true, or later validation will fail.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ImportDanglingIndexRequest extends AcknowledgedRequest<ImportDanglingIndexRequest> {
     private final String indexUUID;
     private final boolean acceptDataLoss;

@@ -32,7 +32,6 @@
 
 package org.opensearch.index.translog;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.util.BigArrays;
 import org.opensearch.core.common.unit.ByteSizeUnit;
 import org.opensearch.core.common.unit.ByteSizeValue;
@@ -46,9 +45,8 @@ import java.nio.file.Path;
  * Once {@link Translog} has been created with this object, changes to this
  * object will affect the {@link Translog} instance.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class TranslogConfig {
 
     public static final ByteSizeValue DEFAULT_BUFFER_SIZE = new ByteSizeValue(1, ByteSizeUnit.MB);

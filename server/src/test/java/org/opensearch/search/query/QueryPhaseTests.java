@@ -69,7 +69,6 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.MatchNoDocsQuery;
 import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Pruning;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
@@ -660,7 +659,7 @@ public class QueryPhaseTests extends IndexShardTestCase {
                 @SuppressWarnings("unchecked")
                 FieldComparator<Object> comparator = (FieldComparator<Object>) searchSortAndFormat.sort.getSort()[i].getComparator(
                     1,
-                    Pruning.NONE
+                    false
                 );
                 int cmp = comparator.compareValues(firstDoc.fields[i], lastDoc.fields[i]);
                 if (cmp == 0) {
@@ -1210,12 +1209,6 @@ public class QueryPhaseTests extends IndexShardTestCase {
         IndexShard indexShard = mock(IndexShard.class);
         when(searchContext.indexShard()).thenReturn(indexShard);
         when(searchContext.bucketCollectorProcessor()).thenReturn(SearchContext.NO_OP_BUCKET_COLLECTOR_PROCESSOR);
-        when(searchContext.shouldUseConcurrentSearch()).thenReturn(executor != null);
-        if (executor != null) {
-            when(searchContext.getTargetMaxSliceCount()).thenReturn(randomIntBetween(0, 2));
-        } else {
-            when(searchContext.getTargetMaxSliceCount()).thenThrow(IllegalStateException.class);
-        }
         return new ContextIndexSearcher(
             reader,
             IndexSearcher.getDefaultSimilarity(),
@@ -1233,12 +1226,6 @@ public class QueryPhaseTests extends IndexShardTestCase {
         IndexShard indexShard = mock(IndexShard.class);
         when(searchContext.indexShard()).thenReturn(indexShard);
         when(searchContext.bucketCollectorProcessor()).thenReturn(SearchContext.NO_OP_BUCKET_COLLECTOR_PROCESSOR);
-        when(searchContext.shouldUseConcurrentSearch()).thenReturn(executor != null);
-        if (executor != null) {
-            when(searchContext.getTargetMaxSliceCount()).thenReturn(randomIntBetween(0, 2));
-        } else {
-            when(searchContext.getTargetMaxSliceCount()).thenThrow(IllegalStateException.class);
-        }
         return new ContextIndexSearcher(
             reader,
             IndexSearcher.getDefaultSimilarity(),

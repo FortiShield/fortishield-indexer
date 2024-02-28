@@ -35,7 +35,6 @@ package org.opensearch.action.admin.indices.shards;
 import org.opensearch.LegacyESVersion;
 import org.opensearch.OpenSearchException;
 import org.opensearch.cluster.node.DiscoveryNode;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.action.ActionResponse;
 import org.opensearch.core.action.support.DefaultShardOperationFailedException;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -55,17 +54,15 @@ import java.util.Map;
  * Consists of {@link StoreStatus}s for requested indices grouped by
  * indices and shard ids and a list of encountered node {@link Failure}s
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class IndicesShardStoresResponse extends ActionResponse implements ToXContentFragment {
 
     /**
      * Shard store information from a node
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class StoreStatus implements Writeable, ToXContentFragment, Comparable<StoreStatus> {
         private final DiscoveryNode node;
         private final String allocationId;
@@ -74,10 +71,7 @@ public class IndicesShardStoresResponse extends ActionResponse implements ToXCon
 
         /**
          * The status of the shard store with respect to the cluster
-         *
-         * @opensearch.api
          */
-        @PublicApi(since = "1.0.0")
         public enum AllocationStatus {
 
             /**
@@ -239,9 +233,8 @@ public class IndicesShardStoresResponse extends ActionResponse implements ToXCon
     /**
      * Single node failure while retrieving shard store information
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Failure extends DefaultShardOperationFailedException {
         private String nodeId;
 

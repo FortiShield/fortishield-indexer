@@ -31,7 +31,6 @@
 
 package org.opensearch.cluster.routing;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.util.Countable;
 
 import java.util.List;
@@ -39,9 +38,8 @@ import java.util.List;
 /**
  * Allows to iterate over unrelated shards.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface ShardsIterator extends Iterable<ShardRouting>, Countable {
 
     /**

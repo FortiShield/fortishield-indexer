@@ -50,6 +50,7 @@ import org.opensearch.common.lease.Releasables;
 import org.opensearch.common.lucene.search.Queries;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.common.util.BigArrays;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.concurrency.OpenSearchRejectedExecutionException;
 import org.opensearch.index.IndexService;
 import org.opensearch.index.IndexSettings;
@@ -949,7 +950,9 @@ final class DefaultSearchContext extends SearchContext {
      *         false: otherwise
      */
     private boolean evaluateConcurrentSegmentSearchSettings(Executor concurrentSearchExecutor) {
-        if ((clusterService != null) && (concurrentSearchExecutor != null)) {
+        if (FeatureFlags.isEnabled(FeatureFlags.CONCURRENT_SEGMENT_SEARCH)
+            && (clusterService != null)
+            && (concurrentSearchExecutor != null)) {
             return indexService.getIndexSettings()
                 .getSettings()
                 .getAsBoolean(
@@ -968,13 +971,4 @@ final class DefaultSearchContext extends SearchContext {
             && sort.isSortOnTimeSeriesField()
             && sort.sort.getSort()[0].getReverse() == false;
     }
-
-    @Override
-    public int getTargetMaxSliceCount() {
-        if (shouldUseConcurrentSearch() == false) {
-            throw new IllegalStateException("Target slice count should not be used when concurrent search is disabled");
-        }
-        return clusterService.getClusterSettings().get(SearchService.CONCURRENT_SEGMENT_SEARCH_TARGET_MAX_SLICE_COUNT_SETTING);
-    }
-
 }

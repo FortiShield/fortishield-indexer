@@ -32,14 +32,11 @@
 
 package org.opensearch.snapshots;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * Represents the state that a snapshot can be in
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public enum SnapshotState {
     /**
      * Snapshot process has started

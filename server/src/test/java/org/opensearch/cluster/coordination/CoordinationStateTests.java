@@ -938,8 +938,6 @@ public class CoordinationStateTests extends OpenSearchTestCase {
             Version.CURRENT,
             randomAlphaOfLength(10),
             false,
-            1,
-            randomAlphaOfLength(10),
             Collections.emptyList(),
             randomAlphaOfLength(10),
             true

@@ -2189,7 +2189,6 @@ public final class PainlessLookupBuilder {
             bridgeClassWriter.visitEnd();
 
             try {
-                @SuppressWarnings("removal")
                 BridgeLoader bridgeLoader = AccessController.doPrivileged(new PrivilegedAction<BridgeLoader>() {
                     @Override
                     public BridgeLoader run() {

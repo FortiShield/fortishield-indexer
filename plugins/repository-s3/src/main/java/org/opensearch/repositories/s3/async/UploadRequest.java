@@ -25,8 +25,6 @@ public class UploadRequest {
     private final boolean doRemoteDataIntegrityCheck;
     private final Long expectedChecksum;
 
-    private boolean uploadRetryEnabled;
-
     /**
      * Construct a new UploadRequest object
      *
@@ -45,8 +43,7 @@ public class UploadRequest {
         WritePriority writePriority,
         CheckedConsumer<Boolean, IOException> uploadFinalizer,
         boolean doRemoteDataIntegrityCheck,
-        Long expectedChecksum,
-        boolean uploadRetryEnabled
+        Long expectedChecksum
     ) {
         this.bucket = bucket;
         this.key = key;
@@ -55,7 +52,6 @@ public class UploadRequest {
         this.uploadFinalizer = uploadFinalizer;
         this.doRemoteDataIntegrityCheck = doRemoteDataIntegrityCheck;
         this.expectedChecksum = expectedChecksum;
-        this.uploadRetryEnabled = uploadRetryEnabled;
     }
 
     public String getBucket() {
@@ -84,9 +80,5 @@ public class UploadRequest {
 
     public Long getExpectedChecksum() {
         return expectedChecksum;
-    }
-
-    public boolean isUploadRetryEnabled() {
-        return uploadRetryEnabled;
     }
 }

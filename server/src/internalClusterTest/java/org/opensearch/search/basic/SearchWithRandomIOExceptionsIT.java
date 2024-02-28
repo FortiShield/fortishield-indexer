@@ -45,12 +45,13 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.Requests;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.unit.TimeValue;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.common.xcontent.XContentFactory;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.plugins.Plugin;
 import org.opensearch.search.sort.SortOrder;
 import org.opensearch.test.OpenSearchIntegTestCase;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 import org.opensearch.test.store.MockFSDirectoryFactory;
 import org.opensearch.test.store.MockFSIndexStore;
 
@@ -63,10 +64,10 @@ import static org.opensearch.search.SearchService.CLUSTER_CONCURRENT_SEGMENT_SEA
 import static org.opensearch.test.hamcrest.OpenSearchAssertions.assertHitCount;
 import static org.opensearch.test.hamcrest.OpenSearchAssertions.assertNoFailures;
 
-public class SearchWithRandomIOExceptionsIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class SearchWithRandomIOExceptionsIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public SearchWithRandomIOExceptionsIT(Settings staticSettings) {
-        super(staticSettings);
+    public SearchWithRandomIOExceptionsIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -75,6 +76,11 @@ public class SearchWithRandomIOExceptionsIT extends ParameterizedStaticSettingsO
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     @Override

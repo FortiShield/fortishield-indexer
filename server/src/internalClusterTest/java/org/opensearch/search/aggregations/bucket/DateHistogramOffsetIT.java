@@ -38,11 +38,12 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.time.DateFormatter;
 import org.opensearch.common.time.DateFormatters;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.index.mapper.DateFieldMapper;
 import org.opensearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.opensearch.search.aggregations.bucket.histogram.Histogram;
 import org.opensearch.test.OpenSearchIntegTestCase;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 import org.junit.After;
 import org.junit.Before;
 
@@ -68,13 +69,13 @@ import static org.hamcrest.core.IsNull.notNullValue;
  */
 @OpenSearchIntegTestCase.SuiteScopeTestCase
 @OpenSearchIntegTestCase.ClusterScope(scope = OpenSearchIntegTestCase.Scope.SUITE)
-public class DateHistogramOffsetIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class DateHistogramOffsetIT extends ParameterizedOpenSearchIntegTestCase {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd:hh-mm-ss";
     private static final DateFormatter FORMATTER = DateFormatter.forPattern(DATE_FORMAT);
 
-    public DateHistogramOffsetIT(Settings staticSettings) {
-        super(staticSettings);
+    public DateHistogramOffsetIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -85,8 +86,13 @@ public class DateHistogramOffsetIT extends ParameterizedStaticSettingsOpenSearch
         );
     }
 
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
+    }
+
     private ZonedDateTime date(String date) {
-        return DateFormatters.from(DateFieldMapper.getDefaultDateTimeFormatter().parse(date));
+        return DateFormatters.from(DateFieldMapper.DEFAULT_DATE_TIME_FORMATTER.parse(date));
     }
 
     @Before

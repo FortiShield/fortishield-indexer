@@ -66,9 +66,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import static org.opensearch.Version.V_2_7_0;
-import static org.opensearch.common.util.FeatureFlags.DOC_ID_FUZZY_SET_SETTING;
 import static org.opensearch.common.util.FeatureFlags.SEARCHABLE_SNAPSHOT_EXTENDED_COMPATIBILITY;
-import static org.opensearch.index.codec.fuzzy.FuzzySetParameters.DEFAULT_FALSE_POSITIVE_PROBABILITY;
 import static org.opensearch.index.mapper.MapperService.INDEX_MAPPING_DEPTH_LIMIT_SETTING;
 import static org.opensearch.index.mapper.MapperService.INDEX_MAPPING_FIELD_NAME_LENGTH_LIMIT_SETTING;
 import static org.opensearch.index.mapper.MapperService.INDEX_MAPPING_NESTED_DOCS_LIMIT_SETTING;
@@ -553,7 +551,7 @@ public final class IndexSettings {
 
     /**
      * This setting controls if unreferenced files will be cleaned up in case segment merge fails due to disk full.
-     * <p>
+     *
      * Defaults to true which means unreferenced files will be cleaned up in case segment merge fails.
      */
     public static final Setting<Boolean> INDEX_UNREFERENCED_FILE_CLEANUP = Setting.boolSetting(
@@ -569,7 +567,7 @@ public final class IndexSettings {
      * documents) on the grounds that a file-based peer recovery may copy all of the documents in the shard over to the new peer, but is
      * significantly faster than replaying the missing operations on the peer, so once a peer falls far enough behind the primary it makes
      * more sense to copy all the data over again instead of replaying history.
-     * <p>
+     *
      * Defaults to retaining history for up to 10% of the documents in the shard. This can only be changed in tests, since this setting is
      * intentionally unregistered.
      */
@@ -661,36 +659,12 @@ public final class IndexSettings {
         Property.Dynamic
     );
 
-    public static final Setting<Boolean> INDEX_DOC_ID_FUZZY_SET_ENABLED_SETTING = Setting.boolSetting(
-        "index.optimize_doc_id_lookup.fuzzy_set.enabled",
-        false,
-        Property.IndexScope,
-        Property.Dynamic
-    );
-
-    public static final Setting<Double> INDEX_DOC_ID_FUZZY_SET_FALSE_POSITIVE_PROBABILITY_SETTING = Setting.doubleSetting(
-        "index.optimize_doc_id_lookup.fuzzy_set.false_positive_probability",
-        DEFAULT_FALSE_POSITIVE_PROBABILITY,
-        0.01,
-        0.50,
-        Property.IndexScope,
-        Property.Dynamic
-    );
-
     public static final TimeValue DEFAULT_REMOTE_TRANSLOG_BUFFER_INTERVAL = new TimeValue(650, TimeUnit.MILLISECONDS);
     public static final TimeValue MINIMUM_REMOTE_TRANSLOG_BUFFER_INTERVAL = TimeValue.ZERO;
     public static final Setting<TimeValue> INDEX_REMOTE_TRANSLOG_BUFFER_INTERVAL_SETTING = Setting.timeSetting(
         "index.remote_store.translog.buffer_interval",
         DEFAULT_REMOTE_TRANSLOG_BUFFER_INTERVAL,
         MINIMUM_REMOTE_TRANSLOG_BUFFER_INTERVAL,
-        Property.Dynamic,
-        Property.IndexScope
-    );
-
-    public static final Setting<Integer> INDEX_REMOTE_TRANSLOG_KEEP_EXTRA_GEN_SETTING = Setting.intSetting(
-        "index.remote_store.translog.keep_extra_gen",
-        100,
-        0,
         Property.Dynamic,
         Property.IndexScope
     );
@@ -707,7 +681,6 @@ public final class IndexSettings {
     private final String remoteStoreTranslogRepository;
     private final String remoteStoreRepository;
     private final boolean isRemoteSnapshot;
-    private int remoteTranslogKeepExtraGen;
     private Version extendedCompatibilitySnapshotVersion;
     // volatile fields are updated via #updateIndexMetadata(IndexMetadata) under lock
     private volatile Settings settings;
@@ -806,16 +779,6 @@ public final class IndexSettings {
     private volatile UnaryOperator<MergePolicy> mergeOnFlushPolicy;
 
     /**
-     * Is fuzzy set enabled for doc id
-     */
-    private volatile boolean enableFuzzySetForDocId;
-
-    /**
-     * False positive probability to use while creating fuzzy set.
-     */
-    private volatile double docIdFuzzySetFalsePositiveProbability;
-
-    /**
      * Returns the default search fields for this index.
      */
     public List<String> getDefaultFields() {
@@ -887,7 +850,6 @@ public final class IndexSettings {
         remoteStoreTranslogRepository = settings.get(IndexMetadata.SETTING_REMOTE_TRANSLOG_STORE_REPOSITORY);
         remoteTranslogUploadBufferInterval = INDEX_REMOTE_TRANSLOG_BUFFER_INTERVAL_SETTING.get(settings);
         remoteStoreRepository = settings.get(IndexMetadata.SETTING_REMOTE_SEGMENT_STORE_REPOSITORY);
-        this.remoteTranslogKeepExtraGen = INDEX_REMOTE_TRANSLOG_KEEP_EXTRA_GEN_SETTING.get(settings);
         isRemoteSnapshot = IndexModule.Type.REMOTE_SNAPSHOT.match(this.settings);
 
         if (isRemoteSnapshot && FeatureFlags.isEnabled(SEARCHABLE_SNAPSHOT_EXTENDED_COMPATIBILITY)) {
@@ -953,13 +915,6 @@ public final class IndexSettings {
          * Now this sortField (IndexSort) is stored in SegmentInfo and we need to maintain backward compatibility for them.
          */
         widenIndexSortType = IndexMetadata.SETTING_INDEX_VERSION_CREATED.get(settings).before(V_2_7_0);
-
-        boolean isOptimizeDocIdLookupUsingFuzzySetFeatureEnabled = FeatureFlags.isEnabled(DOC_ID_FUZZY_SET_SETTING);
-        if (isOptimizeDocIdLookupUsingFuzzySetFeatureEnabled) {
-            enableFuzzySetForDocId = scopedSettings.get(INDEX_DOC_ID_FUZZY_SET_ENABLED_SETTING);
-            docIdFuzzySetFalsePositiveProbability = scopedSettings.get(INDEX_DOC_ID_FUZZY_SET_FALSE_POSITIVE_PROBABILITY_SETTING);
-        }
-
         scopedSettings.addSettingsUpdateConsumer(
             TieredMergePolicyProvider.INDEX_COMPOUND_FORMAT_SETTING,
             tieredMergePolicyProvider::setNoCFSRatio
@@ -1065,18 +1020,9 @@ public final class IndexSettings {
             INDEX_REMOTE_TRANSLOG_BUFFER_INTERVAL_SETTING,
             this::setRemoteTranslogUploadBufferInterval
         );
-        scopedSettings.addSettingsUpdateConsumer(INDEX_REMOTE_TRANSLOG_KEEP_EXTRA_GEN_SETTING, this::setRemoteTranslogKeepExtraGen);
-        scopedSettings.addSettingsUpdateConsumer(INDEX_DOC_ID_FUZZY_SET_ENABLED_SETTING, this::setEnableFuzzySetForDocId);
-        scopedSettings.addSettingsUpdateConsumer(
-            INDEX_DOC_ID_FUZZY_SET_FALSE_POSITIVE_PROBABILITY_SETTING,
-            this::setDocIdFuzzySetFalsePositiveProbability
-        );
     }
 
     private void setSearchIdleAfter(TimeValue searchIdleAfter) {
-        if (this.isRemoteStoreEnabled) {
-            logger.warn("Search idle is not supported for remote backed indices");
-        }
         if (this.replicationType == ReplicationType.SEGMENT && this.getNumberOfReplicas() > 0) {
             logger.warn("Search idle is not supported for indices with replicas using 'replication.type: SEGMENT'");
         }
@@ -1350,10 +1296,6 @@ public final class IndexSettings {
         return remoteTranslogUploadBufferInterval;
     }
 
-    public int getRemoteTranslogExtraKeep() {
-        return remoteTranslogKeepExtraGen;
-    }
-
     /**
      * Returns true iff the remote translog buffer interval setting exists or in other words is explicitly set.
      */
@@ -1363,10 +1305,6 @@ public final class IndexSettings {
 
     public void setRemoteTranslogUploadBufferInterval(TimeValue remoteTranslogUploadBufferInterval) {
         this.remoteTranslogUploadBufferInterval = remoteTranslogUploadBufferInterval;
-    }
-
-    public void setRemoteTranslogKeepExtraGen(int extraGen) {
-        this.remoteTranslogKeepExtraGen = extraGen;
     }
 
     /**
@@ -1840,37 +1778,5 @@ public final class IndexSettings {
      */
     public boolean shouldWidenIndexSortType() {
         return this.widenIndexSortType;
-    }
-
-    public boolean isEnableFuzzySetForDocId() {
-        return enableFuzzySetForDocId;
-    }
-
-    public void setEnableFuzzySetForDocId(boolean enableFuzzySetForDocId) {
-        verifyFeatureToSetDocIdFuzzySetSetting(enabled -> this.enableFuzzySetForDocId = enabled, enableFuzzySetForDocId);
-    }
-
-    public double getDocIdFuzzySetFalsePositiveProbability() {
-        return docIdFuzzySetFalsePositiveProbability;
-    }
-
-    public void setDocIdFuzzySetFalsePositiveProbability(double docIdFuzzySetFalsePositiveProbability) {
-        verifyFeatureToSetDocIdFuzzySetSetting(
-            fpp -> this.docIdFuzzySetFalsePositiveProbability = fpp,
-            docIdFuzzySetFalsePositiveProbability
-        );
-    }
-
-    private static <T> void verifyFeatureToSetDocIdFuzzySetSetting(Consumer<T> settingUpdater, T val) {
-        if (FeatureFlags.isEnabled(DOC_ID_FUZZY_SET_SETTING)) {
-            settingUpdater.accept(val);
-        } else {
-            throw new IllegalArgumentException(
-                "Fuzzy set for optimizing doc id lookup "
-                    + "cannot be enabled with feature flag ["
-                    + FeatureFlags.DOC_ID_FUZZY_SET
-                    + "] set to false"
-            );
-        }
     }
 }

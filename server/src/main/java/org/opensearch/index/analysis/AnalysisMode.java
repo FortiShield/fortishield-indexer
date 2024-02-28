@@ -32,16 +32,13 @@
 
 package org.opensearch.index.analysis;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * Enum representing the mode in which token filters and analyzers are allowed to operate.
  * While most token filters are allowed both in index and search time analyzers, some are
  * restricted to be used only at index time, others at search time.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public enum AnalysisMode {
 
     /**

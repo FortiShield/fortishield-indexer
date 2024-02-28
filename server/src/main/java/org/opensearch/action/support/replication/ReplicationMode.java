@@ -8,14 +8,11 @@
 
 package org.opensearch.action.support.replication;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * The type of replication used for inter-node replication.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public enum ReplicationMode {
     /**
      * In this mode, a {@code TransportReplicationAction} is fanned out to underlying concerned shard and is replicated logically.

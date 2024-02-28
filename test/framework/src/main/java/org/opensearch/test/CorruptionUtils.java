@@ -121,7 +121,7 @@ public final class CorruptionUtils {
         }
     }
 
-    public static void corruptAt(Path path, FileChannel channel, int position) throws IOException {
+    static void corruptAt(Path path, FileChannel channel, int position) throws IOException {
         // read
         channel.position(position);
         long filePointer = channel.position();

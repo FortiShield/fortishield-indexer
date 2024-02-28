@@ -32,7 +32,6 @@
 
 package org.opensearch.search.aggregations;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.index.query.QueryShardContext;
 import org.opensearch.search.internal.SearchContext;
 
@@ -44,9 +43,8 @@ import static org.opensearch.search.aggregations.support.AggregationUsageService
 /**
  * Base factory to instantiate an internal aggregator
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class AggregatorFactory {
     protected final String name;
     protected final AggregatorFactory parent;

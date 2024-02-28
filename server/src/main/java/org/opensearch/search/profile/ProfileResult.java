@@ -34,7 +34,6 @@ package org.opensearch.search.profile;
 
 import org.opensearch.LegacyESVersion;
 import org.opensearch.Version;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -66,9 +65,8 @@ import static org.opensearch.core.xcontent.ConstructingObjectParser.optionalCons
  * Each InternalProfileResult has a List of InternalProfileResults, which will contain
  * "children" queries if applicable
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class ProfileResult implements Writeable, ToXContentObject {
     static final ParseField TYPE = new ParseField("type");
     static final ParseField DESCRIPTION = new ParseField("description");

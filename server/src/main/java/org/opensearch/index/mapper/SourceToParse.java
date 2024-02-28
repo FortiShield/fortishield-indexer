@@ -33,7 +33,6 @@
 package org.opensearch.index.mapper;
 
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.bytes.BytesArray;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.core.xcontent.MediaType;
@@ -43,9 +42,8 @@ import java.util.Objects;
 /**
  * Stores the document source
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SourceToParse {
 
     private final BytesReference source;

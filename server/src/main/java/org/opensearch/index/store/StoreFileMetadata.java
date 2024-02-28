@@ -35,7 +35,6 @@ package org.opensearch.index.store;
 import org.apache.lucene.codecs.CodecUtil;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lucene.store.ByteArrayIndexInput;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -48,9 +47,8 @@ import java.util.Objects;
 /**
  * Metadata for the store file
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class StoreFileMetadata implements Writeable {
 
     private final String name;

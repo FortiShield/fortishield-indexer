@@ -37,7 +37,6 @@ import org.opensearch.cluster.node.DiscoveryNode;
 import org.opensearch.cluster.routing.RecoverySource;
 import org.opensearch.cluster.routing.ShardRouting;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -56,17 +55,15 @@ import java.util.Locale;
 /**
  * Keeps track of state related to shard recovery.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class RecoveryState implements ReplicationState, ToXContentFragment, Writeable {
 
     /**
      * The stage of the recovery state
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public enum Stage {
         INIT((byte) 0),
 
@@ -374,9 +371,8 @@ public class RecoveryState implements ReplicationState, ToXContentFragment, Writ
     /**
      * Verifys the lucene index
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class VerifyIndex extends ReplicationTimer implements ToXContentFragment, Writeable {
         private volatile long checkIndexTime;
 
@@ -417,9 +413,8 @@ public class RecoveryState implements ReplicationState, ToXContentFragment, Writ
     /**
      * The translog
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Translog extends ReplicationTimer implements ToXContentFragment, Writeable {
         public static final int UNKNOWN = -1;
 

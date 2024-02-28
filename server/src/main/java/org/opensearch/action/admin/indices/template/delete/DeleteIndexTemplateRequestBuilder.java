@@ -34,14 +34,12 @@ package org.opensearch.action.admin.indices.template.delete;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeOperationRequestBuilder;
 import org.opensearch.action.support.master.AcknowledgedResponse;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * Transport request builder for deleting an index template
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class DeleteIndexTemplateRequestBuilder extends ClusterManagerNodeOperationRequestBuilder<
     DeleteIndexTemplateRequest,
     AcknowledgedResponse,

@@ -34,7 +34,6 @@ package org.opensearch.action.admin.cluster.repositories.get;
 
 import org.opensearch.action.ActionRequestValidationException;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeReadRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -46,9 +45,8 @@ import static org.opensearch.action.ValidateActions.addValidationError;
 /**
  * Get repository request
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class GetRepositoriesRequest extends ClusterManagerNodeReadRequest<GetRepositoriesRequest> {
 
     private String[] repositories = Strings.EMPTY_ARRAY;
@@ -90,7 +88,7 @@ public class GetRepositoriesRequest extends ClusterManagerNodeReadRequest<GetRep
     /**
      * The names of the repositories.
      *
-     * @return  array of repository names
+     * @return list of repositories
      */
     public String[] repositories() {
         return this.repositories;

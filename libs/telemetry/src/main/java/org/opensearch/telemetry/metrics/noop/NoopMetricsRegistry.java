@@ -10,7 +10,6 @@ package org.opensearch.telemetry.metrics.noop;
 
 import org.opensearch.common.annotation.InternalApi;
 import org.opensearch.telemetry.metrics.Counter;
-import org.opensearch.telemetry.metrics.Histogram;
 import org.opensearch.telemetry.metrics.MetricsRegistry;
 
 import java.io.IOException;
@@ -37,11 +36,6 @@ public class NoopMetricsRegistry implements MetricsRegistry {
     @Override
     public Counter createUpDownCounter(String name, String description, String unit) {
         return NoopCounter.INSTANCE;
-    }
-
-    @Override
-    public Histogram createHistogram(String name, String description, String unit) {
-        return NoopHistogram.INSTANCE;
     }
 
     @Override

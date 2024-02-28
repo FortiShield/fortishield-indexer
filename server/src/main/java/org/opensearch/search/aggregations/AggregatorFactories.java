@@ -32,7 +32,6 @@
 package org.opensearch.search.aggregations;
 
 import org.opensearch.action.ActionRequestValidationException;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.xcontent.SuggestingErrorOnUnknown;
 import org.opensearch.core.common.ParsingException;
 import org.opensearch.core.common.Strings;
@@ -83,9 +82,8 @@ import static java.util.stream.Collectors.toMap;
 /**
  * An immutable collection of {@link AggregatorFactories}.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class AggregatorFactories {
     public static final Pattern VALID_AGG_NAME = Pattern.compile("[^\\[\\]>]+");
 
@@ -342,9 +340,8 @@ public class AggregatorFactories {
      * A mutable collection of {@link AggregationBuilder}s and
      * {@link PipelineAggregationBuilder}s.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Builder implements Writeable, ToXContentObject {
         private final Set<String> names = new HashSet<>();
 

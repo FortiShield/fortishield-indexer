@@ -38,6 +38,7 @@ import org.opensearch.action.index.IndexRequestBuilder;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.action.support.WriteRequest;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.common.xcontent.XContentHelper;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.core.xcontent.MediaTypeRegistry;
@@ -57,7 +58,7 @@ import org.opensearch.search.aggregations.metrics.Sum;
 import org.opensearch.search.aggregations.metrics.SumAggregationBuilder;
 import org.opensearch.search.aggregations.pipeline.BucketHelpers.GapPolicy;
 import org.opensearch.test.OpenSearchIntegTestCase;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,7 +80,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 @OpenSearchIntegTestCase.SuiteScopeTestCase
-public class MaxBucketIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class MaxBucketIT extends ParameterizedOpenSearchIntegTestCase {
 
     private static final String SINGLE_VALUED_FIELD_NAME = "l_value";
 
@@ -90,8 +91,8 @@ public class MaxBucketIT extends ParameterizedStaticSettingsOpenSearchIntegTestC
     static int numValueBuckets;
     static long[] valueCounts;
 
-    public MaxBucketIT(Settings staticSettings) {
-        super(staticSettings);
+    public MaxBucketIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -100,6 +101,11 @@ public class MaxBucketIT extends ParameterizedStaticSettingsOpenSearchIntegTestC
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     @Override
@@ -538,13 +544,13 @@ public class MaxBucketIT extends ParameterizedStaticSettingsOpenSearchIntegTestC
 
     /**
      * https://github.com/elastic/elasticsearch/issues/33514
-     * <p>
+     *
      * This bug manifests as the max_bucket agg ("peak") being added to the response twice, because
      * the pipeline agg is run twice.  This makes invalid JSON and breaks conversion to maps.
      * The bug was caused by an UnmappedTerms being the chosen as the first reduction target.  UnmappedTerms
      * delegated reduction to the first non-unmapped agg, which would reduce and run pipeline aggs.  But then
      * execution returns to the UnmappedTerms and _it_ runs pipelines as well, doubling up on the values.
-     * <p>
+     *
      * Applies to any pipeline agg, not just max.
      */
     public void testFieldIsntWrittenOutTwice() throws Exception {

@@ -34,7 +34,6 @@ package org.opensearch.action.admin.cluster.repositories.get;
 
 import org.opensearch.cluster.metadata.RepositoriesMetadata;
 import org.opensearch.cluster.metadata.RepositoryMetadata;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.action.ActionResponse;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -43,17 +42,16 @@ import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.core.xcontent.XContentParser;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.opensearch.core.xcontent.XContentParserUtils.ensureExpectedToken;
 
 /**
  * Get repositories response
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class GetRepositoriesResponse extends ActionResponse implements ToXContentObject {
 
     private RepositoriesMetadata repositories;
@@ -85,10 +83,7 @@ public class GetRepositoriesResponse extends ActionResponse implements ToXConten
         builder.startObject();
         repositories.toXContent(
             builder,
-            new DelegatingMapParams(
-                Map.of(RepositoriesMetadata.HIDE_GENERATIONS_PARAM, "true", RepositoriesMetadata.HIDE_SYSTEM_REPOSITORY_SETTING, "true"),
-                params
-            )
+            new DelegatingMapParams(Collections.singletonMap(RepositoriesMetadata.HIDE_GENERATIONS_PARAM, "true"), params)
         );
         builder.endObject();
         return builder;

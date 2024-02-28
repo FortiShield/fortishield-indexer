@@ -38,7 +38,6 @@ import org.opensearch.Version;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.common.Explicit;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.collect.CopyOnWriteHashMap;
 import org.opensearch.common.logging.DeprecationLogger;
 import org.opensearch.common.settings.Settings;
@@ -61,9 +60,8 @@ import java.util.Map;
 /**
  * Field mapper for object field types
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ObjectMapper extends Mapper implements Cloneable {
     private static final DeprecationLogger deprecationLogger = DeprecationLogger.getLogger(ObjectMapper.class);
 
@@ -84,9 +82,8 @@ public class ObjectMapper extends Mapper implements Cloneable {
     /**
      * Dynamic field mapping specification
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public enum Dynamic {
         TRUE,
         FALSE,
@@ -96,9 +93,8 @@ public class ObjectMapper extends Mapper implements Cloneable {
     /**
      * Nested objects
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Nested {
 
         public static final Nested NO = new Nested(false, new Explicit<>(false, false), new Explicit<>(false, false));

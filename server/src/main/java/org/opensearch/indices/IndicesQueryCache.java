@@ -44,7 +44,6 @@ import org.apache.lucene.search.QueryCachingPolicy;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.ScorerSupplier;
 import org.apache.lucene.search.Weight;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lucene.ShardCoreKeyMap;
 import org.opensearch.common.settings.Setting;
 import org.opensearch.common.settings.Setting.Property;
@@ -66,9 +65,8 @@ import java.util.function.Predicate;
 /**
  * The query cache for indices
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class IndicesQueryCache implements QueryCache, Closeable {
 
     private static final Logger logger = LogManager.getLogger(IndicesQueryCache.class);
@@ -186,12 +184,6 @@ public class IndicesQueryCache implements QueryCache, Closeable {
         public BulkScorer bulkScorer(LeafReaderContext context) throws IOException {
             shardKeyMap.add(context.reader());
             return in.bulkScorer(context);
-        }
-
-        @Override
-        public int count(LeafReaderContext context) throws IOException {
-            shardKeyMap.add(context.reader());
-            return in.count(context);
         }
 
         @Override

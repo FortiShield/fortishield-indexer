@@ -37,7 +37,6 @@ import org.opensearch.ResourceNotFoundException;
 import org.opensearch.Version;
 import org.opensearch.common.Nullable;
 import org.opensearch.common.UUIDs;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.core.xcontent.XContentParser;
 import org.opensearch.core.xcontent.XContentParserUtils;
@@ -62,9 +61,8 @@ import java.util.stream.Collectors;
  * A class that represents the data in a repository, as captured in the
  * repository's index blob.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class RepositoryData {
 
     /**

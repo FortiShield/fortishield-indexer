@@ -33,7 +33,6 @@
 package org.opensearch.index.merge;
 
 import org.opensearch.Version;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -47,9 +46,8 @@ import java.io.IOException;
 /**
  * Stores stats about a merge process
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class MergeStats implements Writeable, ToXContentFragment {
 
     private long total;

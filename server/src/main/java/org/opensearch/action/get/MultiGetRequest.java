@@ -43,7 +43,6 @@ import org.opensearch.action.RealtimeRequest;
 import org.opensearch.action.ValidateActions;
 import org.opensearch.action.support.IndicesOptions;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lucene.uid.Versions;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.ParsingException;
@@ -71,9 +70,8 @@ import java.util.Locale;
 /**
  * Transport request for a multi get.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class MultiGetRequest extends ActionRequest
     implements
         Iterable<MultiGetRequest.Item>,
@@ -94,9 +92,8 @@ public class MultiGetRequest extends ActionRequest
     /**
      * A single get item.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class Item implements Writeable, IndicesRequest, ToXContentObject {
 
         private String index;

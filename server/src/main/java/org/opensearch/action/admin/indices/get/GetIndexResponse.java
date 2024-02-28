@@ -36,7 +36,6 @@ import org.opensearch.LegacyESVersion;
 import org.opensearch.Version;
 import org.opensearch.cluster.metadata.AliasMetadata;
 import org.opensearch.cluster.metadata.MappingMetadata;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.core.action.ActionResponse;
 import org.opensearch.core.common.Strings;
@@ -59,9 +58,8 @@ import java.util.Objects;
 /**
  * A response for a get index action.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class GetIndexResponse extends ActionResponse implements ToXContentObject {
 
     private Map<String, MappingMetadata> mappings = Map.of();

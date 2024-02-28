@@ -35,7 +35,6 @@ package org.opensearch.index.mapper;
 import org.opensearch.LegacyESVersion;
 import org.opensearch.common.Explicit;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.logging.DeprecationLogger;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.time.DateFormatter;
@@ -62,9 +61,8 @@ import static org.opensearch.index.mapper.TypeParsers.parseDateTimeFormatter;
 /**
  * The root object mapper for a document
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class RootObjectMapper extends ObjectMapper {
     private static final DeprecationLogger DEPRECATION_LOGGER = DeprecationLogger.getLogger(RootObjectMapper.class);
 
@@ -75,7 +73,7 @@ public class RootObjectMapper extends ObjectMapper {
      */
     public static class Defaults {
         public static final DateFormatter[] DYNAMIC_DATE_TIME_FORMATTERS = new DateFormatter[] {
-            DateFieldMapper.getDefaultDateTimeFormatter(),
+            DateFieldMapper.DEFAULT_DATE_TIME_FORMATTER,
             DateFormatter.forPattern("yyyy/MM/dd HH:mm:ss||yyyy/MM/dd||epoch_millis") };
         public static final boolean DATE_DETECTION = true;
         public static final boolean NUMERIC_DETECTION = false;

@@ -408,8 +408,8 @@ public class SearchPipelineService implements ClusterStateApplier, ReportingServ
                 pipeline = pipelineHolder.pipeline;
             }
         }
-        PipelineProcessingContext requestContext = new PipelineProcessingContext();
-        return new PipelinedRequest(pipeline, searchRequest, requestContext);
+        SearchRequest transformedRequest = pipeline.transformRequest(searchRequest);
+        return new PipelinedRequest(pipeline, transformedRequest);
     }
 
     Map<String, Processor.Factory<SearchRequestProcessor>> getRequestProcessorFactories() {

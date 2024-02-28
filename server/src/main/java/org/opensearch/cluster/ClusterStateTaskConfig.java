@@ -33,15 +33,13 @@ package org.opensearch.cluster;
 
 import org.opensearch.common.Nullable;
 import org.opensearch.common.Priority;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 
 /**
  * Cluster state update task configuration for timeout and priority
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface ClusterStateTaskConfig {
     /**
      * The timeout for this cluster state update task configuration. If

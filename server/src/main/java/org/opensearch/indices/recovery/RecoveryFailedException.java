@@ -34,7 +34,6 @@ package org.opensearch.indices.recovery;
 
 import org.opensearch.cluster.node.DiscoveryNode;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.index.shard.ShardId;
 import org.opensearch.indices.replication.common.ReplicationFailedException;
@@ -44,9 +43,8 @@ import java.io.IOException;
 /**
  * Exception thrown if recovery fails
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class RecoveryFailedException extends ReplicationFailedException {
 
     public RecoveryFailedException(StartRecoveryRequest request, Throwable cause) {

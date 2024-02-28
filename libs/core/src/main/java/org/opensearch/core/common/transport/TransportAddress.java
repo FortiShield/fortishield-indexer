@@ -32,7 +32,6 @@
 
 package org.opensearch.core.common.transport;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.network.NetworkAddress;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -48,9 +47,8 @@ import java.net.UnknownHostException;
 /**
  * A transport address used for IP socket address (wraps {@link java.net.InetSocketAddress}).
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class TransportAddress implements Writeable, ToXContentFragment {
 
     /**

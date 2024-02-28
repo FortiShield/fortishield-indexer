@@ -36,7 +36,6 @@ import org.apache.lucene.util.ArrayUtil;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.RamUsageEstimator;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lease.Releasable;
 import org.opensearch.common.lease.Releasables;
 import org.opensearch.common.recycler.Recycler;
@@ -48,12 +47,7 @@ import org.opensearch.core.indices.breaker.CircuitBreakerService;
 
 import java.util.Arrays;
 
-/**
- * Utility class to work with arrays.
- *
- * @opensearch.api
- * */
-@PublicApi(since = "1.0.0")
+/** Utility class to work with arrays. */
 public class BigArrays {
 
     public static final BigArrays NON_RECYCLING_INSTANCE = new BigArrays(null, null, CircuitBreaker.REQUEST);

@@ -34,7 +34,6 @@ package org.opensearch.search;
 
 import org.opensearch.action.OriginalIndices;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -48,9 +47,8 @@ import java.util.Objects;
 /**
  * The target that the search request was executed on.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class SearchShardTarget implements Writeable, Comparable<SearchShardTarget> {
 
     private final Text nodeId;

@@ -31,8 +31,6 @@
 
 package org.opensearch.watcher;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import java.io.IOException;
 
 /**
@@ -41,9 +39,8 @@ import java.io.IOException;
  * Different resource watchers can be registered with {@link ResourceWatcherService} to be called
  * periodically in order to check for changes in different external resources.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface ResourceWatcher {
     /**
      * Called once when the resource watcher is added to {@link ResourceWatcherService}

@@ -36,7 +36,6 @@ import com.google.api.client.googleapis.GoogleUtils;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.http.HttpTransportOptions;
@@ -70,16 +69,6 @@ public class GoogleCloudStorageService {
      * the repository name.
      */
     private volatile Map<String, Storage> clientCache = emptyMap();
-
-    final private GoogleApplicationDefaultCredentials googleApplicationDefaultCredentials;
-
-    public GoogleCloudStorageService() {
-        this.googleApplicationDefaultCredentials = new GoogleApplicationDefaultCredentials();
-    }
-
-    public GoogleCloudStorageService(GoogleApplicationDefaultCredentials googleApplicationDefaultCredentials) {
-        this.googleApplicationDefaultCredentials = googleApplicationDefaultCredentials;
-    }
 
     /**
      * Refreshes the client settings and clears the client cache. Subsequent calls to
@@ -224,11 +213,10 @@ public class GoogleCloudStorageService {
             storageOptionsBuilder.setProjectId(clientSettings.getProjectId());
         }
         if (clientSettings.getCredential() == null) {
-            logger.info("\"Application Default Credentials\" will be in use");
-            final GoogleCredentials credentials = googleApplicationDefaultCredentials.get();
-            if (credentials != null) {
-                storageOptionsBuilder.setCredentials(credentials);
-            }
+            logger.warn(
+                "\"Application Default Credentials\" are not supported out of the box."
+                    + " Additional file system permissions have to be granted to the plugin."
+            );
         } else {
             ServiceAccountCredentials serviceAccountCredentials = clientSettings.getCredential();
             // override token server URI
@@ -240,7 +228,7 @@ public class GoogleCloudStorageService {
             }
             storageOptionsBuilder.setCredentials(serviceAccountCredentials);
         }
-        return SocketAccess.doPrivilegedException(() -> storageOptionsBuilder.build());
+        return storageOptionsBuilder.build();
     }
 
     /**

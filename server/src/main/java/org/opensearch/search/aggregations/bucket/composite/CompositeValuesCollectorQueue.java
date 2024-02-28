@@ -47,8 +47,6 @@ import java.util.Map;
 
 /**
  * A specialized {@link PriorityQueue} implementation for composite buckets.
- * Can think of this as a max heap that holds the top small buckets slots in order.
- * Each slot holds the values of the composite bucket key it represents.
  *
  * @opensearch.internal
  */
@@ -79,7 +77,7 @@ final class CompositeValuesCollectorQueue extends PriorityQueue<Integer> impleme
 
     private final BigArrays bigArrays;
     private final int maxSize;
-    private final Map<Slot, Integer> map; // to quickly find the slot for a value
+    private final Map<Slot, Integer> map;
     private final SingleDimensionValuesSource<?>[] arrays;
 
     private LongArray docCounts;
@@ -110,7 +108,7 @@ final class CompositeValuesCollectorQueue extends PriorityQueue<Integer> impleme
 
     @Override
     protected boolean lessThan(Integer a, Integer b) {
-        return compare(a, b) > 0; // max heap
+        return compare(a, b) > 0;
     }
 
     /**
@@ -121,10 +119,10 @@ final class CompositeValuesCollectorQueue extends PriorityQueue<Integer> impleme
     }
 
     /**
-     * Try to get the slot of the current/candidate values in the queue and returns
+     * Compares the current candidate with the values in the queue and returns
      * the slot if the candidate is already in the queue or null if the candidate is not present.
      */
-    Integer getCurrentSlot() {
+    Integer compareCurrent() {
         return map.get(new Slot(CANDIDATE_SLOT));
     }
 
@@ -283,34 +281,32 @@ final class CompositeValuesCollectorQueue extends PriorityQueue<Integer> impleme
      */
     boolean addIfCompetitive(int indexSortSourcePrefix, long inc) {
         // checks if the candidate key is competitive
-        Integer curSlot = getCurrentSlot();
-        if (curSlot != null) {
+        Integer topSlot = compareCurrent();
+        if (topSlot != null) {
             // this key is already in the top N, skip it
-            docCounts.increment(curSlot, inc);
+            docCounts.increment(topSlot, inc);
             return true;
         }
-
         if (afterKeyIsSet) {
             int cmp = compareCurrentWithAfter();
             if (cmp <= 0) {
                 if (indexSortSourcePrefix < 0 && cmp == indexSortSourcePrefix) {
-                    // the leading index sort is and the leading source order are both reversed,
+                    // the leading index sort is in the reverse order of the leading source
                     // so we can early terminate when we reach a document that is smaller
                     // than the after key (collected on a previous page).
                     throw new CollectionTerminatedException();
                 }
-                // the key was collected on a previous page, skip it.
+                // key was collected on a previous page, skip it (>= afterKey).
                 return false;
             }
         }
-
-        // the heap is full, check if the candidate key larger than max heap top
         if (size() >= maxSize) {
+            // the tree map is full, check if the candidate key should be kept
             int cmp = compare(CANDIDATE_SLOT, top());
             if (cmp > 0) {
                 if (cmp <= indexSortSourcePrefix) {
-                    // index sort guarantees the following documents will have a key larger than the current candidate,
-                    // so we can early terminate.
+                    // index sort guarantees that there is no key greater or equal than the
+                    // current one in the subsequent documents so we can early terminate.
                     throw new CollectionTerminatedException();
                 }
                 // the candidate key is not competitive, skip it.
@@ -328,7 +324,7 @@ final class CompositeValuesCollectorQueue extends PriorityQueue<Integer> impleme
         } else {
             newSlot = size();
         }
-        // move the candidate key to its new slot by copy its values to the new slot
+        // move the candidate key to its new slot
         copyCurrent(newSlot, inc);
         map.put(new Slot(newSlot), newSlot);
         add(newSlot);

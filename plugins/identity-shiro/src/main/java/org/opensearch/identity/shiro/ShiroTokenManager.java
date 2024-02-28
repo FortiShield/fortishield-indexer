@@ -10,14 +10,13 @@ package org.opensearch.identity.shiro;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.opensearch.common.Randomness;
 import org.opensearch.identity.IdentityService;
-import org.opensearch.identity.Subject;
 import org.opensearch.identity.tokens.AuthToken;
 import org.opensearch.identity.tokens.BasicAuthToken;
-import org.opensearch.identity.tokens.OnBehalfOfClaims;
 import org.opensearch.identity.tokens.TokenManager;
 
 import java.util.Arrays;
@@ -55,16 +54,15 @@ class ShiroTokenManager implements TokenManager {
             final BasicAuthToken basicAuthToken = (BasicAuthToken) authenticationToken;
             return Optional.of(new UsernamePasswordToken(basicAuthToken.getUser(), basicAuthToken.getPassword()));
         }
+
         return Optional.empty();
     }
 
     @Override
-    public AuthToken issueOnBehalfOfToken(Subject subject, OnBehalfOfClaims claims) {
+    public AuthToken issueToken(String audience) {
 
         String password = generatePassword();
-        // Make a new ShiroSubject audience as name
-        final byte[] rawEncoded = Base64.getUrlEncoder().encode((claims.getAudience() + ":" + password).getBytes(UTF_8));
-
+        final byte[] rawEncoded = Base64.getEncoder().encode((audience + ":" + password).getBytes(UTF_8));
         final String usernamePassword = new String(rawEncoded, UTF_8);
         final String header = "Basic " + usernamePassword;
         BasicAuthToken token = new BasicAuthToken(header);
@@ -73,17 +71,13 @@ class ShiroTokenManager implements TokenManager {
         return token;
     }
 
-    @Override
-    public AuthToken issueServiceAccountToken(String audience) {
-
-        String password = generatePassword();
-        final byte[] rawEncoded = Base64.getUrlEncoder().withoutPadding().encode((audience + ":" + password).getBytes(UTF_8)); // Make a new
-        final String usernamePassword = new String(rawEncoded, UTF_8);
-        final String header = "Basic " + usernamePassword;
-
-        BasicAuthToken token = new BasicAuthToken(header);
-        shiroTokenPasswordMap.put(token, password);
-        return token;
+    public boolean validateToken(AuthToken token) {
+        if (token instanceof BasicAuthToken) {
+            final BasicAuthToken basicAuthToken = (BasicAuthToken) token;
+            return basicAuthToken.getUser().equals(SecurityUtils.getSubject().toString())
+                && basicAuthToken.getPassword().equals(shiroTokenPasswordMap.get(basicAuthToken));
+        }
+        return false;
     }
 
     public String getTokenInfo(AuthToken token) {

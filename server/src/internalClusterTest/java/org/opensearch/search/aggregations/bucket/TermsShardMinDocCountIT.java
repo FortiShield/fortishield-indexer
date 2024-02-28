@@ -36,6 +36,7 @@ import com.carrotsearch.randomizedtesting.annotations.ParametersFactory;
 import org.opensearch.action.index.IndexRequestBuilder;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.aggregations.BucketOrder;
@@ -43,7 +44,7 @@ import org.opensearch.search.aggregations.bucket.filter.InternalFilter;
 import org.opensearch.search.aggregations.bucket.terms.SignificantTerms;
 import org.opensearch.search.aggregations.bucket.terms.SignificantTermsAggregatorFactory;
 import org.opensearch.search.aggregations.bucket.terms.Terms;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,12 +61,12 @@ import static org.opensearch.test.hamcrest.OpenSearchAssertions.assertAcked;
 import static org.opensearch.test.hamcrest.OpenSearchAssertions.assertSearchResponse;
 import static org.hamcrest.Matchers.equalTo;
 
-public class TermsShardMinDocCountIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class TermsShardMinDocCountIT extends ParameterizedOpenSearchIntegTestCase {
 
     private static final String index = "someindex";
 
-    public TermsShardMinDocCountIT(Settings staticSettings) {
-        super(staticSettings);
+    public TermsShardMinDocCountIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -76,16 +77,17 @@ public class TermsShardMinDocCountIT extends ParameterizedStaticSettingsOpenSear
         );
     }
 
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
+    }
+
     private static String randomExecutionHint() {
         return randomBoolean() ? null : randomFrom(SignificantTermsAggregatorFactory.ExecutionMode.values()).toString();
     }
 
     // see https://github.com/elastic/elasticsearch/issues/5998
     public void testShardMinDocCountSignificantTermsTest() throws Exception {
-        assumeFalse(
-            "For concurrent segment search shard_min_doc_count is not enforced at the slice level. See https://github.com/opensearch-project/OpenSearch/issues/11847",
-            internalCluster().clusterService().getClusterSettings().get(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING)
-        );
         String textMappings;
         if (randomBoolean()) {
             textMappings = "type=long";
@@ -155,10 +157,6 @@ public class TermsShardMinDocCountIT extends ParameterizedStaticSettingsOpenSear
 
     // see https://github.com/elastic/elasticsearch/issues/5998
     public void testShardMinDocCountTermsTest() throws Exception {
-        assumeFalse(
-            "For concurrent segment search shard_min_doc_count is not enforced at the slice level. See https://github.com/opensearch-project/OpenSearch/issues/11847",
-            internalCluster().clusterService().getClusterSettings().get(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING)
-        );
         final String[] termTypes = { "text", "long", "integer", "float", "double" };
         String termtype = termTypes[randomInt(termTypes.length - 1)];
         String termMappings = "type=" + termtype;
@@ -191,8 +189,8 @@ public class TermsShardMinDocCountIT extends ParameterizedStaticSettingsOpenSear
             )
             .get();
         assertSearchResponse(response);
-        Terms terms = response.getAggregations().get("myTerms");
-        assertThat(terms.getBuckets().size(), equalTo(0));
+        Terms sigterms = response.getAggregations().get("myTerms");
+        assertThat(sigterms.getBuckets().size(), equalTo(0));
 
         response = client().prepareSearch(index)
             .addAggregation(
@@ -206,8 +204,8 @@ public class TermsShardMinDocCountIT extends ParameterizedStaticSettingsOpenSear
             )
             .get();
         assertSearchResponse(response);
-        terms = response.getAggregations().get("myTerms");
-        assertThat(terms.getBuckets().size(), equalTo(2));
+        sigterms = response.getAggregations().get("myTerms");
+        assertThat(sigterms.getBuckets().size(), equalTo(2));
 
     }
 

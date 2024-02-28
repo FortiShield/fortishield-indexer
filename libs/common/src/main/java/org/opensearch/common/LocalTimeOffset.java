@@ -514,7 +514,7 @@ public abstract class LocalTimeOffset {
      * Builds an array that can be {@link Arrays#binarySearch(long[], long)}ed
      * for the daylight savings time transitions.
      *
-     * @opensearch.internal
+     * @openearch.internal
      */
     private static class TransitionArrayLookup extends AbstractManyTransitionsLookup {
         private final LocalTimeOffset[] offsets;

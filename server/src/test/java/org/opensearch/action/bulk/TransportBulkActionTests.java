@@ -118,8 +118,7 @@ public class TransportBulkActionTests extends OpenSearchTestCase {
                 new AutoCreateIndex(Settings.EMPTY, clusterService.getClusterSettings(), new Resolver(), new SystemIndices(emptyMap())),
                 new IndexingPressureService(Settings.EMPTY, clusterService),
                 mock(IndicesService.class),
-                new SystemIndices(emptyMap()),
-                NoopTracer.INSTANCE
+                new SystemIndices(emptyMap())
             );
         }
 

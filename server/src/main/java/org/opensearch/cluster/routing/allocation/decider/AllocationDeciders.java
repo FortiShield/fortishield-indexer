@@ -39,7 +39,6 @@ import org.opensearch.cluster.node.DiscoveryNode;
 import org.opensearch.cluster.routing.RoutingNode;
 import org.opensearch.cluster.routing.ShardRouting;
 import org.opensearch.cluster.routing.allocation.RoutingAllocation;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,9 +47,8 @@ import java.util.Collections;
  * A composite {@link AllocationDecider} combining the "decision" of multiple
  * {@link AllocationDecider} implementations into a single allocation decision.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class AllocationDeciders extends AllocationDecider {
 
     private static final Logger logger = LogManager.getLogger(AllocationDeciders.class);
@@ -257,7 +255,7 @@ public class AllocationDeciders extends AllocationDecider {
         Decision.Multi ret = new Decision.Multi();
         for (AllocationDecider decider : allocations) {
             Decision decision = decider.canAllocateAnyShardToNode(node, allocation);
-            if (decision.type().canPreemptivelyReturn()) {
+            if (decision.type().canPremptivelyReturn()) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Shard can not be allocated on node [{}] due to [{}]", node.nodeId(), decider.getClass().getSimpleName());
                 }
@@ -279,7 +277,7 @@ public class AllocationDeciders extends AllocationDecider {
         for (AllocationDecider decider : allocations) {
             Decision decision = decider.canMoveAway(shardRouting, allocation);
             // short track if a NO is returned.
-            if (decision.type().canPreemptivelyReturn()) {
+            if (decision.type().canPremptivelyReturn()) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Shard [{}] can not be moved away due to [{}]", shardRouting, decider.getClass().getSimpleName());
                 }
@@ -301,7 +299,7 @@ public class AllocationDeciders extends AllocationDecider {
         for (AllocationDecider decider : allocations) {
             Decision decision = decider.canMoveAnyShard(allocation);
             // short track if a NO is returned.
-            if (decision.type().canPreemptivelyReturn()) {
+            if (decision.type().canPremptivelyReturn()) {
                 if (allocation.debugDecision() == false) {
                     return decision;
                 } else {

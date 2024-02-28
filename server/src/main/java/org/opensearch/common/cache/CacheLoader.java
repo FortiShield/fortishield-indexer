@@ -32,15 +32,12 @@
 
 package org.opensearch.common.cache;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * An interface for a cache loader.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
 @FunctionalInterface
-@PublicApi(since = "1.0.0")
 public interface CacheLoader<K, V> {
     V load(K key) throws Exception;
 }

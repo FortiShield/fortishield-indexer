@@ -36,6 +36,7 @@ import com.carrotsearch.randomizedtesting.annotations.ParametersFactory;
 import org.apache.lucene.util.ArrayUtil;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.index.fielddata.ScriptDocValues;
 import org.opensearch.index.mapper.SeqNoFieldMapper;
 import org.opensearch.index.query.functionscore.FunctionScoreQueryBuilder;
@@ -46,7 +47,7 @@ import org.opensearch.script.ScoreAccessor;
 import org.opensearch.script.Script;
 import org.opensearch.script.ScriptType;
 import org.opensearch.search.SearchHit;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 import org.hamcrest.CoreMatchers;
 
 import java.util.Arrays;
@@ -75,10 +76,10 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.nullValue;
 
-public class RandomScoreFunctionIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class RandomScoreFunctionIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public RandomScoreFunctionIT(Settings staticSettings) {
-        super(staticSettings);
+    public RandomScoreFunctionIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -87,6 +88,11 @@ public class RandomScoreFunctionIT extends ParameterizedStaticSettingsOpenSearch
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     @Override
@@ -129,7 +135,6 @@ public class RandomScoreFunctionIT extends ParameterizedStaticSettingsOpenSearch
         }
         flush();
         refresh();
-        indexRandomForConcurrentSearch("test");
         int outerIters = scaledRandomIntBetween(10, 20);
         for (int o = 0; o < outerIters; o++) {
             final int seed = randomInt();
@@ -202,7 +207,6 @@ public class RandomScoreFunctionIT extends ParameterizedStaticSettingsOpenSearch
                 .get();
         }
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         Map<String, Object> params = new HashMap<>();
         params.put("factor", randomIntBetween(2, 4));
@@ -294,7 +298,6 @@ public class RandomScoreFunctionIT extends ParameterizedStaticSettingsOpenSearch
         index("test", "type", "1", jsonBuilder().startObject().endObject());
         flush();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         int seed = 12345678;
 
@@ -314,7 +317,6 @@ public class RandomScoreFunctionIT extends ParameterizedStaticSettingsOpenSearch
         index("test", "type", "1", jsonBuilder().startObject().endObject());
         flush();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         int seed = 12345678;
 
@@ -366,7 +368,6 @@ public class RandomScoreFunctionIT extends ParameterizedStaticSettingsOpenSearch
         }
         flush();
         refresh();
-        indexRandomForConcurrentSearch("test");
         int iters = scaledRandomIntBetween(10, 20);
         for (int i = 0; i < iters; ++i) {
             SearchResponse searchResponse = client().prepareSearch()
@@ -389,7 +390,6 @@ public class RandomScoreFunctionIT extends ParameterizedStaticSettingsOpenSearch
             index("test", "type", "" + i, jsonBuilder().startObject().endObject());
         }
         flushAndRefresh();
-        indexRandomForConcurrentSearch("test");
 
         assertNoFailures(
             client().prepareSearch()

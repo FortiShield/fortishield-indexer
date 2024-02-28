@@ -32,7 +32,6 @@
 
 package org.opensearch.core.indices.breaker;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -46,9 +45,8 @@ import java.util.Locale;
 /**
  * Class encapsulating stats about the {@link org.opensearch.core.common.breaker.CircuitBreaker}
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class CircuitBreakerStats implements Writeable, ToXContentObject {
 
     /** The name of the circuit breaker */

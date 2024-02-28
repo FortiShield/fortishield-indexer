@@ -32,7 +32,6 @@
 
 package org.opensearch.action.search;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.xcontent.StatusToXContentObject;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.action.ActionResponse;
@@ -53,9 +52,8 @@ import static org.opensearch.core.xcontent.ConstructingObjectParser.constructorA
 /**
  * Transport response for clearing a search scroll
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ClearScrollResponse extends ActionResponse implements StatusToXContentObject {
 
     private static final ParseField SUCCEEDED = new ParseField("succeeded");

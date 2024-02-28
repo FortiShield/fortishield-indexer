@@ -8,14 +8,11 @@
 
 package org.opensearch.common.cache;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * Reason for notification removal
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public enum RemovalReason {
     REPLACED,
     INVALIDATED,

@@ -11,7 +11,6 @@ package org.opensearch.index.store.remote.metadata;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.lucene.util.Version;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.index.Index;
 import org.opensearch.core.index.shard.ShardId;
 import org.opensearch.index.store.RemoteSegmentStoreDirectory;
@@ -26,9 +25,8 @@ import java.util.stream.Collectors;
 /**
  * Metadata object for Remote Segment
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.6.0")
 public class RemoteSegmentMetadata {
     /**
      * Latest supported version of metadata

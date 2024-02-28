@@ -32,8 +32,6 @@
 
 package org.opensearch.common;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.meta.TypeQualifierNickname;
 
@@ -55,6 +53,5 @@ import java.lang.annotation.Target;
 @CheckForNull
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD })
-@PublicApi(since = "1.0.0")
 public @interface Nullable {
 }

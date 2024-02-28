@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -37,6 +35,7 @@ public class DefaultTracerTests extends OpenSearchTestCase {
     private Span mockSpan;
     private Span mockParentSpan;
 
+    private SpanScope mockSpanScope;
     private ThreadPool threadPool;
     private ExecutorService executorService;
     private SpanCreationContext spanCreationContext;
@@ -63,7 +62,6 @@ public class DefaultTracerTests extends OpenSearchTestCase {
 
         String spanName = defaultTracer.getCurrentSpan().getSpan().getSpanName();
         assertEquals("span_name", spanName);
-        assertTrue(defaultTracer.isRecording());
     }
 
     @SuppressWarnings("unchecked")
@@ -103,11 +101,11 @@ public class DefaultTracerTests extends OpenSearchTestCase {
 
         Span span = defaultTracer.startSpan(spanCreationContext);
 
-        assertThat(defaultTracer.getCurrentSpan(), is(nullValue()));
-        assertEquals(1.0, ((MockSpan) span).getAttribute("key1"));
-        assertEquals(2l, ((MockSpan) span).getAttribute("key2"));
-        assertEquals(true, ((MockSpan) span).getAttribute("key3"));
-        assertEquals("key4", ((MockSpan) span).getAttribute("key4"));
+        assertEquals("span_name", defaultTracer.getCurrentSpan().getSpan().getSpanName());
+        assertEquals(1.0, ((MockSpan) defaultTracer.getCurrentSpan().getSpan()).getAttribute("key1"));
+        assertEquals(2l, ((MockSpan) defaultTracer.getCurrentSpan().getSpan()).getAttribute("key2"));
+        assertEquals(true, ((MockSpan) defaultTracer.getCurrentSpan().getSpan()).getAttribute("key3"));
+        assertEquals("key4", ((MockSpan) defaultTracer.getCurrentSpan().getSpan()).getAttribute("key4"));
         span.endSpan();
     }
 
@@ -122,18 +120,16 @@ public class DefaultTracerTests extends OpenSearchTestCase {
 
         Span span = defaultTracer.startSpan(spanCreationContext, null);
 
-        try (final SpanScope scope = defaultTracer.withSpanInScope(span)) {
-            SpanContext parentSpan = defaultTracer.getCurrentSpan();
+        SpanContext parentSpan = defaultTracer.getCurrentSpan();
 
-            SpanCreationContext spanCreationContext1 = buildSpanCreationContext("span_name_1", Attributes.EMPTY, parentSpan.getSpan());
+        SpanCreationContext spanCreationContext1 = buildSpanCreationContext("span_name_1", Attributes.EMPTY, parentSpan.getSpan());
 
-            try (final ScopedSpan span1 = defaultTracer.startScopedSpan(spanCreationContext1)) {
-                assertEquals("span_name_1", defaultTracer.getCurrentSpan().getSpan().getSpanName());
-                assertEquals(parentSpan.getSpan(), defaultTracer.getCurrentSpan().getSpan().getParentSpan());
-            }
-        } finally {
-            span.endSpan();
-        }
+        Span span1 = defaultTracer.startSpan(spanCreationContext1);
+
+        assertEquals("span_name_1", defaultTracer.getCurrentSpan().getSpan().getSpanName());
+        assertEquals(parentSpan.getSpan(), defaultTracer.getCurrentSpan().getSpan().getParentSpan());
+        span1.endSpan();
+        span.endSpan();
     }
 
     @SuppressWarnings("unchecked")
@@ -158,7 +154,8 @@ public class DefaultTracerTests extends OpenSearchTestCase {
 
         Span span = defaultTracer.startSpan(spanCreationContext);
 
-        assertThat(defaultTracer.getCurrentSpan(), is(nullValue()));
+        assertEquals("span_name", defaultTracer.getCurrentSpan().getSpan().getSpanName());
+        assertEquals(null, defaultTracer.getCurrentSpan().getSpan().getParentSpan());
         span.endSpan();
     }
 
@@ -405,6 +402,7 @@ public class DefaultTracerTests extends OpenSearchTestCase {
         mockTracingTelemetry = mock(TracingTelemetry.class);
         mockSpan = mock(Span.class);
         mockParentSpan = mock(Span.class);
+        mockSpanScope = mock(SpanScope.class);
         mockTracerContextStorage = mock(TracerContextStorage.class);
         when(mockSpan.getSpanName()).thenReturn("span_name");
         when(mockSpan.getSpanId()).thenReturn("span_id");

@@ -108,7 +108,7 @@ public abstract class BaseTranslogReader implements Comparable<BaseTranslogReade
         return size;
     }
 
-    TranslogSnapshot newSnapshot() {
+    public TranslogSnapshot newSnapshot() {
         return new TranslogSnapshot(this, sizeInBytes());
     }
 

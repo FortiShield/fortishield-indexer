@@ -31,7 +31,6 @@
 
 package org.opensearch.index.query;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.action.ActionListener;
 import org.opensearch.core.common.ParsingException;
 
@@ -42,9 +41,8 @@ import java.util.List;
 /**
  * A basic interface for rewriteable classes.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface Rewriteable<T> {
 
     int MAX_REWRITE_ROUNDS = 16;

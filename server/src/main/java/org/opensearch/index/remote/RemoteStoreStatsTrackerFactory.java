@@ -11,7 +11,6 @@ package org.opensearch.index.remote;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.cluster.service.ClusterService;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.ClusterSettings;
 import org.opensearch.common.settings.Setting;
 import org.opensearch.common.settings.Settings;
@@ -25,9 +24,8 @@ import java.util.Map;
 /**
  * Factory to manage stats trackers for Remote Store operations
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.10.0")
 public class RemoteStoreStatsTrackerFactory implements IndexEventListener {
     static class Defaults {
         static final int MOVING_AVERAGE_WINDOW_SIZE = 20;

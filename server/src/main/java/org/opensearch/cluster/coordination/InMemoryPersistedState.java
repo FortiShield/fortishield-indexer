@@ -66,11 +66,6 @@ public class InMemoryPersistedState implements CoordinationState.PersistedState 
     }
 
     @Override
-    public PersistedStateStats getStats() {
-        return null;
-    }
-
-    @Override
     public long getCurrentTerm() {
         return currentTerm;
     }

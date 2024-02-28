@@ -32,7 +32,6 @@
 package org.opensearch.search.aggregations;
 
 import org.opensearch.LegacyESVersion;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.util.BigArrays;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.NamedWriteable;
@@ -63,16 +62,14 @@ import static java.util.Objects.requireNonNull;
 /**
  * An internal implementation of {@link Aggregation}. Serves as a base class for all aggregation implementations.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class InternalAggregation implements Aggregation, NamedWriteable {
     /**
      * Builds {@link ReduceContext}.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public interface ReduceContextBuilder {
         /**
          * Build a {@linkplain ReduceContext} to perform a partial reduction.
@@ -88,9 +85,8 @@ public abstract class InternalAggregation implements Aggregation, NamedWriteable
     /**
      * The reduce context
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class ReduceContext {
         private final BigArrays bigArrays;
         private final ScriptService scriptService;

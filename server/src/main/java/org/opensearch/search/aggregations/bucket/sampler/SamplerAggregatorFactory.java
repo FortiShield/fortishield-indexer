@@ -75,6 +75,6 @@ public class SamplerAggregatorFactory extends AggregatorFactory {
 
     @Override
     protected boolean supportsConcurrentSegmentSearch() {
-        return false;
+        return true;
     }
 }

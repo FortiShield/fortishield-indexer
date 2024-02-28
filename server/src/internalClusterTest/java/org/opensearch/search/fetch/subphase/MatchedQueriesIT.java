@@ -36,6 +36,7 @@ import com.carrotsearch.randomizedtesting.annotations.ParametersFactory;
 
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.common.bytes.BytesReference;
 import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.XContentHelper;
@@ -44,7 +45,7 @@ import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.index.query.TermQueryBuilder;
 import org.opensearch.search.SearchHit;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -63,10 +64,10 @@ import static org.opensearch.test.hamcrest.OpenSearchAssertions.assertHitCount;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItemInArray;
 
-public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class MatchedQueriesIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public MatchedQueriesIT(Settings staticSettings) {
-        super(staticSettings);
+    public MatchedQueriesIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -77,6 +78,11 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         );
     }
 
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
+    }
+
     public void testSimpleMatchedQueryFromFilteredQuery() throws Exception {
         createIndex("test");
         ensureGreen();
@@ -85,7 +91,6 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         client().prepareIndex("test").setId("2").setSource("name", "test2", "number", 2).get();
         client().prepareIndex("test").setId("3").setSource("name", "test3", "number", 3).get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse searchResponse = client().prepareSearch()
             .setQuery(
@@ -136,7 +141,6 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         client().prepareIndex("test").setId("2").setSource("name", "test").get();
         client().prepareIndex("test").setId("3").setSource("name", "test").get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse searchResponse = client().prepareSearch()
             .setQuery(matchAllQuery())
@@ -188,7 +192,6 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         client().prepareIndex("test").setId("2").setSource("name", "test", "title", "title2").get();
         client().prepareIndex("test").setId("3").setSource("name", "test", "title", "title3").get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse searchResponse = client().prepareSearch()
             .setQuery(boolQuery().must(matchAllQuery()).filter(termsQuery("title", "title1", "title2", "title3").queryName("title")))
@@ -221,13 +224,12 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         }
     }
 
-    public void testRegExpQuerySupportsName() throws InterruptedException {
+    public void testRegExpQuerySupportsName() {
         createIndex("test1");
         ensureGreen();
 
         client().prepareIndex("test1").setId("1").setSource("title", "title1").get();
         refresh();
-        indexRandomForConcurrentSearch("test1");
 
         SearchResponse searchResponse = client().prepareSearch()
             .setQuery(QueryBuilders.regexpQuery("title", "title1").queryName("regex"))
@@ -244,13 +246,12 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         }
     }
 
-    public void testPrefixQuerySupportsName() throws InterruptedException {
+    public void testPrefixQuerySupportsName() {
         createIndex("test1");
         ensureGreen();
 
         client().prepareIndex("test1").setId("1").setSource("title", "title1").get();
         refresh();
-        indexRandomForConcurrentSearch("test1");
 
         SearchResponse searchResponse = client().prepareSearch()
             .setQuery(QueryBuilders.prefixQuery("title", "title").queryName("prefix"))
@@ -267,13 +268,12 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         }
     }
 
-    public void testFuzzyQuerySupportsName() throws InterruptedException {
+    public void testFuzzyQuerySupportsName() {
         createIndex("test1");
         ensureGreen();
 
         client().prepareIndex("test1").setId("1").setSource("title", "title1").get();
         refresh();
-        indexRandomForConcurrentSearch("test1");
 
         SearchResponse searchResponse = client().prepareSearch()
             .setQuery(QueryBuilders.fuzzyQuery("title", "titel1").queryName("fuzzy"))
@@ -290,13 +290,12 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         }
     }
 
-    public void testWildcardQuerySupportsName() throws InterruptedException {
+    public void testWildcardQuerySupportsName() {
         createIndex("test1");
         ensureGreen();
 
         client().prepareIndex("test1").setId("1").setSource("title", "title1").get();
         refresh();
-        indexRandomForConcurrentSearch("test1");
 
         SearchResponse searchResponse = client().prepareSearch()
             .setQuery(QueryBuilders.wildcardQuery("title", "titl*").queryName("wildcard"))
@@ -313,13 +312,12 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         }
     }
 
-    public void testSpanFirstQuerySupportsName() throws InterruptedException {
+    public void testSpanFirstQuerySupportsName() {
         createIndex("test1");
         ensureGreen();
 
         client().prepareIndex("test1").setId("1").setSource("title", "title1 title2").get();
         refresh();
-        indexRandomForConcurrentSearch("test1");
 
         SearchResponse searchResponse = client().prepareSearch()
             .setQuery(QueryBuilders.spanFirstQuery(QueryBuilders.spanTermQuery("title", "title1"), 10).queryName("span"))
@@ -346,7 +344,6 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
         client().prepareIndex("test").setId("1").setSource("content", "Lorem ipsum dolor sit amet").get();
         client().prepareIndex("test").setId("2").setSource("content", "consectetur adipisicing elit").get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         // Execute search at least two times to load it in cache
         int iter = scaledRandomIntBetween(2, 10);
@@ -381,7 +378,6 @@ public class MatchedQueriesIT extends ParameterizedStaticSettingsOpenSearchInteg
 
         client().prepareIndex("test").setId("1").setSource("content", "Lorem ipsum dolor sit amet").get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         MatchQueryBuilder matchQueryBuilder = matchQuery("content", "amet").queryName("abc");
         BytesReference matchBytes = XContentHelper.toXContent(matchQueryBuilder, MediaTypeRegistry.JSON, false);

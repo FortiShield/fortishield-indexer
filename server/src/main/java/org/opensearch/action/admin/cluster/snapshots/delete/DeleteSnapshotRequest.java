@@ -34,7 +34,6 @@ package org.opensearch.action.admin.cluster.snapshots.delete;
 
 import org.opensearch.action.ActionRequestValidationException;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.snapshots.SnapshotsService;
@@ -49,9 +48,8 @@ import static org.opensearch.action.ValidateActions.addValidationError;
  * Delete snapshot request removes snapshots from the repository and cleans up all files that are associated with the snapshots.
  * All files that are shared with at least one other existing snapshot are left intact.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class DeleteSnapshotRequest extends ClusterManagerNodeRequest<DeleteSnapshotRequest> {
 
     private String repository;

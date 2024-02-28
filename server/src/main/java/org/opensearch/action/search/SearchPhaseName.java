@@ -8,17 +8,10 @@
 
 package org.opensearch.action.search;
 
-import org.opensearch.common.annotation.PublicApi;
-
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Enum for different Search Phases in OpenSearch
- *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.9.0")
 public enum SearchPhaseName {
     DFS_PRE_QUERY("dfs_pre_query"),
     QUERY("query"),
@@ -28,12 +21,6 @@ public enum SearchPhaseName {
     CAN_MATCH("can_match");
 
     private final String name;
-    private static final Set<String> PHASE_NAMES = new HashSet<>();
-    static {
-        for (SearchPhaseName phaseName : SearchPhaseName.values()) {
-            PHASE_NAMES.add(phaseName.name);
-        }
-    }
 
     SearchPhaseName(final String name) {
         this.name = name;
@@ -41,9 +28,5 @@ public enum SearchPhaseName {
 
     public String getName() {
         return name;
-    }
-
-    public static boolean isValidName(String phaseName) {
-        return PHASE_NAMES.contains(phaseName);
     }
 }

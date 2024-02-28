@@ -39,7 +39,6 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.apache.lucene.util.BytesRef;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,9 +49,8 @@ import java.util.Set;
  * Filter the term vector (doc frequency, positions, offsets) for a
  * document.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class TermVectorsFilter {
     public static final int DEFAULT_MAX_QUERY_TERMS = 25;
     public static final int DEFAULT_MIN_TERM_FREQ = 0;
@@ -181,9 +179,8 @@ public class TermVectorsFilter {
     /**
      * Internal score term
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static final class ScoreTerm {
         public String field;
         public String word;

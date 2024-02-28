@@ -33,16 +33,14 @@ package org.opensearch.action.admin.indices.analyze;
 
 import org.opensearch.action.support.single.shard.SingleShardOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.util.Map;
 
 /**
  * Transport request builder for analyzing text
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class AnalyzeRequestBuilder extends SingleShardOperationRequestBuilder<
     AnalyzeAction.Request,
     AnalyzeAction.Response,

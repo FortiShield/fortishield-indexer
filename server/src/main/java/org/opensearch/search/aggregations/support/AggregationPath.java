@@ -32,7 +32,6 @@
 
 package org.opensearch.search.aggregations.support;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.search.aggregations.AggregationExecutionException;
 import org.opensearch.search.aggregations.Aggregator;
@@ -132,9 +131,8 @@ public class AggregationPath {
     /**
      * Element in an agg path
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class PathElement {
 
         private final String fullName;

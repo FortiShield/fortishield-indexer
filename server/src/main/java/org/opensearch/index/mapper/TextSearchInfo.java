@@ -34,7 +34,6 @@ package org.opensearch.index.mapper;
 
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lucene.Lucene;
 import org.opensearch.index.analysis.NamedAnalyzer;
 import org.opensearch.index.similarity.SimilarityProvider;
@@ -42,9 +41,8 @@ import org.opensearch.index.similarity.SimilarityProvider;
 /**
  * Encapsulates information about how to perform text searches over a field
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class TextSearchInfo {
 
     private static final FieldType SIMPLE_MATCH_ONLY_FIELD_TYPE = new FieldType();
@@ -147,9 +145,8 @@ public class TextSearchInfo {
     /**
      * What sort of term vectors are available
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public enum TermVector {
         NONE,
         DOCS,

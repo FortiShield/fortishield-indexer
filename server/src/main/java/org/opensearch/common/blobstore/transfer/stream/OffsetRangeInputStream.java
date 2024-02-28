@@ -10,7 +10,6 @@ package org.opensearch.common.blobstore.transfer.stream;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * OffsetRangeInputStream is an abstract class that extends from {@link InputStream}
@@ -20,8 +19,4 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class OffsetRangeInputStream extends InputStream {
     public abstract long getFilePointer() throws IOException;
-
-    public void setReadBlock(AtomicBoolean readBlock) {
-        // Nothing
-    }
 }

@@ -37,7 +37,6 @@ import org.opensearch.common.Booleans;
 import org.opensearch.common.CheckedConsumer;
 import org.opensearch.common.Nullable;
 import org.opensearch.common.SetOnce;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.collect.Tuple;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.common.xcontent.LoggingDeprecationHandler;
@@ -73,7 +72,6 @@ import static org.opensearch.core.common.unit.ByteSizeValue.parseBytesSizeValue;
  *
  * @opensearch.api
  */
-@PublicApi(since = "1.0.0")
 public class RestRequest implements ToXContent.Params {
 
     // tchar pattern as defined by RFC7230 section 3.2.6
@@ -233,9 +231,8 @@ public class RestRequest implements ToXContent.Params {
     /**
      * The method used.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public enum Method {
         GET,
         POST,

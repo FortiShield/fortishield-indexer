@@ -32,7 +32,6 @@
 package org.opensearch.index.translog;
 
 import org.opensearch.Version;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -47,9 +46,8 @@ import java.io.IOException;
 /**
  * Translog statistics
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class TranslogStats implements Writeable, ToXContentFragment {
     private static final String TRANSLOG = "translog";
     private long translogSizeInBytes;

@@ -33,7 +33,6 @@
 package org.opensearch.action.admin.indices.dangling.list;
 
 import org.opensearch.action.support.nodes.BaseNodesRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -43,9 +42,8 @@ import java.io.IOException;
 /**
  * Transport request for listing a dangling indices
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ListDanglingIndicesRequest extends BaseNodesRequest<ListDanglingIndicesRequest> {
     /**
      * Filter the response by index UUID. Leave as null to find all indices.

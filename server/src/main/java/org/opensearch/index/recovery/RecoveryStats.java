@@ -31,7 +31,6 @@
 
 package org.opensearch.index.recovery;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -47,9 +46,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * Recovery related statistics, starting at the shard level and allowing aggregation to
  * indices and node level
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class RecoveryStats implements ToXContentFragment, Writeable {
 
     private final AtomicInteger currentAsSource = new AtomicInteger();

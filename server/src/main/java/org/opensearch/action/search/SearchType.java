@@ -32,14 +32,11 @@
 
 package org.opensearch.action.search;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * Search type represent the manner at which the search operation is executed.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public enum SearchType {
     /**
      * Same as {@link #QUERY_THEN_FETCH}, except for an initial scatter phase which goes and computes the distributed

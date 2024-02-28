@@ -8,14 +8,11 @@
 
 package org.opensearch.index.store.remote.utils.cache;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * Usage metrics for {@link RefCountedCache}
  *
  * @opensearch.internal
  */
-@PublicApi(since = "2.7.0")
 public class CacheUsage {
     /**
      * Cache usage of the system

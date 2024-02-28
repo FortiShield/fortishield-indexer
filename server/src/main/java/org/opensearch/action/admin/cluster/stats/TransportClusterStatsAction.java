@@ -168,10 +168,6 @@ public class TransportClusterStatsAction extends TransportNodesAction<
             false,
             false,
             false,
-            false,
-            false,
-            false,
-            false,
             false
         );
         List<ShardStats> shardsStats = new ArrayList<>();

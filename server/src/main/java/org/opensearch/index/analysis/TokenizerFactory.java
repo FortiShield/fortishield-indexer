@@ -33,16 +33,14 @@
 package org.opensearch.index.analysis;
 
 import org.apache.lucene.analysis.Tokenizer;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.util.function.Supplier;
 
 /**
  * Base tokenizer factory used in analysis chain
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface TokenizerFactory {
 
     String name();

@@ -38,13 +38,14 @@ import org.opensearch.ExceptionsHelper;
 import org.opensearch.action.search.SearchPhaseExecutionException;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.index.query.InnerHitBuilder;
 import org.opensearch.index.query.NestedQueryBuilder;
 import org.opensearch.index.query.TermQueryBuilder;
 import org.opensearch.search.SearchException;
 import org.opensearch.search.SearchHits;
 import org.opensearch.search.fetch.subphase.FetchSourceContext;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,10 +57,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
-public class MetadataFetchingIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class MetadataFetchingIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public MetadataFetchingIT(Settings staticSettings) {
-        super(staticSettings);
+    public MetadataFetchingIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -70,13 +71,17 @@ public class MetadataFetchingIT extends ParameterizedStaticSettingsOpenSearchInt
         );
     }
 
-    public void testSimple() throws InterruptedException {
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
+    }
+
+    public void testSimple() {
         assertAcked(prepareCreate("test"));
         ensureGreen();
 
         client().prepareIndex("test").setId("1").setSource("field", "value").get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse response = client().prepareSearch("test").storedFields("_none_").setFetchSource(false).setVersion(true).get();
         assertThat(response.getHits().getAt(0).getId(), nullValue());
@@ -88,12 +93,12 @@ public class MetadataFetchingIT extends ParameterizedStaticSettingsOpenSearchInt
         assertThat(response.getHits().getAt(0).getSourceAsString(), nullValue());
     }
 
-    public void testInnerHits() throws InterruptedException {
+    public void testInnerHits() {
         assertAcked(prepareCreate("test").setMapping("nested", "type=nested"));
         ensureGreen();
         client().prepareIndex("test").setId("1").setSource("field", "value", "nested", Collections.singletonMap("title", "foo")).get();
         refresh();
-        indexRandomForConcurrentSearch("test");
+
         SearchResponse response = client().prepareSearch("test")
             .storedFields("_none_")
             .setFetchSource(false)
@@ -114,13 +119,12 @@ public class MetadataFetchingIT extends ParameterizedStaticSettingsOpenSearchInt
         assertThat(hits.getAt(0).getSourceAsString(), nullValue());
     }
 
-    public void testWithRouting() throws InterruptedException {
+    public void testWithRouting() {
         assertAcked(prepareCreate("test"));
         ensureGreen();
 
         client().prepareIndex("test").setId("1").setSource("field", "value").setRouting("toto").get();
         refresh();
-        indexRandomForConcurrentSearch("test");
 
         SearchResponse response = client().prepareSearch("test").storedFields("_none_").setFetchSource(false).get();
         assertThat(response.getHits().getAt(0).getId(), nullValue());

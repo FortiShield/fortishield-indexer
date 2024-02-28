@@ -38,7 +38,6 @@ import org.opensearch.action.support.WriteResponse;
 import org.opensearch.action.support.replication.ReplicationResponse;
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.xcontent.StatusToXContentObject;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -65,9 +64,8 @@ import static org.opensearch.index.seqno.SequenceNumbers.UNASSIGNED_SEQ_NO;
 /**
  * A base class for the response of a write operation that involves a single doc
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class DocWriteResponse extends ReplicationResponse implements WriteResponse, StatusToXContentObject {
 
     private static final String _SHARDS = "_shards";
@@ -82,10 +80,7 @@ public abstract class DocWriteResponse extends ReplicationResponse implements Wr
     /**
      * An enum that represents the results of CRUD operations, primarily used to communicate the type of
      * operation that occurred.
-     *
-     * @opensearch.api
      */
-    @PublicApi(since = "1.0.0")
     public enum Result implements Writeable {
         CREATED(0),
         UPDATED(1),
@@ -346,7 +341,7 @@ public abstract class DocWriteResponse extends ReplicationResponse implements Wr
 
     /**
      * Parse the output of the {@link #innerToXContent(XContentBuilder, Params)} method.
-     * <p>
+     *
      * This method is intended to be called by subclasses and must be called multiple times to parse all the information concerning
      * {@link DocWriteResponse} objects. It always parses the current token, updates the given parsing context accordingly
      * if needed and then immediately returns.

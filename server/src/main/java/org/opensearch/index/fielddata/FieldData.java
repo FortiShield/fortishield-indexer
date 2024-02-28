@@ -37,7 +37,6 @@ import org.apache.lucene.index.DocValues;
 import org.apache.lucene.index.NumericDocValues;
 import org.apache.lucene.index.SortedNumericDocValues;
 import org.apache.lucene.index.SortedSetDocValues;
-import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.util.BytesRef;
 import org.opensearch.common.Numbers;
 import org.opensearch.common.geo.GeoPoint;
@@ -77,10 +76,6 @@ public enum FieldData {
                 throw new UnsupportedOperationException();
             }
 
-            @Override
-            public int advance(int target) throws IOException {
-                return DocIdSetIterator.NO_MORE_DOCS;
-            }
         };
     }
 
@@ -566,10 +561,6 @@ public enum FieldData {
             return values.advanceExact(doc);
         }
 
-        @Override
-        public int advance(int target) throws IOException {
-            return values.advance(target);
-        }
     }
 
     /**
@@ -600,10 +591,6 @@ public enum FieldData {
             return values.docValueCount();
         }
 
-        @Override
-        public int advance(int target) throws IOException {
-            return values.advance(target);
-        }
     }
 
     /**
@@ -633,12 +620,6 @@ public enum FieldData {
 
         @Override
         public int docID() {
-            return docID;
-        }
-
-        @Override
-        public int advance(int target) throws IOException {
-            docID = values.advance(target);
             return docID;
         }
     }
@@ -702,11 +683,6 @@ public enum FieldData {
             public long longValue() throws IOException {
                 return value;
             }
-
-            @Override
-            public int advance(int target) throws IOException {
-                return values.advance(target);
-            }
         };
     }
 
@@ -739,11 +715,6 @@ public enum FieldData {
             public long longValue() throws IOException {
                 return value.longValue();
             }
-
-            @Override
-            public int advance(int target) throws IOException {
-                return values.advance(target);
-            }
         };
     }
 
@@ -770,11 +741,6 @@ public enum FieldData {
             @Override
             public double doubleValue() throws IOException {
                 return value;
-            }
-
-            @Override
-            public int advance(int target) throws IOException {
-                return values.advance(target);
             }
         };
     }

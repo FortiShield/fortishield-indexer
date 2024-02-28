@@ -89,7 +89,6 @@ public class Ec2NetworkTests extends AbstractEc2DiscoveryTestCase {
         httpServer.start();
     }
 
-    @SuppressWarnings("removal")
     @Before
     public void setup() {
         // redirect EC2 metadata service to httpServer
@@ -117,7 +116,6 @@ public class Ec2NetworkTests extends AbstractEc2DiscoveryTestCase {
     /**
      * Test for network.host: _ec2_
      */
-    @SuppressWarnings("removal")
     public void testNetworkHostUnableToResolveEc2() {
         // redirect EC2 metadata service to unknown location
         AccessController.doPrivileged(

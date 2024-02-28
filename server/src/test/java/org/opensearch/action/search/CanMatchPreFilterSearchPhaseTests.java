@@ -31,7 +31,6 @@
 
 package org.opensearch.action.search;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.lucene.util.BytesRef;
 import org.opensearch.Version;
 import org.opensearch.action.OriginalIndices;
@@ -138,10 +137,7 @@ public class CanMatchPreFilterSearchPhaseTests extends OpenSearchTestCase {
                 }
             },
             SearchResponse.Clusters.EMPTY,
-            new SearchRequestContext(
-                new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                searchRequest
-            )
+            null
         );
 
         canMatchPhase.start();
@@ -233,10 +229,7 @@ public class CanMatchPreFilterSearchPhaseTests extends OpenSearchTestCase {
                 }
             },
             SearchResponse.Clusters.EMPTY,
-            new SearchRequestContext(
-                new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                searchRequest
-            )
+            null
         );
 
         canMatchPhase.start();
@@ -327,10 +320,7 @@ public class CanMatchPreFilterSearchPhaseTests extends OpenSearchTestCase {
                 new ArraySearchPhaseResults<>(iter.size()),
                 randomIntBetween(1, 32),
                 SearchResponse.Clusters.EMPTY,
-                new SearchRequestContext(
-                    new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                    searchRequest
-                )
+                null
             ) {
 
                 @Override
@@ -358,10 +348,7 @@ public class CanMatchPreFilterSearchPhaseTests extends OpenSearchTestCase {
                 }
             },
             SearchResponse.Clusters.EMPTY,
-            new SearchRequestContext(
-                new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                searchRequest
-            )
+            null
         );
 
         canMatchPhase.start();
@@ -446,10 +433,7 @@ public class CanMatchPreFilterSearchPhaseTests extends OpenSearchTestCase {
                     }
                 },
                 SearchResponse.Clusters.EMPTY,
-                new SearchRequestContext(
-                    new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                    searchRequest
-                )
+                null
             );
 
             canMatchPhase.start();
@@ -549,10 +533,7 @@ public class CanMatchPreFilterSearchPhaseTests extends OpenSearchTestCase {
                     }
                 },
                 SearchResponse.Clusters.EMPTY,
-                new SearchRequestContext(
-                    new SearchRequestOperationsListener.CompositeListener(List.of(), LogManager.getLogger()),
-                    searchRequest
-                )
+                null
             );
 
             canMatchPhase.start();

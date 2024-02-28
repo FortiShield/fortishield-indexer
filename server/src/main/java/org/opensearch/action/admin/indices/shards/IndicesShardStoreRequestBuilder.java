@@ -37,14 +37,12 @@ import org.opensearch.action.support.IndicesOptions;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeReadOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
 import org.opensearch.cluster.health.ClusterHealthStatus;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * Request builder for {@link IndicesShardStoresRequest}
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class IndicesShardStoreRequestBuilder extends ClusterManagerNodeReadOperationRequestBuilder<
     IndicesShardStoresRequest,
     IndicesShardStoresResponse,

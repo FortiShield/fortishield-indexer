@@ -32,7 +32,6 @@
 
 package org.opensearch.action.admin.cluster.snapshots.status;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -51,9 +50,8 @@ import java.io.IOException;
 /**
  * Stats for snapshots
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SnapshotStats implements Writeable, ToXContentObject {
 
     private long startTime;

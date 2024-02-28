@@ -33,7 +33,6 @@
 package org.opensearch.index.warmer;
 
 import org.apache.logging.log4j.Logger;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.metrics.CounterMetric;
 import org.opensearch.common.metrics.MeanMetric;
 import org.opensearch.core.index.shard.ShardId;
@@ -45,9 +44,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Warms the index into the cache
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ShardIndexWarmerService extends AbstractIndexShardComponent {
 
     private final CounterMetric current = new CounterMetric();

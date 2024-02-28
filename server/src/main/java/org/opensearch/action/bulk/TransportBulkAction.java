@@ -86,11 +86,6 @@ import org.opensearch.indices.SystemIndices;
 import org.opensearch.ingest.IngestService;
 import org.opensearch.node.NodeClosedException;
 import org.opensearch.tasks.Task;
-import org.opensearch.telemetry.tracing.Span;
-import org.opensearch.telemetry.tracing.SpanBuilder;
-import org.opensearch.telemetry.tracing.SpanScope;
-import org.opensearch.telemetry.tracing.Tracer;
-import org.opensearch.telemetry.tracing.listener.TraceableActionListener;
 import org.opensearch.threadpool.ThreadPool;
 import org.opensearch.threadpool.ThreadPool.Names;
 import org.opensearch.transport.TransportService;
@@ -139,7 +134,6 @@ public class TransportBulkAction extends HandledTransportAction<BulkRequest, Bul
     private final IndexingPressureService indexingPressureService;
     private final IndicesService indicesService;
     private final SystemIndices systemIndices;
-    private final Tracer tracer;
 
     @Inject
     public TransportBulkAction(
@@ -154,8 +148,7 @@ public class TransportBulkAction extends HandledTransportAction<BulkRequest, Bul
         AutoCreateIndex autoCreateIndex,
         IndexingPressureService indexingPressureService,
         IndicesService indicesService,
-        SystemIndices systemIndices,
-        Tracer tracer
+        SystemIndices systemIndices
     ) {
         this(
             threadPool,
@@ -170,8 +163,7 @@ public class TransportBulkAction extends HandledTransportAction<BulkRequest, Bul
             indexingPressureService,
             indicesService,
             systemIndices,
-            System::nanoTime,
-            tracer
+            System::nanoTime
         );
     }
 
@@ -188,8 +180,7 @@ public class TransportBulkAction extends HandledTransportAction<BulkRequest, Bul
         IndexingPressureService indexingPressureService,
         IndicesService indicesService,
         SystemIndices systemIndices,
-        LongSupplier relativeTimeProvider,
-        Tracer tracer
+        LongSupplier relativeTimeProvider
     ) {
         super(BulkAction.NAME, transportService, actionFilters, BulkRequest::new, ThreadPool.Names.SAME);
         Objects.requireNonNull(relativeTimeProvider);
@@ -206,7 +197,6 @@ public class TransportBulkAction extends HandledTransportAction<BulkRequest, Bul
         this.indicesService = indicesService;
         this.systemIndices = systemIndices;
         clusterService.addStateApplier(this.ingestForwarder);
-        this.tracer = tracer;
     }
 
     /**
@@ -657,66 +647,52 @@ public class TransportBulkAction extends HandledTransportAction<BulkRequest, Bul
                     bulkShardRequest::ramBytesUsed,
                     isOnlySystem
                 );
-
-                final Span span = tracer.startSpan(SpanBuilder.from("bulkShardAction", nodeId, bulkShardRequest));
-                try (SpanScope spanScope = tracer.withSpanInScope(span)) {
-                    shardBulkAction.execute(
-                        bulkShardRequest,
-                        TraceableActionListener.create(ActionListener.runBefore(new ActionListener<BulkShardResponse>() {
-                            @Override
-                            public void onResponse(BulkShardResponse bulkShardResponse) {
-                                for (BulkItemResponse bulkItemResponse : bulkShardResponse.getResponses()) {
-                                    // we may have no response if item failed
-                                    if (bulkItemResponse.getResponse() != null) {
-                                        bulkItemResponse.getResponse().setShardInfo(bulkShardResponse.getShardInfo());
-                                    }
-
-                                    docStatusStats.inc(bulkItemResponse.status());
-                                    responses.set(bulkItemResponse.getItemId(), bulkItemResponse);
-                                }
-
-                                if (counter.decrementAndGet() == 0) {
-                                    finishHim();
-                                }
+                shardBulkAction.execute(bulkShardRequest, ActionListener.runBefore(new ActionListener<BulkShardResponse>() {
+                    @Override
+                    public void onResponse(BulkShardResponse bulkShardResponse) {
+                        for (BulkItemResponse bulkItemResponse : bulkShardResponse.getResponses()) {
+                            // we may have no response if item failed
+                            if (bulkItemResponse.getResponse() != null) {
+                                bulkItemResponse.getResponse().setShardInfo(bulkShardResponse.getShardInfo());
                             }
 
-                            @Override
-                            public void onFailure(Exception e) {
-                                // create failures for all relevant requests
-                                for (BulkItemRequest request : requests) {
-                                    final String indexName = concreteIndices.getConcreteIndex(request.index()).getName();
-                                    final DocWriteRequest<?> docWriteRequest = request.request();
-                                    final BulkItemResponse bulkItemResponse = new BulkItemResponse(
-                                        request.id(),
-                                        docWriteRequest.opType(),
-                                        new BulkItemResponse.Failure(indexName, docWriteRequest.id(), e)
-                                    );
+                            docStatusStats.inc(bulkItemResponse.status());
+                            responses.set(bulkItemResponse.getItemId(), bulkItemResponse);
+                        }
 
-                                    docStatusStats.inc(bulkItemResponse.status());
-                                    responses.set(request.id(), bulkItemResponse);
-                                }
+                        if (counter.decrementAndGet() == 0) {
+                            finishHim();
+                        }
+                    }
 
-                                if (counter.decrementAndGet() == 0) {
-                                    finishHim();
-                                }
-                            }
+                    @Override
+                    public void onFailure(Exception e) {
+                        // create failures for all relevant requests
+                        for (BulkItemRequest request : requests) {
+                            final String indexName = concreteIndices.getConcreteIndex(request.index()).getName();
+                            final DocWriteRequest<?> docWriteRequest = request.request();
+                            final BulkItemResponse bulkItemResponse = new BulkItemResponse(
+                                request.id(),
+                                docWriteRequest.opType(),
+                                new BulkItemResponse.Failure(indexName, docWriteRequest.id(), e)
+                            );
 
-                            private void finishHim() {
-                                indicesService.addDocStatusStats(docStatusStats);
-                                listener.onResponse(
-                                    new BulkResponse(
-                                        responses.toArray(new BulkItemResponse[responses.length()]),
-                                        buildTookInMillis(startTimeNanos)
-                                    )
-                                );
-                            }
-                        }, releasable::close), span, tracer)
-                    );
-                } catch (Exception e) {
-                    span.setError(e);
-                    span.endSpan();
-                    throw e;
-                }
+                            docStatusStats.inc(bulkItemResponse.status());
+                            responses.set(request.id(), bulkItemResponse);
+                        }
+
+                        if (counter.decrementAndGet() == 0) {
+                            finishHim();
+                        }
+                    }
+
+                    private void finishHim() {
+                        indicesService.addDocStatusStats(docStatusStats);
+                        listener.onResponse(
+                            new BulkResponse(responses.toArray(new BulkItemResponse[responses.length()]), buildTookInMillis(startTimeNanos))
+                        );
+                    }
+                }, releasable::close));
             }
             bulkRequest = null; // allow memory for bulk request items to be reclaimed before all items have been completed
         }

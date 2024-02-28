@@ -44,7 +44,7 @@ public final class RemoteInfoAction extends ActionType<RemoteInfoResponse> {
     public static final String NAME = "cluster:monitor/remote/info";
     public static final RemoteInfoAction INSTANCE = new RemoteInfoAction();
 
-    private RemoteInfoAction() {
+    public RemoteInfoAction() {
         super(NAME, RemoteInfoResponse::new);
     }
 }

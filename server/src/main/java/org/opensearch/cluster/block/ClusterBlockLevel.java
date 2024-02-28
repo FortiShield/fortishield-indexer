@@ -32,16 +32,13 @@
 
 package org.opensearch.cluster.block;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import java.util.EnumSet;
 
 /**
  * What level to block the cluster
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public enum ClusterBlockLevel {
     READ,
     WRITE,

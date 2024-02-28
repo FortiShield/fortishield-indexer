@@ -32,14 +32,11 @@
 
 package org.opensearch.common.util;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * Base countable interface.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface Countable {
     int size();
 }

@@ -39,8 +39,9 @@ import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.Client;
 import org.opensearch.cluster.health.ClusterHealthStatus;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.index.query.QueryBuilders;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,10 +54,10 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
  * This test basically verifies that search with a single shard active (cause we indexed to it) and other
  * shards possibly not active at all (cause they haven't allocated) will still work.
  */
-public class SearchWhileCreatingIndexIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class SearchWhileCreatingIndexIT extends ParameterizedOpenSearchIntegTestCase {
 
-    public SearchWhileCreatingIndexIT(Settings staticSettings) {
-        super(staticSettings);
+    public SearchWhileCreatingIndexIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -65,6 +66,11 @@ public class SearchWhileCreatingIndexIT extends ParameterizedStaticSettingsOpenS
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     public void testIndexCausesIndexCreation() throws Exception {
@@ -100,7 +106,6 @@ public class SearchWhileCreatingIndexIT extends ParameterizedStaticSettingsOpenS
         }
         client().prepareIndex("test").setId(id).setSource("field", "test").get();
         RefreshResponse refreshResponse = client().admin().indices().prepareRefresh("test").get();
-        indexRandomForConcurrentSearch("test");
         // at least one shard should be successful when refreshing
         assertThat(refreshResponse.getSuccessfulShards(), greaterThanOrEqualTo(1));
 

@@ -60,7 +60,7 @@ ext.expansions = { Architecture architecture, DockerBase base, boolean local ->
     classifier = "linux-\$(arch)"
   }
 
-  final String opensearch = "opensearch-min-${VersionProperties.getOpenSearch()}-${classifier}.tar.gz"
+  final String opensearch = "fortishield-indexer-min-${VersionProperties.getOpenSearch()}-${classifier}.tar.gz"
 
   /* Both the following Dockerfile commands put the resulting artifact at
    * the same location, regardless of classifier, so that the commands that
@@ -172,8 +172,8 @@ opensearch_distributions {
 tasks.named("preProcessFixture").configure {
   dependsOn opensearch_distributions.docker
   // always run the task, otherwise the folders won't be created
-  outputs.upToDateWhen { 
-    false 
+  outputs.upToDateWhen {
+    false
   }
   doLast {
     // tests expect to have an empty repo

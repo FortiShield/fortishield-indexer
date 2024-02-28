@@ -35,7 +35,6 @@ package org.opensearch.action.explain;
 import org.opensearch.action.support.single.shard.SingleShardOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.search.fetch.subphase.FetchSourceContext;
@@ -43,9 +42,8 @@ import org.opensearch.search.fetch.subphase.FetchSourceContext;
 /**
  * A builder for {@link ExplainRequest}.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ExplainRequestBuilder extends SingleShardOperationRequestBuilder<ExplainRequest, ExplainResponse, ExplainRequestBuilder> {
 
     ExplainRequestBuilder(OpenSearchClient client, ExplainAction action) {

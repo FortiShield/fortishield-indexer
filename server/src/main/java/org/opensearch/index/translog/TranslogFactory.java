@@ -8,8 +8,6 @@
 
 package org.opensearch.index.translog;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import java.io.IOException;
 import java.util.function.BooleanSupplier;
 import java.util.function.LongConsumer;
@@ -19,10 +17,9 @@ import java.util.function.LongSupplier;
  * Translog Factory to enable creation of various local on-disk
  * and remote store flavors of {@link Translog}
  *
- * @opensearch.api
+ * @opensearch.internal
  */
 @FunctionalInterface
-@PublicApi(since = "1.0.0")
 public interface TranslogFactory {
 
     Translog newTranslog(
@@ -32,6 +29,6 @@ public interface TranslogFactory {
         final LongSupplier globalCheckpointSupplier,
         final LongSupplier primaryTermSupplier,
         final LongConsumer persistedSequenceNumberConsumer,
-        final BooleanSupplier startedPrimarySupplier
+        final BooleanSupplier primaryModeSupplier
     ) throws IOException;
 }

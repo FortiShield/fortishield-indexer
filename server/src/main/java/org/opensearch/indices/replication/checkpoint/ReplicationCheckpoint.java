@@ -10,7 +10,6 @@ package org.opensearch.indices.replication.checkpoint;
 
 import org.opensearch.Version;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -26,9 +25,8 @@ import java.util.Objects;
 /**
  * Represents a Replication Checkpoint which is sent to a replica shard.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.2.0")
 public class ReplicationCheckpoint implements Writeable, Comparable<ReplicationCheckpoint> {
 
     private final ShardId shardId;

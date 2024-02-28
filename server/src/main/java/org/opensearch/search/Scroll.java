@@ -32,7 +32,6 @@
 
 package org.opensearch.search;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -45,9 +44,8 @@ import java.util.Objects;
  * A scroll enables scrolling of search request. It holds a {@link #keepAlive()} time that
  * will control how long to keep the scrolling resources open.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class Scroll implements Writeable {
 
     private final TimeValue keepAlive;

@@ -204,7 +204,7 @@ public final class NoOpEngine extends ReadOnlyEngine {
                                         engineConfig.getGlobalCheckpointSupplier(),
                                         engineConfig.getPrimaryTermSupplier(),
                                         seqNo -> {},
-                                        engineConfig.getStartedPrimarySupplier()
+                                        engineConfig.getPrimaryModeSupplier()
                                     )
                             ) {
                                 translog.trimUnreferencedReaders();

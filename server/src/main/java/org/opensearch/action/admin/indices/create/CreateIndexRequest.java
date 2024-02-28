@@ -43,7 +43,6 @@ import org.opensearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.opensearch.action.support.ActiveShardCount;
 import org.opensearch.action.support.IndicesOptions;
 import org.opensearch.action.support.master.AcknowledgedRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.xcontent.LoggingDeprecationHandler;
 import org.opensearch.common.xcontent.XContentFactory;
@@ -82,9 +81,8 @@ import static org.opensearch.common.settings.Settings.writeSettingsToStream;
  * @see org.opensearch.client.Requests#createIndexRequest(String)
  * @see CreateIndexResponse
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class CreateIndexRequest extends AcknowledgedRequest<CreateIndexRequest> implements IndicesRequest {
 
     public static final ParseField MAPPINGS = new ParseField("mappings");
@@ -249,7 +247,7 @@ public class CreateIndexRequest extends AcknowledgedRequest<CreateIndexRequest> 
 
     /**
      * Set the mapping for this index
-     * <p>
+     *
      * The mapping should be in the form of a JSON string, with an outer _doc key
      * <pre>
      *     .mapping("{\"_doc\":{\"properties\": ... }}")
@@ -275,7 +273,7 @@ public class CreateIndexRequest extends AcknowledgedRequest<CreateIndexRequest> 
 
     /**
      * Adds mapping that will be added when the index gets created.
-     * <p>
+     *
      * Note that the definition should *not* be nested under a type name.
      *
      * @param source The mapping source
@@ -302,7 +300,7 @@ public class CreateIndexRequest extends AcknowledgedRequest<CreateIndexRequest> 
 
     /**
      * Adds mapping that will be added when the index gets created.
-     * <p>
+     *
      * Note that the definition should *not* be nested under a type name.
      *
      * @param source The mapping source
@@ -438,7 +436,7 @@ public class CreateIndexRequest extends AcknowledgedRequest<CreateIndexRequest> 
 
     /**
      * Sets the settings and mappings as a single source.
-     * <p>
+     *
      * Note that the mapping definition should *not* be nested under a type name.
      */
     public CreateIndexRequest source(String source, MediaType mediaType) {
@@ -464,7 +462,7 @@ public class CreateIndexRequest extends AcknowledgedRequest<CreateIndexRequest> 
 
     /**
      * Sets the settings and mappings as a single source.
-     * <p>
+     *
      * Note that the mapping definition should *not* be nested under a type name.
      */
     public CreateIndexRequest source(byte[] source, MediaType mediaType) {

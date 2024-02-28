@@ -19,19 +19,16 @@ import org.opensearch.common.Nullable;
 final class AmazonAsyncS3WithCredentials {
     private final S3AsyncClient client;
     private final S3AsyncClient priorityClient;
-    private final S3AsyncClient urgentClient;
     private final AwsCredentialsProvider credentials;
 
     private AmazonAsyncS3WithCredentials(
         final S3AsyncClient client,
         final S3AsyncClient priorityClient,
-        final S3AsyncClient urgentClient,
         @Nullable final AwsCredentialsProvider credentials
     ) {
         this.client = client;
         this.credentials = credentials;
         this.priorityClient = priorityClient;
-        this.urgentClient = urgentClient;
     }
 
     S3AsyncClient client() {
@@ -42,10 +39,6 @@ final class AmazonAsyncS3WithCredentials {
         return priorityClient;
     }
 
-    S3AsyncClient urgentClient() {
-        return urgentClient;
-    }
-
     AwsCredentialsProvider credentials() {
         return credentials;
     }
@@ -53,9 +46,8 @@ final class AmazonAsyncS3WithCredentials {
     static AmazonAsyncS3WithCredentials create(
         final S3AsyncClient client,
         final S3AsyncClient priorityClient,
-        final S3AsyncClient urgentClient,
         @Nullable final AwsCredentialsProvider credentials
     ) {
-        return new AmazonAsyncS3WithCredentials(client, priorityClient, urgentClient, credentials);
+        return new AmazonAsyncS3WithCredentials(client, priorityClient, credentials);
     }
 }

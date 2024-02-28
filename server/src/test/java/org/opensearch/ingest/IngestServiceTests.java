@@ -67,7 +67,6 @@ import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.index.IndexSettings;
 import org.opensearch.index.VersionType;
-import org.opensearch.indices.IndicesService;
 import org.opensearch.plugins.IngestPlugin;
 import org.opensearch.script.MockScriptEngine;
 import org.opensearch.script.Script;
@@ -150,8 +149,7 @@ public class IngestServiceTests extends OpenSearchTestCase {
             null,
             null,
             Collections.singletonList(DUMMY_PLUGIN),
-            client,
-            mock(IndicesService.class)
+            client
         );
         Map<String, Processor.Factory> factories = ingestService.getProcessorFactories();
         assertTrue(factories.containsKey("foo"));
@@ -169,8 +167,7 @@ public class IngestServiceTests extends OpenSearchTestCase {
                 null,
                 null,
                 Arrays.asList(DUMMY_PLUGIN, DUMMY_PLUGIN),
-                client,
-                mock(IndicesService.class)
+                client
             )
         );
         assertTrue(e.getMessage(), e.getMessage().contains("already registered"));
@@ -185,8 +182,7 @@ public class IngestServiceTests extends OpenSearchTestCase {
             null,
             null,
             Collections.singletonList(DUMMY_PLUGIN),
-            client,
-            mock(IndicesService.class)
+            client
         );
         final IndexRequest indexRequest = new IndexRequest("_index").id("_id")
             .source(emptyMap())
@@ -1489,8 +1485,7 @@ public class IngestServiceTests extends OpenSearchTestCase {
             null,
             null,
             Arrays.asList(testPlugin),
-            client,
-            mock(IndicesService.class)
+            client
         );
         ingestService.addIngestClusterStateListener(ingestClusterStateListener);
 
@@ -1707,7 +1702,7 @@ public class IngestServiceTests extends OpenSearchTestCase {
             public Map<String, Processor.Factory> getProcessors(final Processor.Parameters parameters) {
                 return processors;
             }
-        }), client, mock(IndicesService.class));
+        }), client);
     }
 
     private CompoundProcessor mockCompoundProcessor() {

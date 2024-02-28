@@ -35,8 +35,9 @@ import com.carrotsearch.randomizedtesting.annotations.ParametersFactory;
 
 import org.opensearch.action.index.IndexRequestBuilder;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.test.OpenSearchIntegTestCase;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,11 +48,11 @@ import static org.opensearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.opensearch.search.SearchService.CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING;
 
 @OpenSearchIntegTestCase.SuiteScopeTestCase
-public abstract class AbstractNumericTestCase extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public abstract class AbstractNumericTestCase extends ParameterizedOpenSearchIntegTestCase {
     protected static long minValue, maxValue, minValues, maxValues;
 
-    public AbstractNumericTestCase(Settings staticSettings) {
-        super(staticSettings);
+    public AbstractNumericTestCase(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -60,6 +61,11 @@ public abstract class AbstractNumericTestCase extends ParameterizedStaticSetting
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     @Override

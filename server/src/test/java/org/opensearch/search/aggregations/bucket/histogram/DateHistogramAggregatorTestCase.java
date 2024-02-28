@@ -125,7 +125,7 @@ public abstract class DateHistogramAggregatorTestCase extends AggregatorTestCase
             isSearchable,
             false,
             true,
-            DateFieldMapper.getDefaultDateTimeFormatter(),
+            DateFieldMapper.DEFAULT_DATE_TIME_FORMATTER,
             useNanosecondResolution ? DateFieldMapper.Resolution.NANOSECONDS : DateFieldMapper.Resolution.MILLISECONDS,
             null,
             Collections.emptyMap()

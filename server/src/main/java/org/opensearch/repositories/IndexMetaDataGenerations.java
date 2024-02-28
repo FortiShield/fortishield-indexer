@@ -34,7 +34,6 @@ package org.opensearch.repositories;
 
 import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.snapshots.SnapshotId;
 
 import java.util.Collection;
@@ -51,9 +50,8 @@ import java.util.stream.Collectors;
  * {@link IndexMetadata} should be computed and then used to check if it already exists in the repository via
  * {@link #getIndexMetaBlobId(String)}.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class IndexMetaDataGenerations {
 
     public static final IndexMetaDataGenerations EMPTY = new IndexMetaDataGenerations(Collections.emptyMap(), Collections.emptyMap());

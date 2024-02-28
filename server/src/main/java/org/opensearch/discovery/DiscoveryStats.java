@@ -32,10 +32,8 @@
 
 package org.opensearch.discovery;
 
-import org.opensearch.Version;
 import org.opensearch.cluster.coordination.PendingClusterStateStats;
 import org.opensearch.cluster.coordination.PublishClusterStateStats;
-import org.opensearch.cluster.service.ClusterStateStats;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -53,31 +51,21 @@ public class DiscoveryStats implements Writeable, ToXContentFragment {
 
     private final PendingClusterStateStats queueStats;
     private final PublishClusterStateStats publishStats;
-    private final ClusterStateStats clusterStateStats;
 
-    public DiscoveryStats(PendingClusterStateStats queueStats, PublishClusterStateStats publishStats, ClusterStateStats clusterStateStats) {
+    public DiscoveryStats(PendingClusterStateStats queueStats, PublishClusterStateStats publishStats) {
         this.queueStats = queueStats;
         this.publishStats = publishStats;
-        this.clusterStateStats = clusterStateStats;
     }
 
     public DiscoveryStats(StreamInput in) throws IOException {
         queueStats = in.readOptionalWriteable(PendingClusterStateStats::new);
         publishStats = in.readOptionalWriteable(PublishClusterStateStats::new);
-        if (in.getVersion().onOrAfter(Version.V_2_12_0)) {
-            clusterStateStats = in.readOptionalWriteable(ClusterStateStats::new);
-        } else {
-            clusterStateStats = null;
-        }
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         out.writeOptionalWriteable(queueStats);
         out.writeOptionalWriteable(publishStats);
-        if (out.getVersion().onOrAfter(Version.V_2_12_0)) {
-            out.writeOptionalWriteable(clusterStateStats);
-        }
     }
 
     @Override
@@ -88,9 +76,6 @@ public class DiscoveryStats implements Writeable, ToXContentFragment {
         }
         if (publishStats != null) {
             publishStats.toXContent(builder, params);
-        }
-        if (clusterStateStats != null) {
-            clusterStateStats.toXContent(builder, params);
         }
         builder.endObject();
         return builder;
@@ -106,9 +91,5 @@ public class DiscoveryStats implements Writeable, ToXContentFragment {
 
     public PublishClusterStateStats getPublishStats() {
         return publishStats;
-    }
-
-    public ClusterStateStats getClusterStateStats() {
-        return clusterStateStats;
     }
 }

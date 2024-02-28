@@ -8,7 +8,6 @@
 
 package org.opensearch.index;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -22,9 +21,8 @@ import java.util.Set;
 /**
  * Return Segment Replication stats for a Replication Group.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.7.0")
 public class SegmentReplicationPerGroupStats implements Writeable, ToXContentFragment {
 
     private final ShardId shardId;

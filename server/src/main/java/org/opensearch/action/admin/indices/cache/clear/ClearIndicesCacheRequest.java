@@ -34,7 +34,6 @@ package org.opensearch.action.admin.indices.cache.clear;
 
 import org.opensearch.Version;
 import org.opensearch.action.support.broadcast.BroadcastRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -44,9 +43,8 @@ import java.io.IOException;
 /**
  * Transport request for clearing cache
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ClearIndicesCacheRequest extends BroadcastRequest<ClearIndicesCacheRequest> {
 
     private boolean queryCache = false;

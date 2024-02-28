@@ -33,16 +33,14 @@
 package org.opensearch.core.common.util;
 
 import org.apache.lucene.util.BytesRef;
-import org.opensearch.common.annotation.PublicApi;
 
 import java.nio.ByteBuffer;
 
 /**
  * Abstraction of an array of byte values.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface ByteArray extends BigArray {
 
     /**

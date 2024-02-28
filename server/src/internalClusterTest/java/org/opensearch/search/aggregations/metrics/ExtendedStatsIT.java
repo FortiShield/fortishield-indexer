@@ -70,8 +70,8 @@ import static org.hamcrest.Matchers.sameInstance;
 
 public class ExtendedStatsIT extends AbstractNumericTestCase {
 
-    public ExtendedStatsIT(Settings staticSettings) {
-        super(staticSettings);
+    public ExtendedStatsIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @Override

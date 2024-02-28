@@ -33,7 +33,6 @@
 package org.opensearch.action;
 
 import org.opensearch.action.support.IndicesOptions;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * Needs to be implemented by all {@link org.opensearch.action.ActionRequest} subclasses that relate to
@@ -41,9 +40,8 @@ import org.opensearch.common.annotation.PublicApi;
  * In case of internal requests originated during the distributed execution of an external request,
  * they will still return the indices that the original request related to.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface IndicesRequest {
 
     /**

@@ -38,7 +38,6 @@ import org.opensearch.cluster.AbstractDiffable;
 import org.opensearch.cluster.Diff;
 import org.opensearch.cluster.metadata.DataStream.TimestampField;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -66,9 +65,8 @@ import static java.util.Collections.unmodifiableMap;
  * ids corresponding to component templates that should be composed in order when creating a new
  * index.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class ComposableIndexTemplate extends AbstractDiffable<ComposableIndexTemplate> implements ToXContentObject {
     private static final ParseField INDEX_PATTERNS = new ParseField("index_patterns");
     private static final ParseField TEMPLATE = new ParseField("template");
@@ -294,9 +292,8 @@ public class ComposableIndexTemplate extends AbstractDiffable<ComposableIndexTem
     /**
      * Template for data stream.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public static class DataStreamTemplate implements Writeable, ToXContentObject {
 
         private static final ParseField TIMESTAMP_FIELD_FIELD = new ParseField("timestamp_field");

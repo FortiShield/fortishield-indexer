@@ -33,7 +33,6 @@
 package org.opensearch.ingest;
 
 import org.opensearch.core.common.Strings;
-import org.opensearch.core.common.util.CollectionUtils;
 import org.opensearch.index.VersionType;
 import org.opensearch.index.mapper.IdFieldMapper;
 import org.opensearch.index.mapper.IndexFieldMapper;
@@ -753,11 +752,10 @@ public final class IngestDocument {
 
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> deepCopyMap(Map<K, V> source) {
-        CollectionUtils.ensureNoSelfReferences(source, "IngestDocument: Self reference present in object.");
         return (Map<K, V>) deepCopy(source);
     }
 
-    public static Object deepCopy(Object value) {
+    private static Object deepCopy(Object value) {
         if (value instanceof Map) {
             Map<?, ?> mapValue = (Map<?, ?>) value;
             Map<Object, Object> copy = new HashMap<>(mapValue.size());

@@ -32,7 +32,6 @@
 
 package org.opensearch.node;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 import org.opensearch.common.util.set.Sets;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -53,9 +52,8 @@ import java.util.stream.Collectors;
  * EWMA of queue size, service time, and response time, as well as outgoing
  * searches to each node and the "rank" based on the ARS formula.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class AdaptiveSelectionStats implements Writeable, ToXContentFragment {
 
     private final Map<String, Long> clientOutgoingConnections;

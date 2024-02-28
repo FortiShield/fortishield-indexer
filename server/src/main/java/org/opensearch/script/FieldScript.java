@@ -33,7 +33,6 @@
 package org.opensearch.script;
 
 import org.apache.lucene.index.LeafReaderContext;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.logging.DeprecationLogger;
 import org.opensearch.index.fielddata.ScriptDocValues;
 import org.opensearch.search.lookup.LeafSearchLookup;
@@ -48,9 +47,8 @@ import java.util.function.Function;
 /**
  * A script to produce dynamic values for return fields.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public abstract class FieldScript {
 
     public static final String[] PARAMETERS = {};
@@ -115,9 +113,8 @@ public abstract class FieldScript {
     /**
      * A factory to construct {@link FieldScript} instances.
      *
-     * @opensearch.api
+     * @opensearch.internal
      */
-    @PublicApi(since = "1.0.0")
     public interface LeafFactory {
         FieldScript newInstance(LeafReaderContext ctx) throws IOException;
     }

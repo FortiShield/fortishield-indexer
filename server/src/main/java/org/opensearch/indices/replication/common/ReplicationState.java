@@ -8,14 +8,11 @@
 
 package org.opensearch.indices.replication.common;
 
-import org.opensearch.common.annotation.PublicApi;
-
 /**
  * Represents a state object used to track copying of segments from an external source
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.2.0")
 public interface ReplicationState {
     ReplicationLuceneIndex getIndex();
 

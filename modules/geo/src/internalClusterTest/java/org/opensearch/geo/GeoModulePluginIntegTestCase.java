@@ -11,11 +11,12 @@ package org.opensearch.geo;
 import com.carrotsearch.randomizedtesting.annotations.ParametersFactory;
 
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.geometry.utils.StandardValidator;
 import org.opensearch.geometry.utils.WellKnownText;
 import org.opensearch.index.mapper.GeoShapeFieldMapper;
 import org.opensearch.plugins.Plugin;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 import org.opensearch.test.TestGeoShapeFieldMapperPlugin;
 
 import java.util.Arrays;
@@ -28,14 +29,14 @@ import static org.opensearch.search.SearchService.CLUSTER_CONCURRENT_SEGMENT_SEA
  * This is the base class for all the Geo related integration tests. Use this class to add the features and settings
  * for the test cluster on which integration tests are running.
  */
-public abstract class GeoModulePluginIntegTestCase extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public abstract class GeoModulePluginIntegTestCase extends ParameterizedOpenSearchIntegTestCase {
 
     protected static final double GEOHASH_TOLERANCE = 1E-5D;
 
     protected static final WellKnownText WKT = new WellKnownText(true, new StandardValidator(true));
 
-    public GeoModulePluginIntegTestCase(Settings staticSettings) {
-        super(staticSettings);
+    public GeoModulePluginIntegTestCase(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -44,6 +45,11 @@ public abstract class GeoModulePluginIntegTestCase extends ParameterizedStaticSe
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     /**

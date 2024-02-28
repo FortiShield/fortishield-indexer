@@ -33,15 +33,13 @@ package org.opensearch.search.sort;
 
 import org.apache.lucene.search.Sort;
 import org.opensearch.cluster.metadata.DataStream;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.search.DocValueFormat;
 
 /**
  * Utility class to hold sort and doc value format instances
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class SortAndFormats {
 
     public final Sort sort;

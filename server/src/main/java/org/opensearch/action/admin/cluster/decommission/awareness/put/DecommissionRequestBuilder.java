@@ -12,15 +12,13 @@ import org.opensearch.action.ActionType;
 import org.opensearch.action.support.clustermanager.ClusterManagerNodeOperationRequestBuilder;
 import org.opensearch.client.OpenSearchClient;
 import org.opensearch.cluster.decommission.DecommissionAttribute;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.unit.TimeValue;
 
 /**
  * Register decommission request builder
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.4.0")
 public class DecommissionRequestBuilder extends ClusterManagerNodeOperationRequestBuilder<
     DecommissionRequest,
     DecommissionResponse,

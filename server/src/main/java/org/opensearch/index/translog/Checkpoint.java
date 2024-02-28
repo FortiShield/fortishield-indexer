@@ -44,7 +44,6 @@ import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.store.OutputStreamIndexOutput;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.io.Channels;
 import org.opensearch.index.seqno.SequenceNumbers;
 
@@ -58,10 +57,9 @@ import java.nio.file.Path;
 /**
  * A checkpoint for OpenSearch operations
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
-public final class Checkpoint {
+final public class Checkpoint {
 
     final long offset;
     final int numOps;

@@ -112,7 +112,6 @@ public class MockInternalClusterInfoService extends InternalClusterInfoService {
                 nodeStats.getDiscoveryStats(),
                 nodeStats.getIngestStats(),
                 nodeStats.getAdaptiveSelectionStats(),
-                nodeStats.getResourceUsageStats(),
                 nodeStats.getScriptCacheStats(),
                 nodeStats.getIndexingPressureStats(),
                 nodeStats.getShardIndexingPressureStats(),
@@ -121,10 +120,7 @@ public class MockInternalClusterInfoService extends InternalClusterInfoService {
                 nodeStats.getWeightedRoutingStats(),
                 nodeStats.getFileCacheStats(),
                 nodeStats.getTaskCancellationStats(),
-                nodeStats.getSearchPipelineStats(),
-                nodeStats.getSegmentReplicationRejectionStats(),
-                nodeStats.getRepositoriesStats(),
-                nodeStats.getAdmissionControlStats()
+                nodeStats.getSearchPipelineStats()
             );
         }).collect(Collectors.toList());
     }

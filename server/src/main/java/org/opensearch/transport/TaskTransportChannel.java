@@ -37,7 +37,6 @@ import org.opensearch.common.lease.Releasable;
 import org.opensearch.core.transport.TransportResponse;
 
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * Transport channel for tasks
@@ -89,10 +88,5 @@ public class TaskTransportChannel implements TransportChannel {
 
     public TransportChannel getChannel() {
         return channel;
-    }
-
-    @Override
-    public <T> Optional<T> get(String name, Class<T> clazz) {
-        return getChannel().get(name, clazz);
     }
 }

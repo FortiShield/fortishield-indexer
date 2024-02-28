@@ -35,10 +35,7 @@ package org.opensearch.index.search.stats;
 import org.opensearch.action.search.SearchPhase;
 import org.opensearch.action.search.SearchPhaseContext;
 import org.opensearch.action.search.SearchPhaseName;
-import org.opensearch.action.search.SearchRequestOperationsListenerSupport;
 import org.opensearch.action.search.SearchRequestStats;
-import org.opensearch.common.settings.ClusterSettings;
-import org.opensearch.common.settings.Settings;
 import org.opensearch.index.search.stats.SearchStats.Stats;
 import org.opensearch.test.OpenSearchTestCase;
 
@@ -50,7 +47,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SearchStatsTests extends OpenSearchTestCase implements SearchRequestOperationsListenerSupport {
+public class SearchStatsTests extends OpenSearchTestCase {
 
     // https://github.com/elastic/elasticsearch/issues/7644
     public void testShardLevelSearchGroupStats() throws Exception {
@@ -79,8 +76,7 @@ public class SearchStatsTests extends OpenSearchTestCase implements SearchReques
         long paramValue = randomIntBetween(2, 50);
 
         // Testing for request stats
-        ClusterSettings clusterSettings = new ClusterSettings(Settings.EMPTY, ClusterSettings.BUILT_IN_CLUSTER_SETTINGS);
-        SearchRequestStats testRequestStats = new SearchRequestStats(clusterSettings);
+        SearchRequestStats testRequestStats = new SearchRequestStats();
         SearchPhaseContext ctx = mock(SearchPhaseContext.class);
         for (SearchPhaseName searchPhaseName : SearchPhaseName.values()) {
             SearchPhase mockSearchPhase = mock(SearchPhase.class);
@@ -88,8 +84,8 @@ public class SearchStatsTests extends OpenSearchTestCase implements SearchReques
             when(mockSearchPhase.getStartTimeInNanos()).thenReturn(System.nanoTime() - TimeUnit.SECONDS.toNanos(paramValue));
             when(mockSearchPhase.getSearchPhaseName()).thenReturn(searchPhaseName);
             for (int iterator = 0; iterator < paramValue; iterator++) {
-                onPhaseStart(testRequestStats, ctx);
-                onPhaseEnd(testRequestStats, ctx);
+                testRequestStats.onPhaseStart(ctx);
+                testRequestStats.onPhaseEnd(ctx);
             }
         }
         searchStats1.setSearchRequestStats(testRequestStats);

@@ -31,16 +31,13 @@
 
 package org.opensearch.search.aggregations;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import static org.opensearch.search.aggregations.MultiBucketConsumerService.MultiBucketConsumer;
 
 /**
  * The aggregation context that is part of the search context.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class SearchContextAggregations {
     private final AggregatorFactories factories;
     private final MultiBucketConsumer multiBucketConsumer;

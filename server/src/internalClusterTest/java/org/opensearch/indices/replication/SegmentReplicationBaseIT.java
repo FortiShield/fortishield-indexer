@@ -61,6 +61,11 @@ public class SegmentReplicationBaseIT extends OpenSearchIntegTestCase {
     }
 
     @Override
+    protected boolean addMockInternalEngine() {
+        return false;
+    }
+
+    @Override
     public Settings indexSettings() {
         return Settings.builder()
             .put(super.indexSettings())

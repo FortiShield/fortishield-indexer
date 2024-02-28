@@ -53,7 +53,6 @@ import java.util.function.Predicate;
  *
  * @opensearch.internal
  **/
-@SuppressWarnings("removal")
 final class OpenSearchPolicy extends Policy {
 
     /** template policy file, the one used in tests */

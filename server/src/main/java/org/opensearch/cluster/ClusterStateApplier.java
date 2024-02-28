@@ -33,15 +33,13 @@
 package org.opensearch.cluster;
 
 import org.opensearch.cluster.service.ClusterService;
-import org.opensearch.common.annotation.PublicApi;
 
 /**
  * A component that is in charge of applying an incoming cluster state to the node internal data structures.
  * The single apply method is called before the cluster state becomes visible via {@link ClusterService#state()}.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface ClusterStateApplier {
 
     /**

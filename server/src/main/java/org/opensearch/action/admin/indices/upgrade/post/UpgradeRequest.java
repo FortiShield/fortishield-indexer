@@ -33,7 +33,6 @@
 package org.opensearch.action.admin.indices.upgrade.post;
 
 import org.opensearch.action.support.broadcast.BroadcastRequest;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 
@@ -46,9 +45,8 @@ import java.io.IOException;
  * @see org.opensearch.client.IndicesAdminClient#upgrade(UpgradeRequest)
  * @see UpgradeResponse
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class UpgradeRequest extends BroadcastRequest<UpgradeRequest> {
 
     /**

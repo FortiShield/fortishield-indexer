@@ -91,7 +91,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static org.opensearch.index.engine.EngineTestCase.assertAtMostOneLuceneDocumentPerSequenceNumber;
@@ -436,15 +435,11 @@ public class SegmentReplicationIndexShardTests extends OpenSearchIndexLevelRepli
             shards.startAll();
             final IndexShard primary = shards.getPrimary();
             shards.indexDocs(randomIntBetween(1, 10));
-            validateShardIdleWithNoReplicas(primary);
+            // ensure search idle conditions are met.
+            assertTrue(primary.isSearchIdle());
+            assertFalse(primary.scheduledRefresh());
+            assertTrue(primary.hasRefreshPending());
         }
-    }
-
-    protected void validateShardIdleWithNoReplicas(IndexShard primary) {
-        // ensure search idle conditions are met.
-        assertTrue(primary.isSearchIdle());
-        assertFalse(primary.scheduledRefresh());
-        assertTrue(primary.hasRefreshPending());
     }
 
     /**
@@ -730,7 +725,6 @@ public class SegmentReplicationIndexShardTests extends OpenSearchIndexLevelRepli
                     ReplicationCheckpoint checkpoint,
                     List<StoreFileMetadata> filesToFetch,
                     IndexShard indexShard,
-                    BiConsumer<String, Long> fileProgressTracker,
                     ActionListener<GetSegmentFilesResponse> listener
                 ) {
                     // set the listener, we will only fail it once we cancel the source.
@@ -926,33 +920,6 @@ public class SegmentReplicationIndexShardTests extends OpenSearchIndexLevelRepli
                         .contains("snapshot triggered on a new primary following failover and cannot proceed until promotion is complete")
                 );
             });
-        }
-    }
-
-    public void testReuseReplicationCheckpointWhenLatestInfosIsUnChanged() throws Exception {
-        try (ReplicationGroup shards = createGroup(1, settings, indexMapping, new NRTReplicationEngineFactory(), createTempDir())) {
-            final IndexShard primaryShard = shards.getPrimary();
-            shards.startAll();
-            shards.indexDocs(10);
-            shards.refresh("test");
-            replicateSegments(primaryShard, shards.getReplicas());
-            shards.assertAllEqual(10);
-            final ReplicationCheckpoint latestReplicationCheckpoint = primaryShard.getLatestReplicationCheckpoint();
-            try (GatedCloseable<SegmentInfos> segmentInfosSnapshot = primaryShard.getSegmentInfosSnapshot()) {
-                assertEquals(latestReplicationCheckpoint, primaryShard.computeReplicationCheckpoint(segmentInfosSnapshot.get()));
-            }
-            final Tuple<GatedCloseable<SegmentInfos>, ReplicationCheckpoint> latestSegmentInfosAndCheckpoint = primaryShard
-                .getLatestSegmentInfosAndCheckpoint();
-            try (final GatedCloseable<SegmentInfos> closeable = latestSegmentInfosAndCheckpoint.v1()) {
-                assertEquals(latestReplicationCheckpoint, primaryShard.computeReplicationCheckpoint(closeable.get()));
-            }
-        }
-    }
-
-    public void testComputeReplicationCheckpointNullInfosReturnsEmptyCheckpoint() throws Exception {
-        try (ReplicationGroup shards = createGroup(1, settings, indexMapping, new NRTReplicationEngineFactory(), createTempDir())) {
-            final IndexShard primaryShard = shards.getPrimary();
-            assertEquals(ReplicationCheckpoint.empty(primaryShard.shardId), primaryShard.computeReplicationCheckpoint(null));
         }
     }
 

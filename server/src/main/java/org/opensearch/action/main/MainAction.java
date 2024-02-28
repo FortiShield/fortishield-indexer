@@ -44,7 +44,7 @@ public class MainAction extends ActionType<MainResponse> {
     public static final String NAME = "cluster:monitor/main";
     public static final MainAction INSTANCE = new MainAction();
 
-    private MainAction() {
+    public MainAction() {
         super(NAME, MainResponse::new);
     }
 }

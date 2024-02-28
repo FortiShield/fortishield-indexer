@@ -32,7 +32,6 @@
 
 package org.opensearch.repositories;
 
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
@@ -47,25 +46,28 @@ import java.util.Objects;
 /**
  * Stats snapshot about a repository
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public final class RepositoryStatsSnapshot implements Writeable, ToXContentObject {
     public static final long UNKNOWN_CLUSTER_VERSION = -1;
     private final RepositoryInfo repositoryInfo;
     private final RepositoryStats repositoryStats;
     private final long clusterVersion;
+    private final boolean archived;
 
-    public RepositoryStatsSnapshot(RepositoryInfo repositoryInfo, RepositoryStats repositoryStats, long clusterVersion) {
+    public RepositoryStatsSnapshot(RepositoryInfo repositoryInfo, RepositoryStats repositoryStats, long clusterVersion, boolean archived) {
+        assert archived != (clusterVersion == UNKNOWN_CLUSTER_VERSION);
         this.repositoryInfo = repositoryInfo;
         this.repositoryStats = repositoryStats;
         this.clusterVersion = clusterVersion;
+        this.archived = archived;
     }
 
     public RepositoryStatsSnapshot(StreamInput in) throws IOException {
         this.repositoryInfo = new RepositoryInfo(in);
         this.repositoryStats = new RepositoryStats(in);
         this.clusterVersion = in.readLong();
+        this.archived = in.readBoolean();
     }
 
     public RepositoryInfo getRepositoryInfo() {
@@ -74,6 +76,10 @@ public final class RepositoryStatsSnapshot implements Writeable, ToXContentObjec
 
     public RepositoryStats getRepositoryStats() {
         return repositoryStats;
+    }
+
+    public boolean isArchived() {
+        return archived;
     }
 
     public long getClusterVersion() {
@@ -85,13 +91,18 @@ public final class RepositoryStatsSnapshot implements Writeable, ToXContentObjec
         repositoryInfo.writeTo(out);
         repositoryStats.writeTo(out);
         out.writeLong(clusterVersion);
+        out.writeBoolean(archived);
     }
 
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
         builder.startObject();
         repositoryInfo.toXContent(builder, params);
-        repositoryStats.toXContent(builder, params);
+        builder.field("request_counts", repositoryStats.requestCounts);
+        builder.field("archived", archived);
+        if (archived) {
+            builder.field("cluster_version", clusterVersion);
+        }
         builder.endObject();
         return builder;
     }
@@ -103,12 +114,13 @@ public final class RepositoryStatsSnapshot implements Writeable, ToXContentObjec
         RepositoryStatsSnapshot that = (RepositoryStatsSnapshot) o;
         return repositoryInfo.equals(that.repositoryInfo)
             && repositoryStats.equals(that.repositoryStats)
-            && clusterVersion == that.clusterVersion;
+            && clusterVersion == that.clusterVersion
+            && archived == that.archived;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(repositoryInfo, repositoryStats, clusterVersion);
+        return Objects.hash(repositoryInfo, repositoryStats, clusterVersion, archived);
     }
 
     @Override

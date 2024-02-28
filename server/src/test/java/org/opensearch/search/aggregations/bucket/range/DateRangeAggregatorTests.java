@@ -273,7 +273,7 @@ public class DateRangeAggregatorTests extends AggregatorTestCase {
             true,
             false,
             true,
-            DateFieldMapper.getDefaultDateTimeFormatter(),
+            DateFieldMapper.DEFAULT_DATE_TIME_FORMATTER,
             resolution,
             null,
             Collections.emptyMap()

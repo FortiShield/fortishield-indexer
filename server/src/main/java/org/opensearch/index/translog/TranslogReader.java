@@ -34,7 +34,6 @@ package org.opensearch.index.translog;
 
 import org.apache.lucene.store.AlreadyClosedException;
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.io.Channels;
 import org.opensearch.common.util.io.IOUtils;
 import org.opensearch.index.seqno.SequenceNumbers;
@@ -53,9 +52,8 @@ import static org.opensearch.index.translog.Translog.getCommitCheckpointFileName
 /**
  * an immutable translog filereader
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public class TranslogReader extends BaseTranslogReader implements Closeable {
     protected final long length;
     private final int totalOperations;

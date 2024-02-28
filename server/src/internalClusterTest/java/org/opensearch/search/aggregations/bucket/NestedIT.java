@@ -39,6 +39,7 @@ import org.opensearch.action.search.SearchPhaseExecutionException;
 import org.opensearch.action.search.SearchRequestBuilder;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.common.settings.Settings;
+import org.opensearch.common.util.FeatureFlags;
 import org.opensearch.core.rest.RestStatus;
 import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.XContentBuilder;
@@ -56,7 +57,7 @@ import org.opensearch.search.aggregations.metrics.Max;
 import org.opensearch.search.aggregations.metrics.Stats;
 import org.opensearch.search.aggregations.metrics.Sum;
 import org.opensearch.test.OpenSearchIntegTestCase;
-import org.opensearch.test.ParameterizedStaticSettingsOpenSearchIntegTestCase;
+import org.opensearch.test.ParameterizedOpenSearchIntegTestCase;
 import org.hamcrest.Matchers;
 
 import java.util.ArrayList;
@@ -91,14 +92,14 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 @OpenSearchIntegTestCase.SuiteScopeTestCase
-public class NestedIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase {
+public class NestedIT extends ParameterizedOpenSearchIntegTestCase {
 
     private static int numParents;
     private static int[] numChildren;
     private static SubAggCollectionMode aggCollectionMode;
 
-    public NestedIT(Settings staticSettings) {
-        super(staticSettings);
+    public NestedIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     @ParametersFactory
@@ -107,6 +108,11 @@ public class NestedIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), false).build() },
             new Object[] { Settings.builder().put(CLUSTER_CONCURRENT_SEGMENT_SEARCH_SETTING.getKey(), true).build() }
         );
+    }
+
+    @Override
+    protected Settings featureFlagSettings() {
+        return Settings.builder().put(super.featureFlagSettings()).put(FeatureFlags.CONCURRENT_SEGMENT_SEARCH, "true").build();
     }
 
     @Override
@@ -218,7 +224,6 @@ public class NestedIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase
                 )
         );
         indexRandom(true, builders);
-        indexRandomForMultipleSlices("idx");
         ensureSearchable();
     }
 
@@ -349,7 +354,6 @@ public class NestedIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase
     }
 
     public void testNestNestedAggs() throws Exception {
-        indexRandomForConcurrentSearch("idx_nested_nested_aggs");
         SearchResponse response = client().prepareSearch("idx_nested_nested_aggs")
             .addAggregation(
                 nested("level1", "nested1").subAggregation(
@@ -603,7 +607,6 @@ public class NestedIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase
             )
             .get();
         refresh();
-        indexRandomForConcurrentSearch("idx4");
 
         SearchResponse response = client().prepareSearch("idx4")
             .addAggregation(
@@ -779,7 +782,6 @@ public class NestedIT extends ParameterizedStaticSettingsOpenSearchIntegTestCase
             )
             .get();
         refresh();
-        indexRandomForConcurrentSearch("classes");
 
         SearchResponse response = client().prepareSearch("classes")
             .addAggregation(

@@ -31,8 +31,6 @@
 
 package org.opensearch.common;
 
-import org.opensearch.common.annotation.PublicApi;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -45,7 +43,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.CLASS)
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
-@PublicApi(since = "1.0.0")
 public @interface SuppressForbidden {
     String reason();
 }

@@ -449,7 +449,6 @@ public class ReloadSecureSettingsIT extends OpenSearchIntegTestCase {
         }
     }
 
-    @SuppressWarnings("removal")
     private SecureSettings writeEmptyKeystore(Environment environment, char[] password) throws Exception {
         final KeyStoreWrapper keyStoreWrapper = KeyStoreWrapper.create();
         try {

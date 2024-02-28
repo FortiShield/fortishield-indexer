@@ -217,7 +217,6 @@ public class JvmInfo implements ReportingService.Info {
         }
     }
 
-    @SuppressWarnings("removal")
     public static JvmInfo jvmInfo() {
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {

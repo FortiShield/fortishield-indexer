@@ -55,8 +55,8 @@ import static org.hamcrest.Matchers.sameInstance;
 public class GeoCentroidIT extends AbstractGeoTestCase {
     private static final String aggName = "geoCentroid";
 
-    public GeoCentroidIT(Settings staticSettings) {
-        super(staticSettings);
+    public GeoCentroidIT(Settings dynamicSettings) {
+        super(dynamicSettings);
     }
 
     public void testEmptyAggregation() throws Exception {

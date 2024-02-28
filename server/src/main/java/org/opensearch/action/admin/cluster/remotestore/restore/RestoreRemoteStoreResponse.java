@@ -9,7 +9,6 @@
 package org.opensearch.action.admin.cluster.remotestore.restore;
 
 import org.opensearch.common.Nullable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.action.ActionResponse;
 import org.opensearch.core.common.io.stream.StreamInput;
@@ -29,9 +28,8 @@ import static org.opensearch.core.xcontent.ConstructingObjectParser.optionalCons
 /**
  * Contains information about remote store restores
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "2.2.0")
 public final class RestoreRemoteStoreResponse extends ActionResponse implements ToXContentObject {
 
     @Nullable

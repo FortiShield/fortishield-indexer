@@ -38,7 +38,6 @@ import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.lucene.search.TotalHits;
 import org.opensearch.action.search.SearchResponse.Clusters;
 import org.opensearch.cluster.routing.GroupShardsIterator;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.search.SearchPhaseResult;
 import org.opensearch.search.SearchShardTarget;
 import org.opensearch.search.aggregations.InternalAggregations;
@@ -54,7 +53,6 @@ import java.util.stream.StreamSupport;
  *
  * @opensearch.api
  */
-@PublicApi(since = "1.0.0")
 public abstract class SearchProgressListener {
     private static final Logger logger = LogManager.getLogger(SearchProgressListener.class);
 

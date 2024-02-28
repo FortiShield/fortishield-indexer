@@ -33,7 +33,6 @@
 package org.opensearch.index.fielddata;
 
 import org.apache.lucene.util.Accountable;
-import org.opensearch.common.annotation.PublicApi;
 import org.opensearch.common.lease.Releasable;
 import org.opensearch.index.mapper.DocValueFetcher;
 import org.opensearch.search.DocValueFormat;
@@ -43,9 +42,8 @@ import java.io.IOException;
 /**
  * The thread safe {@link org.apache.lucene.index.LeafReader} level cache of the data.
  *
- * @opensearch.api
+ * @opensearch.internal
  */
-@PublicApi(since = "1.0.0")
 public interface LeafFieldData extends Accountable, Releasable {
 
     /**
